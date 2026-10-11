@@ -56,9 +56,8 @@ a{color:var(--ac)}.chips{display:flex;gap:8px;overflow-x:auto;margin:0 0 14px;pa
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 @media print{#pv td,#pv th{white-space:normal}#app,#toast{display:none!important}#pv{display:block}body{background:#fff}}
 </style></head><body><div class="wrap" id="app"></div><div id="pv"></div><div id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
-const SB_URL='https://xxljkzutforvdqwbhcwb.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4bGprenV0Zm9ydmRxd2JoY3diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2NjE1MDEsImV4cCI6MjEwNzIzNzUwMX0.D91ou5DSl1o8_5OFmHE8sYF29VO5Z47ysO9mQdblh1E',RED=location.origin+location.pathname;
+const FB_CFG={apiKey:'',authDomain:'',projectId:'',storageBucket:'',messagingSenderId:'',appId:''};
 const $=s=>document.querySelector(s),enc=new TextEncoder(),dec=new TextDecoder();
 const L=['id','en','zh','ar'],LOC=['id-ID','en-US','zh-CN','ar'];
 const S={
@@ -87,7 +86,7 @@ ruleh:['Aturan jatuh tempo dicatat otomatis setiap kali brankas dibuka.','Due ru
 verify:['Verifikasi rantai audit','Verify audit chain','验证审计链','التحقق من سلسلة التدقيق'],
 good:['Rantai utuh:','Chain intact:','链完整：','السلسلة سليمة:'],tamp:['Perubahan terdeteksi pada entri #','Tampering found at entry #','在分录 #发现篡改','تم اكتشاف تلاعب في القيد #'],
 wipe:['Hapus semua data','Erase all data','清除所有数据','محو كل البيانات'],
-sec:['Masuk lewat Google atau email terverifikasi. Data disimpan di Supabase dengan Row Level Security: tiap pengguna hanya melihat buku miliknya. Otomatis keluar setelah 5 menit tidak aktif. Jurnal tidak bisa diubah; koreksi lewat jurnal balik.','Sign in with Google or a verified email. Data lives in Supabase with Row Level Security: each user sees only their own books. Auto sign-out after 5 idle minutes. Entries are immutable; correct them with reversals.','通过 Google 或已验证邮箱登录。数据存于启用行级安全的 Supabase：用户只能看到自己的账簿。闲置5分钟自动退出。分录不可修改，请用冲销更正。','سجّل الدخول عبر Google أو بريد موثّق. البيانات في Supabase بأمان على مستوى الصفوف: يرى كل مستخدم دفاتره فقط. خروج تلقائي بعد 5 دقائق خمول. القيود غير قابلة للتعديل وتُصحَّح بالعكس.'],
+sec:['Masuk lewat Google atau email terverifikasi. Data disimpan di Firebase dengan Firestore Security Rules: tiap pengguna hanya melihat buku miliknya. Otomatis keluar setelah 5 menit tidak aktif. Jurnal tidak bisa diubah; koreksi lewat jurnal balik.','Sign in with Google or a verified email. Data lives in Firebase with Firestore Security Rules: each user sees only their own books. Auto sign-out after 5 idle minutes. Entries are immutable; correct them with reversals.','通过 Google 或已验证邮箱登录。数据存于启用安全规则的 Firebase：用户只能看到自己的账簿。闲置5分钟自动退出。分录不可修改，请用冲销更正。','سجّل الدخول عبر Google أو بريد موثّق. البيانات في Firebase بقواعد أمان Firestore: يرى كل مستخدم دفاتره فقط. خروج تلقائي بعد 5 دقائق خمول. القيود غير قابلة للتعديل وتُصحَّح بالعكس.'],
 unb:['Debit dan kredit harus berbeda dan jumlah > 0','Debit and credit must differ and amount must be > 0','借贷科目须不同且金额 > 0','يجب اختلاف المدين والدائن والمبلغ > 0'],
 auto:['otomatis','auto','自动','تلقائي'],
 email:['Email','Email','邮箱','البريد الإلكتروني'],bademail:['Format email tidak valid','Invalid email','邮箱格式无效','بريد غير صالح'],
@@ -110,7 +109,7 @@ bal:['Saldo','Balance'],acct:['Akun','Account'],line:['Baris','Line'],diff:['Sel
 item:['Barang/jasa','Item'],qty:['Jml','Qty'],price:['Harga','Price'],tax:['Pajak %','Tax %'],sub:['Subtotal','Subtotal'],print:['Cetak / PDF','Print / PDF'],
 company:['Nama usaha','Business name'],logo:['Logo','Logo'],invite:['Undang','Invite'],role:['Peran','Role'],pending:['menunggu','pending'],remove:['Hapus','Remove'],save:['Simpan','Save'],ws:['Nama buku','Book name'],
 ro:['Akun Anda hanya bisa melihat (viewer).','Your account is view-only (viewer).'],onlyowner:['Hanya owner yang bisa mengelola tim. Peran Anda:','Only the owner can manage the team. Your role:'],
-inve:['Undangan aktif saat orang itu masuk dengan email tersebut. Jalankan schema-v2.sql dulu.','The invite activates when that person signs in with that email. Run schema-v2.sql first.'],
+inve:['Undangan aktif saat orang itu masuk dengan email tersebut.','The invite activates when that person signs in with that email.'],
 a2200:['Utang pajak','Tax payable'],g_from:['Dari','From'],g_to:['Sampai','To'],g_per:['Periode','Period'],g_sd:['s.d.','to'],g_open:['Saldo awal','Opening balance'],g_close:['Saldo akhir','Closing balance'],cfg:['Pengaturan','Settings'],c_prof:['Profil','Profile'],c_team:['Tim','Team'],c_sec:['Keamanan','Security'],c_bhs:['Bahasa','Language'],c_mc:['Mata uang','Currency'],c_out:['Keluar','Log out'],
 terms:['Syarat Layanan','Terms of Service'],privacy:['Kebijakan Privasi','Privacy Policy'],eff:['Berlaku sejak','Effective'],l_agree:['Dengan masuk, Anda menyetujui','By continuing, you agree to the'],l_and:['dan','and'],
 l_badge:['Pembukuan untuk usaha kecil dan menengah','Bookkeeping for small businesses'],l_h:['Pembukuan rapi, laporan siap kapan saja','Tidy books, reports whenever you need them'],
@@ -118,13 +117,14 @@ l_p:['Catat jurnal, buat faktur, dan pantau laporan dalam Rupiah, Ringgit, dan U
 l_cta:['Daftar gratis','Start free'],l_f:['Semua yang Anda butuhkan','Everything you need'],l_pl:['Pilih paket','Choose a plan'],l_pop:['Terpopuler','Most popular'],l_soon:['Langganan berbayar dibuka bertahap.','Paid plans open gradually.'],
 l_lang:['Empat bahasa tersedia. Sebagian label baru di 中文 dan العربية masih tampil dalam bahasa Inggris.','Four languages available. Some newer labels in 中文 and العربية still appear in English.'],theme:['Tema tampilan','Theme'],th_biru:['Biru','Blue'],th_hijau:['Hijau','Green'],th_gelap:['Gelap','Dark'],th_emas:['Emas','Gold'],prof:['Profil','Profile'],myprof:['Profil saya','My profile'],photo:['Ganti foto','Change photo'],pname:['Nama tampilan','Display name'],
 bprof:['Profil usaha (tampil di faktur dan laporan)','Business profile (shown on invoices and reports)'],addr:['Alamat','Address'],phone:['Telepon','Phone'],taxid:['No. pajak (NPWP/SSM)','Tax ID'],
-saved:['Tersimpan','Saved'],badimg:['Gambar tidak bisa dibaca. Coba JPG atau PNG.','Could not read the image. Try a JPG or PNG.'],profErr:['Profil belum tersimpan. Jalankan schema-v3.sql dulu.','Profile not saved. Run schema-v3.sql first.'],
+saved:['Tersimpan','Saved'],badimg:['Gambar tidak bisa dibaca. Coba JPG atau PNG.','Could not read the image. Try a JPG or PNG.'],profErr:['Profil belum tersimpan.','Profile not saved.'],
 acctsec:['Keamanan akun','Account security'],npw:['Kata sandi baru','New password'],npw2:['Ulangi kata sandi','Repeat password'],chpw:['Ubah kata sandi','Change password'],outall:['Keluar dari semua perangkat','Sign out everywhere'],
 pwh:['Akun Google juga bisa membuat kata sandi di sini, agar bisa masuk dengan email. Minimal 8 karakter.','Google accounts can set a password here too, to sign in with email. Minimum 8 characters.'],pwmis:['Kata sandi tidak sama','Passwords do not match'],pwok:['Kata sandi diperbarui','Password updated'],google:['Masuk dengan Google','Continue with Google','使用 Google 登录','المتابعة عبر Google'],
 sent:['Cek email Anda untuk tautan konfirmasi/pemulihan.','Check your email for the confirmation/recovery link.','请查收邮件中的确认/恢复链接。','تحقق من بريدك للحصول على رابط التأكيد/الاستعادة.'],
 setpw:['Simpan kata sandi baru','Save new passphrase','保存新密码','حفظ العبارة الجديدة'],
-conf:['Isi SB_URL dan SB_KEY di index.html dengan data proyek Supabase Anda.','Set SB_URL and SB_KEY in index.html to your Supabase project values.','请在 index.html 中填写 Supabase 项目的 SB_URL 和 SB_KEY。','عيّن SB_URL و SB_KEY في index.html من مشروع Supabase.'],
-conflict:['Data berubah di perangkat lain. Memuat ulang...','Data changed elsewhere. Reloading...','数据已在别处更改，正在重新加载…','تغيّرت البيانات في مكان آخر. جارٍ إعادة التحميل…'],
+conf:['Isi FB_CFG di index.html dengan konfigurasi aplikasi web Firebase Anda (lihat README).','Fill FB_CFG in index.html with your Firebase web app config (see README).','请在 index.html 中填写 Firebase 网页应用配置 FB_CFG（见 README）。','املأ FB_CFG في index.html بإعدادات تطبيق Firebase (انظر README).'],
+c_plan:['Paket','Plan'],planh:['Paket Anda','Your plan'],trialn:['Masa percobaan Pro','Pro trial'],activen:['Aktif','Active'],freen:['Gratis','Free'],until:['Berlaku sampai','Valid until'],pmem:['Anggota tim','Team members'],ptx:['Transaksi bulan ini','Entries this month'],unl:['tak terbatas','unlimited'],upg:['Untuk upgrade atau perpanjang, hubungi kami dan sertakan ID buku ini:','To upgrade or renew, contact us and include this book ID:'],copy:['Salin ID','Copy ID'],copied:['ID disalin','ID copied'],limit:['Perubahan ditolak server: batas paket tercapai atau peran Anda berubah. Memuat ulang…','Change rejected by the server: plan limit reached or your role changed. Reloading…'],limMem:['Batas anggota paket tercapai. Upgrade paket untuk menambah anggota.','Plan member limit reached. Upgrade to add members.'],verifyfirst:['Email belum diverifikasi. Kami kirim ulang tautan verifikasi, cek kotak masuk/spam lalu masuk lagi.','Email not verified. We re-sent the verification link; check your inbox/spam and sign in again.'],badcred:['Email atau kata sandi salah.','Wrong email or password.'],emailused:['Email sudah terdaftar. Silakan masuk.','Email already registered. Please sign in.'],toomany:['Terlalu banyak percobaan. Coba lagi nanti.','Too many attempts. Try again later.'],relogin:['Demi keamanan, keluar lalu masuk lagi sebelum mengganti kata sandi.','For security, sign out and back in before changing your password.'],neterr:['Jaringan bermasalah. Coba lagi.','Network problem. Try again.'],
+big:['Buku sudah terlalu besar untuk satu dokumen. Hubungi kami untuk arsip tahunan.','The book is too large for one document. Contact us about yearly archiving.'],conflict:['Data berubah di perangkat lain. Memuat ulang...','Data changed elsewhere. Reloading...','数据已在别处更改，正在重新加载…','تغيّرت البيانات في مكان آخر. جارٍ إعادة التحميل…'],
 a1100:['Kas & Bank','Cash & Bank','现金及银行','النقد والبنك'],a1200:['Piutang usaha','Accounts receivable','应收账款','الذمم المدينة'],
 a2100:['Utang usaha','Accounts payable','应付账款','الذمم الدائنة'],a3100:['Modal pemilik','Owner capital','所有者资本','رأس المال'],
 a4100:['Pendapatan jasa','Service revenue','服务收入','إيرادات الخدمات'],a5100:['Beban gaji','Payroll expense','工资费用','مصروف الرواتب'],
@@ -134,18 +134,37 @@ const t=k=>{const a=S[k]||[k];return a[li]??a[1]??a[0]};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const b64=b=>{let s='';for(const x of new Uint8Array(b))s+=String.fromCharCode(x);return btoa(s)},ub=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',enc.encode(s)))].map(x=>x.toString(16).padStart(2,'0')).join('');
-async function save(){if(role==='viewer'){toast(t('ro'));st=null;setTimeout(()=>load(ws),0);return}const{data,error}=await sb.from('ledgers').update({data:st,version:ver+1,updated_at:new Date().toISOString()}).eq('workspace_id',ws).eq('version',ver).select('version');
-if(error||!data||!data.length){msg=t('conflict');st=null;draw();setTimeout(()=>location.reload(),1800);return}ver=data[0].version}
+const ymNow=()=>{const d=new Date();return d.getUTCFullYear()*100+d.getUTCMonth()+1};
+let LM={n:0,mYm:0,mBase:0},bill=null,fapp,fau,fdb,FS,AU;
+const D=(...p)=>FS.doc(fdb,...p),C=(...p)=>FS.collection(fdb,...p);
+const aerr=e=>{const c=e&&e.code||'';return c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found'||c==='auth/invalid-email'?t('badcred'):c==='auth/email-already-in-use'?t('emailused'):c==='auth/weak-password'?t('short'):c==='auth/too-many-requests'?t('toomany'):c==='auth/network-request-failed'?t('neterr'):c==='auth/requires-recent-login'?t('relogin'):(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')?'':(e&&e.message)||String(e)};
+async function save(){if(role==='viewer'){toast(t('ro'));st=null;setTimeout(()=>load(ws),0);return}
+try{const j=JSON.stringify(st);if(j.length>950000){toast(t('big'));throw new Error('BIG')}
+await FS.runTransaction(fdb,async tx=>{const r=D('workspaces',ws,'ledgers','main'),s=await tx.get(r);if(!s.exists()||s.data().version!==ver)throw new Error('CONFLICT');
+const o=s.data(),ym=ymNow(),base=o.mYm===ym?(o.mBase||0):(o.n||0),n=st.entries.length;
+tx.update(r,{j,version:ver+1,n,mYm:ym,mBase:base,updatedAt:FS.serverTimestamp()});LM={n,mYm:ym,mBase:base}});ver++}
+catch(e){const k=e.message==='CONFLICT'?'conflict':e.message==='BIG'?'big':'limit';try{sessionStorage.setItem('zmsg',k)}catch(_){}msg=t(k);st=null;draw();setTimeout(()=>location.reload(),1800)}}
+async function createWs(){const u=fau.currentUser,w=FS.doc(C('workspaces')),b=FS.writeBatch(fdb);
+b.set(w,{name:'Zui Akuntansi',owner:me.id,memberIds:[me.id],roles:{[me.id]:'owner'},memberInfo:{[me.id]:{email:me.email,name:u.displayName||''}},createdAt:FS.serverTimestamp()});
+b.set(D('workspaces',w.id,'ledgers','main'),{j:'{}',version:1,n:0,mYm:ymNow(),mBase:0,updatedAt:FS.serverTimestamp()});await b.commit()}
+async function acceptInvites(){try{const sn=await FS.getDocs(FS.query(C('invites'),FS.where('email','==',me.email)));
+for(const d of sn.docs){const i=d.data(),b=FS.writeBatch(fdb);
+b.update(D('workspaces',i.workspaceId),{memberIds:FS.arrayUnion(me.id),['roles.'+me.id]:i.role,['memberInfo.'+me.id]:{email:me.email,name:gm.full_name||''}});b.delete(d.ref);
+try{await b.commit()}catch(e){if(e.code==='permission-denied')try{await FS.deleteDoc(d.ref)}catch(_){}}}}catch(e){}}
 async function load(wid){if(busy)return;busy=true;try{
-await sb.rpc('accept_invites');const sel='workspace_id,role,workspaces(name)';
-let r=await sb.from('members').select(sel);if(r.error)throw r.error;
-if(!r.data.length){const c=await sb.rpc('create_workspace',{n:'Zui Akuntansi'});if(c.error)throw c.error;r=await sb.from('members').select(sel);if(r.error)throw r.error}
-mem=r.data;let last='';try{last=localStorage.getItem('lgw')||''}catch(e){}
+const u=fau.currentUser;me={id:u.uid,email:(u.email||'').toLowerCase()};gm={full_name:u.displayName,avatar_url:u.photoURL};
+await acceptInvites();
+const q=FS.query(C('workspaces'),FS.where('memberIds','array-contains',me.id));
+let sn=await FS.getDocs(q);if(sn.empty){await createWs();sn=await FS.getDocs(q)}
+mem=sn.docs.map(d=>{const x=d.data();return{workspace_id:d.id,role:x.roles[me.id],workspaces:{name:x.name},created:x.createdAt,members:x.memberIds.length}});
+let last='';try{last=localStorage.getItem('lgw')||''}catch(e){}
 const p=mem.find(x=>x.workspace_id===wid)||mem.find(x=>x.workspace_id===last)||mem[0];ws=p.workspace_id;role=p.role;try{localStorage.setItem('lgw',ws)}catch(e){}
-const{data:l,error:e2}=await sb.from('ledgers').select('data,version').eq('workspace_id',ws).single();if(e2)throw e2;
-const fresh=!Object.keys(l.data).length;st=fresh?seed():l.data;ver=l.version;st.invoices??=[];st.rules??=[];
+const [ls,bs]=await Promise.all([FS.getDoc(D('workspaces',ws,'ledgers','main')),FS.getDoc(D('workspaces',ws,'billing','plan'))]);
+if(!ls.exists())throw new Error('Data buku tidak ditemukan.');
+bill=bs.exists()?bs.data():null;const l=ls.data(),dj=JSON.parse(l.j||'{}');LM={n:l.n||0,mYm:l.mYm||0,mBase:l.mBase||0};
+const fresh=!Object.keys(dj).length;st=fresh?seed():dj;ver=l.version;st.invoices??=[];st.rules??=[];
 if(!st.accts.some(a=>a.c==='2200'))st.accts.push({c:'2200',y:'Li',n:''});
-if(fresh)await save();await loadProfile();fixCur();await autorun();msg='';ping();draw()}catch(e){st=null;msg=e.message;draw()}finally{busy=false}}
+if(fresh)await save();await loadProfile();fixCur();await autorun();msg='';ping();draw()}catch(e){st=null;msg=aerr(e)||e.message;draw()}finally{busy=false}}
 const seed=()=>({rates:{IDR:1,MYR:3800,USD:16000},
 accts:[['1100','A'],['1200','A'],['2100','Li'],['2200','Li'],['3100','E'],['4100','R'],['5100','X'],['5200','X']].map(([c,y])=>({c,y,n:''})),entries:[],rules:[],invoices:[]});
 const nm=a=>S['a'+a.c]?t('a'+a.c):a.n;
@@ -153,21 +172,23 @@ const today=()=>new Date().toISOString().slice(0,10);
 const addM=(d,m)=>{const x=new Date(d+'T00:00:00Z');x.setUTCMonth(x.getUTCMonth()+m);return x.toISOString().slice(0,10)};
 async function post(date,desc,cur,lines,auto){if(role==='viewer'){toast(t('ro'));throw new Error('ro')}const prev=st.entries.length?st.entries.at(-1).hash:'0';const e={id:st.entries.length+1,date,desc,cur,rate:st.rates[cur],lines,auto:!!auto,prev};e.hash=await sha(prev+JSON.stringify([e.id,date,desc,cur,e.rate,lines]));st.entries.push(e)}
 async function autorun(){let n=0;for(const r of st.rules){while(r.next<=today()&&n++<120){await post(r.next,r.desc,r.cur,[{a:r.d,dr:r.amt,cr:0},{a:r.c,dr:0,cr:r.amt}],true);r.next=addM(r.next,r.every)}}if(n)await save()}
-const cfgOk=()=>SB_URL.startsWith('https://')&&SB_KEY.length>20&&window.supabase;
+const cfgOk=()=>!!(FB_CFG.apiKey&&FB_CFG.projectId&&window.FB);
 async function boot(){try{const p=JSON.parse(localStorage.getItem('lgp')||'{}');if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<4)li=p.li;if(['biru','hijau','gelap','emas'].includes(p.th))th=p.th}catch(e){}
-if(!cfgOk()){draw();return}sb=supabase.createClient(SB_URL,SB_KEY);
-sb.auth.onAuthStateChange((ev,ses)=>{if(ev==='PASSWORD_RECOVERY'){rec=true;draw()}else if(ev==='SIGNED_OUT'){st=null;draw()}else if(ses&&!st&&!rec)setTimeout(load,0)});
+try{const k=sessionStorage.getItem('zmsg');if(k){sessionStorage.removeItem('zmsg');setTimeout(()=>toast(t(k)),400)}}catch(e){}
+if(!cfgOk()){draw();return}
+FS=FB.Fs;AU=FB.Au;fapp=FB.A.initializeApp(FB_CFG);fau=AU.getAuth(fapp);fdb=FS.getFirestore(fapp);
+AU.onAuthStateChanged(fau,u=>{if(!u){st=null;draw();return}if(!u.emailVerified)return;if(!st)setTimeout(load,0)});
 draw()}
-async function authGo(mode){const e=($('#em')||{}).value?.trim()||'',p=($('#pw')||{}).value||'',m=$('#m');m.textContent='';let r;
-if((mode==='up'||mode==='n')&&p.length<8){m.textContent=t('short');return}
-if(mode==='in')r=await sb.auth.signInWithPassword({email:e,password:p});
-else if(mode==='up')r=await sb.auth.signUp({email:e,password:p,options:{emailRedirectTo:RED}});
-else if(mode==='g')r=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:RED}});
-else if(mode==='f')r=await sb.auth.resetPasswordForEmail(e,{redirectTo:RED});
-else if(mode==='n'){r=await sb.auth.updateUser({password:p});if(!r.error){rec=false;await load();return}}
-if(r&&r.error){m.textContent=r.error.message;return}
-if(mode==='up'||mode==='f')m.textContent=t('sent')}
-async function lockNow(){clearTimeout(idle);st=null;view='land';tab='dash';if(sb)await sb.auth.signOut();draw()}
+const say=s=>{const x=$('#m');if(x)x.textContent=s};
+async function authGo(mode){const e=($('#em')||{}).value?.trim()||'',p=($('#pw')||{}).value||'';say('');
+if(mode==='up'&&p.length<8){say(t('short'));return}
+try{
+if(mode==='in'){const c=await AU.signInWithEmailAndPassword(fau,e,p);if(!c.user.emailVerified){await AU.sendEmailVerification(c.user).catch(()=>{});await AU.signOut(fau);say(t('verifyfirst'))}}
+else if(mode==='up'){const c=await AU.createUserWithEmailAndPassword(fau,e,p);await AU.sendEmailVerification(c.user);await AU.signOut(fau);say(t('sent'))}
+else if(mode==='g'){try{await AU.signInWithPopup(fau,new AU.GoogleAuthProvider())}catch(x){if(x.code==='auth/popup-blocked')await AU.signInWithRedirect(fau,new AU.GoogleAuthProvider());else throw x}}
+else if(mode==='f'){if(!e){say(t('bademail'));return}await AU.sendPasswordResetEmail(fau,e);say(t('sent'))}
+}catch(x){say(aerr(x))}}
+async function lockNow(){clearTimeout(idle);st=null;view='land';tab='dash';if(fau)await AU.signOut(fau);draw()}
 function ping(){clearTimeout(idle);idle=setTimeout(lockNow,300000)}
 ['click','keydown','pointerdown'].forEach(e=>addEventListener(e,()=>st&&ping()));
 const conv=(v,from,to)=>v*st.rates[from]/st.rates[to];
@@ -210,14 +231,16 @@ const wsSel=()=>mem.length>1?`<select aria-label="workspace" onchange="busy=fals
 function teamTab(){if(role!=='owner')return`<div class="card"><p>${t('onlyowner')} ${esc(role)}</p></div>`;const cur=mem.find(x=>x.workspace_id===ws);
 return`<div class="card"><h3>${t('team')}</h3><div class="row"><label>${t('ws')}<input id="wn" value="${esc((cur&&cur.workspaces&&cur.workspaces.name)||'')}"></label><button class="b g" onclick="renWs()">${t('save')}</button></div></div>
 <div class="card"><div class="row"><label>${t('email')}<input id="ie" type="email"></label><label>${t('role')}<select id="ir">${opt([['editor','editor'],['viewer','viewer']],'editor')}</select></label><button class="b" onclick="invite()">${t('invite')}</button></div><p class="mut">${t('inve')}</p><p class="bad" id="te"></p></div><div class="card sc" id="tm"></div>`}
-async function teamLoad(){if(role!=='owner'||!sb)return;const el=$('#tm');if(!el)return;
-const [a,b]=await Promise.all([sb.rpc('list_members',{w:ws}),sb.from('invites').select('id,email,role').eq('workspace_id',ws)]);
-el.innerHTML='<table>'+(a.data||[]).map(x=>`<tr><td>${esc(x.email)}</td><td>${esc(x.role)}</td><td>${x.role==='owner'?'':`<button class="b g" onclick="rmMem('${esc(x.user_id)}')">${t('remove')}</button>`}</td></tr>`).join('')+(b.data||[]).map(x=>`<tr><td>${esc(x.email)}</td><td>${esc(x.role)} · ${t('pending')}</td><td><button class="b g" onclick="delInv('${esc(x.id)}')">${t('remove')}</button></td></tr>`).join('')+'</table>'}
-async function invite(){const e=$('#ie').value.trim().toLowerCase(),m=$('#te');m.textContent='';if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){m.textContent=t('bademail');return}
-const{error}=await sb.from('invites').insert({workspace_id:ws,email:e,role:$('#ir').value});if(error){m.textContent=error.message;return}$('#ie').value='';teamLoad()}
-async function delInv(id){await sb.from('invites').delete().eq('id',id);teamLoad()}
-async function rmMem(u){await sb.from('members').delete().eq('workspace_id',ws).eq('user_id',u);teamLoad()}
-async function renWs(){const n=$('#wn').value.trim().slice(0,80);if(!n)return;await sb.from('workspaces').update({name:n}).eq('id',ws);const x=mem.find(x=>x.workspace_id===ws);if(x)x.workspaces={name:n};draw()}
+async function teamLoad(){if(role!=='owner'||!fdb)return;const el=$('#tm');if(!el)return;
+const [a,b]=await Promise.all([FS.getDoc(D('workspaces',ws)),FS.getDocs(FS.query(C('invites'),FS.where('workspaceId','==',ws)))]);if(!a.exists())return;
+const w=a.data(),rows=w.memberIds.map(u=>({user_id:u,email:(w.memberInfo[u]||{}).email||u,role:w.roles[u]})),inv=b.docs.map(d=>({id:d.id,...d.data()}));
+el.innerHTML='<table>'+rows.map(x=>`<tr><td>${esc(x.email)}</td><td>${esc(x.role)}</td><td>${x.role==='owner'?'':`<button class="b g" data-u="${esc(x.user_id)}" onclick="rmMem(this.dataset.u)">${t('remove')}</button>`}</td></tr>`).join('')+inv.map(x=>`<tr><td>${esc(x.email)}</td><td>${esc(x.role)} · ${t('pending')}</td><td><button class="b g" data-i="${esc(x.id)}" onclick="delInv(this.dataset.i)">${t('remove')}</button></td></tr>`).join('')+'</table>'}
+async function invite(){const e=$('#ie').value.trim().toLowerCase(),m=$('#te');m.textContent='';if(!/^[^@\s/]+@[^@\s/]+\.[^@\s/]+$/.test(e)){m.textContent=t('bademail');return}
+const cur=mem.find(x=>x.workspace_id===ws);
+try{await FS.setDoc(D('invites',ws+'__'+e),{workspaceId:ws,email:e,role:$('#ir').value,wsName:(cur&&cur.workspaces.name)||'',by:me.id})}catch(x){m.textContent=x.code==='permission-denied'?t('limMem'):aerr(x);return}$('#ie').value='';teamLoad()}
+async function delInv(id){try{await FS.deleteDoc(D('invites',id))}catch(e){}teamLoad()}
+async function rmMem(u){try{await FS.updateDoc(D('workspaces',ws),{memberIds:FS.arrayRemove(u),['roles.'+u]:FS.deleteField(),['memberInfo.'+u]:FS.deleteField()})}catch(e){toast(aerr(e))}teamLoad()}
+async function renWs(){const n=$('#wn').value.trim().slice(0,80);if(!n)return;try{await FS.updateDoc(D('workspaces',ws),{name:n})}catch(e){toast(aerr(e));return}const x=mem.find(x=>x.workspace_id===ws);if(x)x.workspaces={name:n};draw()}
 const IC={dash:'📊',rep:'📑',gl:'📚',jrn:'✍️',inv:'🧾',bank:'🏦',aut:'🔁',team:'👥',prof:'👤',set:'🔒',cfg:'⚙️'};
 function setTheme(k){th=k;savePref();draw()}
 const dispName=()=>prof.name||gm.full_name||gm.name||me.email||'';
@@ -226,11 +249,10 @@ const avatarHtml=(n=32)=>{const a=avSrc();return a?`<img src="${esc(a)}" referre
 const meChip=()=>`<span style="display:inline-flex;align-items:center;gap:6px;cursor:pointer" onclick="tab='cfg';cs='prof';draw()">${avatarHtml(30)}<span class="mut" style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(dispName())}</span></span>`;
 const coBlock=()=>{const c=st.coInfo||{};return`<p><b>${esc(st.co||'')}</b><br>${esc(c.addr||'')}<br>${esc(c.phone||'')} ${esc(c.tax||'')}</p>`};
 function fixCur(){const u=new Set([...st.entries.map(e=>e.cur),...st.rules.map(r=>r.cur),...st.invoices.map(v=>v.cur)]);for(const c of Object.keys(st.rates))if(!['IDR','MYR','USD'].includes(c)&&!u.has(c))delete st.rates[c];st.rates.IDR=1;st.rates.MYR??=3800;st.rates.USD??=16000;if(!st.rates[disp])disp='IDR'}
-async function loadProfile(){try{const{data:u}=await sb.auth.getUser();const x=(u&&u.user)||{};me={id:x.id,email:x.email};gm=x.user_metadata||{};
-const{data}=await sb.from('profiles').select('name,avatar,prefs').eq('user_id',me.id).maybeSingle();
-if(data){prof=data;const p=data.prefs||{};if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<4)li=p.li;if(['biru','hijau','gelap','emas'].includes(p.th))th=p.th}}catch(e){}}
-async function upProf(){const{error}=await sb.from('profiles').upsert({user_id:me.id,name:prof.name||null,avatar:prof.avatar||null,prefs:{disp,li,th},updated_at:new Date().toISOString()});if(error)toast(t('profErr'));return !error}
-function savePref(){try{localStorage.setItem('lgp',JSON.stringify({disp,li,th}))}catch(e){}if(sb&&me.id)upProf()}
+async function loadProfile(){try{const s=await FS.getDoc(D('users',me.id));
+if(s.exists()){const data=s.data();prof={name:data.name||'',avatar:data.avatar||''};const p=data.prefs||{};if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<4)li=p.li;if(['biru','hijau','gelap','emas'].includes(p.th))th=p.th}}catch(e){}}
+async function upProf(){try{await FS.setDoc(D('users',me.id),{name:prof.name||'',avatar:prof.avatar||'',prefs:{disp,li,th}});return true}catch(e){toast(t('profErr'));return false}}
+function savePref(){try{localStorage.setItem('lgp',JSON.stringify({disp,li,th}))}catch(e){}if(fdb&&me.id)upProf()}
 function setDisp(v){disp=v;savePref();draw()}
 function setLang(v){li=v;savePref();draw()}
 function shrink(f,max,sq,cb){if(!f)return;const im=new Image(),u=URL.createObjectURL(f);
@@ -247,8 +269,7 @@ return`<div class="card"><h3>${t('myprof')}</h3><div class="row" style="align-it
 <div class="row" style="margin-top:12px"><label>${t('company')}<input id="cn" value="${esc(st.co||'')}"></label><label>${t('addr')}<input id="ca" value="${esc(c.addr||'')}"></label><label>${t('phone')}<input id="cp" value="${esc(c.phone||'')}"></label><label>${t('taxid')}<input id="ct" value="${esc(c.tax||'')}"></label><button class="b" onclick="saveCo()">${t('save')}</button></div></div>
 <div class="card"><h3>${t('theme')}</h3><div class="row">${[['biru','#2563eb'],['hijau','#15803d'],['gelap','#0e1420'],['emas','#a16207']].map(([k,c])=>`<button class="b g" style="border-color:${c};${th===k?'background:'+c+';color:#fff':'color:inherit'}" onclick="setTheme('${k}')">${t('th_'+k)}</button>`).join('')}</div></div>`}
 async function chPw(){const a=$('#np1').value,b=$('#np2').value,m=$('#pe');if(a.length<8){m.className='bad';m.textContent=t('short');return}if(a!==b){m.className='bad';m.textContent=t('pwmis');return}
-const{error}=await sb.auth.updateUser({password:a});m.className=error?'bad':'ok';m.textContent=error?error.message:t('pwok');if(!error){$('#np1').value='';$('#np2').value=''}}
-async function outAll(){await sb.auth.signOut({scope:'global'});st=null;draw()}
+try{await AU.updatePassword(fau.currentUser,a);m.className='ok';m.textContent=t('pwok');$('#np1').value='';$('#np2').value=''}catch(e){m.className='bad';m.textContent=aerr(e)}}
 function printReport(){const cards=[...document.querySelectorAll('#app .sc')].map(e=>e.parentElement.outerHTML).join(''),lg=st.logo&&st.logo.startsWith('data:image/')?`<img src="${esc(st.logo)}" style="max-height:60px;max-width:180px">`:'<span></span>';
 $('#pv').innerHTML=`<div style="padding:24px;max-width:800px;margin:auto"><div style="display:flex;justify-content:space-between;align-items:center">${lg}<div style="text-align:right"><b style="font-size:20px">${t('rep')}</b><br>${today()} · ${disp}</div></div>${coBlock()}${cards}</div>`;window.print()}
 const qq=x=>{x=String(x);if(/^[=+\-@]/.test(x))x="'"+x;return'"'+x.replace(/"/g,'""')+'"'};
@@ -266,9 +287,9 @@ const FEATS=[['✍️',['Jurnal dan buku besar','Journal and ledger'],['Jurnal m
 ['🏦',['Rekonsiliasi bank','Bank reconciliation'],['Cocokkan mutasi bank dengan catatan kas untuk menemukan selisih.','Match bank lines with your cash records to find differences.']],
 ['🔒',['Aman','Secure'],['Login Google atau email terverifikasi, akses per pengguna, dan rantai audit untuk setiap jurnal.','Google or verified email sign-in, per-user access, and an audit chain for every entry.']]];
 /* UBAH HARGA DAN FITUR PAKET DI SINI */
-const PLANS=[{n:'Gratis',p:'Rp 0',per:['selamanya','forever'],f:[['1 buku usaha','1 business book'],['Jurnal, buku besar, dan laporan','Journal, ledger, and reports'],['3 mata uang','3 currencies'],['Cetak faktur','Invoice printing']]},
-{n:'Pro',p:'Rp 49.000',per:['per bulan','per month'],hot:1,soon:1,f:[['Semua fitur Gratis','Everything in Free'],['Tim dengan peran owner, editor, viewer','Team with owner, editor, viewer roles'],['Rekonsiliasi dan jurnal berulang','Reconciliation and recurring entries'],['Dukungan prioritas','Priority support']]},
-{n:'Bisnis',p:'Rp 99.000',per:['per bulan','per month'],soon:1,f:[['Semua fitur Pro','Everything in Pro'],['Beberapa buku usaha','Multiple business books'],['Anggota tim lebih banyak','More team members'],['Ekspor lanjutan','Advanced export']]}];
+const PLANS=[{n:'Gratis',p:'Rp 0',per:['selamanya','forever'],f:[['1 buku usaha, 1 anggota','1 business book, 1 member'],['Hingga 50 transaksi per bulan','Up to 50 entries per month'],['Jurnal, buku besar, dan laporan','Journal, ledger, and reports'],['3 mata uang','3 currencies'],['Cetak faktur','Invoice printing']]},
+{n:'Pro',p:'Rp 49.000',per:['per bulan','per month'],hot:1,soon:1,f:[['Semua fitur Gratis','Everything in Free'],['Hingga 3 anggota (owner, editor, viewer)','Up to 3 members (owner, editor, viewer)'],['Transaksi tanpa batas','Unlimited entries'],['Percobaan gratis 14 hari','14-day free trial'],['Rekonsiliasi dan jurnal berulang','Reconciliation and recurring entries'],['Dukungan prioritas','Priority support']]},
+{n:'Bisnis',p:'Rp 99.000',per:['per bulan','per month'],soon:1,f:[['Semua fitur Pro','Everything in Pro'],['Beberapa buku usaha','Multiple business books'],['Hingga 10 anggota tim','Up to 10 team members'],['Ekspor lanjutan','Advanced export']]}];
 const FAQ=[[['Apakah data saya aman?','Is my data safe?'],['Login memakai Google atau email terverifikasi, data tersimpan di server dengan aturan akses per pengguna, dan setiap jurnal tercatat dalam rantai audit. Tidak ada sistem yang 100% aman, jadi simpan cadangan laporan penting.','Sign-in uses Google or verified email, data is stored on servers with per-user access rules, and every entry is recorded in an audit chain. No system is 100% secure, so keep backups of important reports.']],
 [['Apakah ini pengganti akuntan?','Does this replace an accountant?'],['Tidak. Zui Akuntansi membantu pencatatan dan laporan. Untuk pajak dan keputusan akuntansi penting, konsultasikan dengan profesional.','No. Zui Akuntansi helps with record-keeping and reports. For tax and major accounting decisions, consult a professional.']],
 [['Bagaimana cara berhenti berlangganan?','How do I cancel?'],['Anda bisa berhenti kapan saja. Akses berbayar tetap berlaku sampai akhir periode yang sudah dibayar. Rinciannya ada di Syarat Layanan.','You can cancel any time. Paid access stays until the end of the period already paid. Details are in the Terms of Service.']],
@@ -295,7 +316,7 @@ const TERMS=[['1. Penerimaan Syarat','Dengan membuat akun atau memakai Zui Akunt
 ['12. Perubahan Syarat','Kami dapat memperbarui Syarat ini. Penggunaan Layanan setelah perubahan berarti Anda menerima Syarat yang baru.']];
 const PRIV=[['1. Data yang kami kumpulkan','Data akun (email, nama, foto profil dari Google atau yang Anda unggah), data pembukuan yang Anda masukkan (jurnal, faktur, nama pelanggan, profil usaha), preferensi (bahasa, mata uang, tema), serta data teknis dasar seperti alamat IP dan jenis perangkat yang dicatat penyedia infrastruktur.'],
 ['2. Cara kami menggunakan data','Untuk menjalankan Layanan, mengautentikasi Anda, menjaga keamanan, memberi dukungan, dan memperbaiki Layanan. Kami tidak menjual data pribadi Anda.'],
-['3. Pihak ketiga','Kami memakai Supabase (database dan autentikasi, server di Singapura), Google (login), layanan hosting situs, layanan pengirim email, dan penyedia pembayaran saat fitur berbayar tersedia. Halaman ini juga memuat font dari Google Fonts. Pihak-pihak tersebut memproses data sesuai kebijakan masing-masing.'],
+['3. Pihak ketiga','Kami memakai Google Firebase (database dan autentikasi), Google (login), layanan hosting situs, layanan pengirim email, dan penyedia pembayaran saat fitur berbayar tersedia. Halaman ini juga memuat font dari Google Fonts. Pihak-pihak tersebut memproses data sesuai kebijakan masing-masing.'],
 ['4. Penyimpanan di perangkat','Aplikasi menyimpan preferensi (bahasa, mata uang, tema) di browser Anda. Kami tidak memakai iklan atau pelacak pihak ketiga.'],
 ['5. Keamanan','Koneksi memakai HTTPS, akses data dibatasi per pengguna dengan aturan di tingkat database, dan jurnal dicatat dalam rantai audit. Tidak ada sistem yang sepenuhnya aman, dan Kami tidak dapat menjamin keamanan mutlak.'],
 ['6. Penyimpanan dan penghapusan','Data disimpan selama akun aktif. Anda dapat meminta penghapusan akun dan data. Salinan cadangan dapat bertahan sementara sesuai kebijakan penyedia infrastruktur.'],
@@ -310,9 +331,19 @@ let cs0=0;
 const bhsTab=()=>`<div class="card"><h3>${t('c_bhs')}</h3><div class="row">${['Indonesia','English','中文','العربية'].map((x,k)=>`<button class="b ${li===k?'':'g'}" onclick="setLang(${k})">${x}</button>`).join('')}</div><p class="mut" style="font-size:13px">${t('l_lang')}</p></div>`;
 const curTab=()=>`<div class="card"><h3>${t('c_mc')}</h3><div class="row"><label>${t('disp')}<select onchange="setDisp(this.value)">${opt(curs(),disp)}</select></label></div></div>${RATES()}`;
 const RATES=()=>`<div class="card"><h3>${t('rate')}</h3><div class="row">${Object.keys(st.rates).filter(c=>c!=='IDR').map(c=>`<label>${c}<input type="number" min="0" step="any" value="${st.rates[c]}" style="width:110px" onchange="setRate('${c}',this.value)"></label>`).join('')}</div></div>`;
-const outTab=()=>`<div class="card"><h3>${t('c_out')}</h3><p class="mut">${me.email?esc(me.email):''}</p><div class="row"><button class="b" onclick="lockNow()">${t('c_out')}</button><button class="b g" onclick="outAll()">${t('outall')}</button></div></div>`;
-function cfg(){const body={prof:profileTab,team:teamTab,sec:settings,bhs:bhsTab,mc:curTab,out:outTab}[cs]();
-return`<div class="chips">${[['prof','👤'],['team','👥'],['sec','🔒'],['bhs','🌐'],['mc','💱'],['out','🚪']].map(([k,e])=>`<button class="ch ${cs===k?'on':''}" onclick="cs='${k}';draw()">${e} ${t('c_'+k)}</button>`).join('')}</div><div class="cc">${body}</div><p class="mut" style="font-size:13px"><a href="#" onclick="openLegal('terms','land');return false" style="color:var(--ac)">${t('terms')}</a> · <a href="#" onclick="openLegal('privacy','land');return false" style="color:var(--ac)">${t('privacy')}</a></p>`}
+const outTab=()=>`<div class="card"><h3>${t('c_out')}</h3><p class="mut">${me.email?esc(me.email):''}</p><div class="row"><button class="b" onclick="lockNow()">${t('c_out')}</button></div></div>`;
+const LIM={free:{m:1,tx:50},pro:{m:3,tx:null},bisnis:{m:10,tx:null}};
+function planInfo(){const w=mem.find(x=>x.workspace_id===ws)||{},now=Date.now(),cr=w.created&&w.created.toMillis?w.created.toMillis():now;
+if(bill&&bill.until&&bill.until.toMillis()>now&&LIM[bill.plan])return{p:bill.plan,until:bill.until.toMillis(),trial:false};
+if(now<cr+14*864e5)return{p:'pro',until:cr+14*864e5,trial:true};return{p:'free',until:0,trial:false}}
+function planTab(){const w=mem.find(x=>x.workspace_id===ws)||{},i=planInfo(),L=LIM[i.p],used=LM.mYm===ymNow()?Math.max(0,st.entries.length-LM.mBase):0,bar=(a,b)=>b?`<div style="height:8px;border-radius:6px;background:var(--line);overflow:hidden"><div style="height:8px;width:${Math.min(100,a/b*100)}%;background:var(--ac)"></div></div>`:'';
+const nm={free:t('freen'),pro:'Pro',bisnis:'Bisnis'}[i.p];
+return`<div class="card"><h3>${t('planh')}: ${nm}${i.trial?' · '+t('trialn'):''}</h3>${i.until?`<p class="mut">${t('until')} ${new Date(i.until).toLocaleDateString(LOC[li])}</p>`:''}
+<p>${t('pmem')}: <b>${w.members||1}</b> / ${L.m}</p>${bar(w.members||1,L.m)}
+<p>${t('ptx')}: <b>${used}</b> / ${L.tx??t('unl')}</p>${bar(used,L.tx)}</div>
+<div class="card"><p>${t('upg')}</p><p><code id="wid" style="user-select:all">${esc(ws)}</code></p><div class="row"><button class="b" onclick="navigator.clipboard&&navigator.clipboard.writeText(ws).then(()=>toast(t('copied')))">${t('copy')}</button></div><p class="mut">${esc(KONTAK)}</p></div>`}
+function cfg(){const body={prof:profileTab,team:teamTab,plan:planTab,sec:settings,bhs:bhsTab,mc:curTab,out:outTab}[cs]();
+return`<div class="chips">${[['prof','👤'],['team','👥'],['plan','💎'],['sec','🔒'],['bhs','🌐'],['mc','💱'],['out','🚪']].map(([k,e])=>`<button class="ch ${cs===k?'on':''}" onclick="cs='${k}';draw()">${e} ${t('c_'+k)}</button>`).join('')}</div><div class="cc">${body}</div><p class="mut" style="font-size:13px"><a href="#" onclick="openLegal('terms','land');return false" style="color:var(--ac)">${t('terms')}</a> · <a href="#" onclick="openLegal('privacy','land');return false" style="color:var(--ac)">${t('privacy')}</a></p>`}
 function toggleMenu(){if(matchMedia('(min-width:900px)').matches)mhide=!mhide;else mopen=!mopen;const sh=$('.shell');if(!sh)return;sh.classList.toggle('hide',mhide);$('nav').classList.toggle('open',mopen);$('#scrim').classList.toggle('on',mopen)}
 function report(){const b=bals(),D=c=>conv(c,'IDR',disp);
 const sum=ty=>st.accts.filter(a=>a.y===ty).reduce((s,a)=>s+b[a.c],0);
@@ -362,7 +393,7 @@ return`<div class="card"><h3>${t('rules')}</h3><p class="mut">${t('ruleh')}</p><
 <div class="card sc"><table>${rows}</table></div>`}
 async function addR(){const a=parseFloat($('#ra').value),d=$('#rd').value,c=$('#rc').value;if(!(a>0)||d===c)return;st.rules.push({desc:$('#rt').value.trim().slice(0,120)||'-',d,c,amt:a,cur:$('#rcu').value,every:Math.max(1,parseInt($('#re').value)||1),next:$('#rf').value||today()});await autorun();await save();draw()}
 async function delR(i){st.rules.splice(i,1);await save();draw()}
-function settings(){return`<div class="card"><h3>${t('acctsec')}</h3><div class="row"><label>${t('npw')}<input id="np1" type="password" autocomplete="new-password"></label><label>${t('npw2')}<input id="np2" type="password" autocomplete="new-password"></label><button class="b" onclick="chPw()">${t('chpw')}</button><button class="b g" onclick="outAll()">${t('outall')}</button></div><p class="mut">${t('pwh')}</p><p id="pe"></p></div><div class="card"><h3>${t('set')}</h3><p>${t('sec')}</p><div class="row"><button class="b" onclick="verify()">${t('verify')}</button><button class="b g" onclick="exportCsv()">${t('exp')}</button><button class="b g" onclick="wipe()">${t('wipe')}</button></div><p id="vr"></p></div>
+function settings(){return`<div class="card"><h3>${t('acctsec')}</h3><div class="row"><label>${t('npw')}<input id="np1" type="password" autocomplete="new-password"></label><label>${t('npw2')}<input id="np2" type="password" autocomplete="new-password"></label><button class="b" onclick="chPw()">${t('chpw')}</button></div><p class="mut">${t('pwh')}</p><p id="pe"></p></div><div class="card"><h3>${t('set')}</h3><p>${t('sec')}</p><div class="row"><button class="b" onclick="verify()">${t('verify')}</button><button class="b g" onclick="exportCsv()">${t('exp')}</button><button class="b g" onclick="wipe()">${t('wipe')}</button></div><p id="vr"></p></div>
 `}
 async function setRate(c,v){v=parseFloat(v);if(v>0){st.rates[c]=v;await save()}}
 async function verify(){let prev='0';for(const e of st.entries){const h=await sha(prev+JSON.stringify([e.id,e.date,e.desc,e.cur,e.rate,e.lines]));if(e.prev!==prev||e.hash!==h){$('#vr').innerHTML=`<span class="bad">${t('tamp')}${e.id}</span>`;return}prev=e.hash}
@@ -373,10 +404,14 @@ const sel=`<select aria-label="language" onchange="setLang(+this.value)">${[['0'
 if(view==='terms'||view==='privacy'){legal();return}
 if(!st&&view==='land'&&!rec&&!msg){landing(sel);return}
 if(!st){const bt=(m,l,c='')=>`<button class="b ${c}" onclick="authGo('${m}')">${t(l)}</button>`;
-const body=!cfgOk()?`<p class="bad">${t('conf')}</p>`:rec?`<div class="row" style="flex-direction:column;align-items:stretch"><input id="pw" type="password" autocomplete="new-password" placeholder="${esc(t('newpw'))}"></div><p>${bt('n','setpw')}</p>`
+const body=!cfgOk()?`<p class="bad">${t('conf')}</p>`
 :`<p>${bt('g','google')}</p><div class="row" style="flex-direction:column;align-items:stretch"><input id="em" type="email" autocomplete="email" placeholder="${esc(t('email'))}"><input id="pw" type="password" autocomplete="current-password" placeholder="${esc(t('pw'))}" onkeydown="if(event.key==='Enter')authGo('in')"></div><p>${bt('in','signin')} ${bt('up','signup','g')} ${bt('f','forgot','g')}</p>`;
 $('#app').innerHTML=`<div class="card" id="lock"><h1>Zui Akuntansi</h1><p class="mut">${t('l_badge')}</p>${body}<p class="bad" id="m">${esc(msg)}</p><p class="mut" style="font-size:13px">${t('l_agree')} <a href="#" onclick="openLegal('terms','auth');return false">${t('terms')}</a> ${t('l_and')} <a href="#" onclick="openLegal('privacy','auth');return false">${t('privacy')}</a>.</p><div class="row">${sel}<button class="b g" onclick="view='land';msg='';draw()">←</button></div></div>`;return}
 const v={dash:dashboard,rep:report,gl:ledgerTab,jrn:journal,inv:invoices,bank:bank,aut:auto,cfg:cfg}[tab]();
 $('#app').innerHTML=`<header><h1 style="margin:0;display:flex;gap:10px;align-items:center"><button class="lg" onclick="toggleMenu()" aria-label="Menu" title="Menu"><svg width="30" height="30" viewBox="0 0 30 30"><rect width="30" height="30" rx="9" fill="var(--ac)"/><path d="M9 9h12L9 21h12" stroke="var(--onac)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>Zui Akuntansi</h1><div class="row">${meChip()}${wsSel()}</div></header><div class="shell${mhide?' hide':''}"><nav class="${mopen?'open':''}">${['dash','rep','gl','jrn','inv','bank','aut','cfg'].map(k=>`<button class="${k===tab?'on':''}" onclick="tab='${k}';mopen=false;draw()">${IC[k]} ${t(k)}</button>`).join('')}</nav><div id="scrim" class="${mopen?'on':''}" onclick="toggleMenu()"></div><main>${v}</main></div>`;if(tab==='cfg'&&cs==='team')teamLoad()}
-boot();
+window.__boot=boot;
+</script>
+<script type="module">
+try{const B='https://www.gstatic.com/firebasejs/10.14.1/',[A,Au,Fs]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);window.FB={A,Au,Fs}}catch(e){window.FB=null;console.error(e)}
+window.__boot();
 </script></body></html>
