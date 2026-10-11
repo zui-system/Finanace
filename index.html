@@ -2,58 +2,66 @@
 <html lang="id"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Zui Akuntansi</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#EDF0F3">
+<script>try{const p=JSON.parse(localStorage.getItem('lgp')||'{}'),d=p.th==='gelap'||(p.th!=='terang'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.dataset.th=d?'gelap':'terang'}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-:root,html[data-th="biru"]{--bg:#f3f6fb;--card:#fff;--ink:#12213b;--mut:#64748b;--line:#e3e9f2;--ac:#2563eb;--ac2:#e8f0fe;--onac:#fff;--brass:#f59e0b;--bad:#dc2626;--ok:#16a34a}
-html[data-th="hijau"]{--bg:#f1f7f3;--card:#fff;--ink:#0f2a1d;--mut:#5b7266;--line:#dbe8df;--ac:#15803d;--ac2:#e6f6ec;--onac:#fff;--brass:#ca8a04;--bad:#dc2626;--ok:#15803d}
-html[data-th="gelap"]{--bg:#0e1420;--card:#161e2e;--ink:#e8edf6;--mut:#93a1b8;--line:#26314b;--ac:#60a5fa;--ac2:#1b2a46;--onac:#0b1220;--brass:#fbbf24;--bad:#f87171;--ok:#4ade80}
-html[data-th="emas"]{--bg:#faf7f0;--card:#fff;--ink:#2b2418;--mut:#7a6d58;--line:#e9e1cf;--ac:#a16207;--ac2:#fbf3dc;--onac:#fff;--brass:#2563eb;--bad:#dc2626;--ok:#15803d}
+:root,html[data-th="terang"]{--bg:#EDF0F3;--card:#EDF0F3;--ink:#16202A;--mut:#5B6B78;--line:#C9D1D8;--ac:#1D6E8C;--ac2:#DCE7ED;--onac:#fff;--brass:#B9791A;--bad:#B3402F;--ok:#2E7D5B;color-scheme:light}
+html[data-th="gelap"]{--bg:#10171E;--card:#10171E;--ink:#E7ECF0;--mut:#8FA0AD;--line:#27333D;--ac:#5BB4D2;--ac2:#1B2A35;--onac:#10171E;--brass:#B9791A;--bad:#E0796A;--ok:#2E7D5B;color-scheme:dark}
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 'Plus Jakarta Sans',system-ui,sans-serif}
-h1,h2,h3{margin:0 0 .5em;font-weight:700;letter-spacing:-.01em}h3{font-size:16px}
-.wrap{max-width:1440px;margin:0 auto;padding:14px}
-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(16,24,40,.06)}
-header h1{font-size:19px}
-.shell{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
-nav{position:fixed;top:0;left:0;bottom:0;width:min(84%,290px);display:flex;flex-direction:column;gap:4px;overflow-y:auto;background:var(--card);border-right:1px solid var(--line);padding:calc(14px + env(safe-area-inset-top,0px)) 10px 16px;transform:translateX(-105%);transition:transform .22s;z-index:30;box-shadow:0 0 30px rgba(0,0,0,.25)}
-nav.open{transform:none}
-nav button{background:none;color:var(--mut);padding:12px 14px;border-radius:12px;cursor:pointer;font:inherit;font-weight:600;border:0;text-align:left;white-space:nowrap}
-nav button.on{background:var(--ac2);color:var(--ac)}
-#scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}#scrim.on{display:block}
-main{min-width:0}
-.lg{border:0;background:none;padding:0;cursor:pointer;display:inline-flex;border-radius:10px;line-height:0}.lg:hover{box-shadow:0 0 0 4px var(--ac2)}
-.cc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px;align-items:start}.cc>.card{margin:0}
+*{box-sizing:border-box;border-radius:0}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:300 14px/1.55 'Outfit',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+b,strong{font-weight:600}
+h1,h2,h3{margin:0 0 .5em;font-weight:300;letter-spacing:0}h3{font-size:17px}
+.wrap{max-width:none;margin:0;padding:0 clamp(14px,3vw,36px) 48px}
+header{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 0;margin:0 0 14px}
+.top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.app{display:flex;gap:10px;align-items:center;font-size:24px;font-weight:600;line-height:1.2}
+@media(max-width:600px){.app{font-size:22px}}
+html,body{overflow-x:clip}
+.pivot{contain:paint;position:relative;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-top:12px;border-bottom:1px solid var(--line);overscroll-behavior-x:contain}.pivot::-webkit-scrollbar{display:none}
+.pvi{display:flex;width:max-content;min-width:100%;padding-inline-end:55vw}
+.pivot button{flex:none;background:none;border:0;font:300 20px/1.3 'Outfit',system-ui,sans-serif;color:var(--mut);opacity:.6;padding:4px 20px 10px 0;cursor:pointer;transition:opacity .2s,color .2s;white-space:nowrap}
+[dir=rtl] .pivot button{padding:4px 0 10px 20px}
+.pivot button.on{color:var(--ink);opacity:1}
+@media(max-width:600px){.pivot button{font-size:17px;padding-right:16px}}
+main{min-width:0;padding-top:6px}
+main.f{animation:slf .26s ease-out both}main.b{animation:slb .26s ease-out both}
+@keyframes slf{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:none}}
+@keyframes slb{from{opacity:0;transform:translateX(-32px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){main.f,main.b{animation:none}.pivot button{transition:none}}
+.cc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:0 36px;align-items:start}.cc>.card{margin:0}
 .row>label input,.row>label select{width:100%}
 .lnav,.hero,.foot{margin-left:auto;margin-right:auto;max-width:1100px}.sec{margin:34px auto;max-width:1100px}
-@media(min-width:900px){.shell{grid-template-columns:220px minmax(0,1fr);align-items:start}nav{position:sticky;top:12px;transform:none;width:auto;box-shadow:none;border:1px solid var(--line);border-radius:16px;padding:10px;z-index:5;max-height:calc(100vh - 24px)}#scrim{display:none!important}.shell.hide{grid-template-columns:minmax(0,1fr)}.shell.hide nav{display:none}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(16,24,40,.06)}
-input,select,textarea{font:inherit;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-width:0}
-.b{display:inline-block;font:inherit;font-weight:600;padding:9px 14px;border-radius:10px;border:1px solid var(--ac);background:var(--ac);color:var(--onac);cursor:pointer}
+.card{background:none;border:0;border-bottom:1px solid var(--line);padding:16px 0;margin:0}
+input,select,textarea{font:inherit;font-weight:300;padding:8px 10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:0}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ac)}
+.b{display:inline-block;font:inherit;font-weight:400;padding:8px 18px;border:1px solid var(--ac);background:var(--ac);color:var(--onac);cursor:pointer}
 .b.g{background:transparent;color:var(--ac)}
 :focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:end}.row>label{flex:1 1 170px;display:flex;flex-direction:column;font-size:13px;color:var(--mut);gap:3px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:end}.row>label{flex:1 1 170px;display:flex;flex-direction:column;font-size:12.5px;color:var(--mut);gap:3px}
 .sc{overflow-x:auto}table{width:100%;border-collapse:collapse}
-th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:start;white-space:nowrap}
-th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
-td.n,th.n{text-align:end;font-variant-numeric:tabular-nums}tr.t td{font-weight:700;border-top:2px solid var(--ink)}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:start;white-space:nowrap;font-weight:300}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);font-weight:400}
+td.n,th.n{text-align:end;font-variant-numeric:tabular-nums}tr.t td{font-weight:600;border-top:1px solid var(--ink)}
 .mut{color:var(--mut)}.bad{color:var(--bad)}.ok{color:var(--ok)}
-.big{font-weight:700;font-size:28px;letter-spacing:-.02em}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.grid>.card{margin-bottom:0}.kg{grid-template-columns:repeat(2,minmax(0,1fr))}@media(min-width:900px){.kg{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:600px){.kpi .big{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kpi{padding:12px}}.kpi{background:linear-gradient(135deg,var(--card),var(--ac2))}.kpi .big{font-size:24px;margin-top:4px}
-#lock{max-width:400px;margin:10vh auto;padding:24px}
+.big{font-weight:300;font-size:22px;letter-spacing:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 36px}
+.grid>.card{margin-bottom:0}.kg{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}@media(min-width:900px){.kg{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:600px){.kpi .big{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+.kpi{border-top:2px solid var(--ac);border-bottom:0;padding:10px 0 14px}.kpi .big{margin-top:2px}
+#lock{max-width:420px;margin:8vh auto;padding:0 2px;border:0}
 #pv{display:none;--ink:#000;--mut:#444;--line:#999;--card:#fff;--ac:#000;--brass:#000;--bad:#a00;--ok:#060;color:#000;font:13px/1.4 sans-serif}
-#pv .card{border:1px solid #999;padding:12px;margin:12px 0;page-break-inside:avoid;border-radius:0;box-shadow:none}.lnav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 2px 14px}
-.hero{text-align:center;padding:34px 8px 26px}.hero h1{font-size:clamp(28px,6vw,46px);line-height:1.15;margin:12px 0}.hero p{max-width:620px;margin:0 auto 20px;color:var(--mut);font-size:17px}
-.sec{margin:34px 0}.sec h2{text-align:center;font-size:26px;margin-bottom:16px}
-.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.fg .card{margin:0}.fi{font-size:30px}
-.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.plan{margin:0;display:flex;flex-direction:column;gap:6px}.plan.hot{border:2px solid var(--ac)}.price{font-size:30px;font-weight:800}.plan ul{padding-left:18px;flex:1;margin:8px 0}
-.badge{display:inline-block;background:var(--ac2);color:var(--ac);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:700}
-.faq details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}.faq summary{font-weight:600;cursor:pointer}
+#pv .card{border:1px solid #999;padding:12px;margin:12px 0;page-break-inside:avoid}.lnav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 2px 14px}
+.hero{text-align:center;padding:34px 8px 26px}.hero h1{font-size:clamp(26px,5vw,36px);line-height:1.2;margin:12px 0}.hero p{max-width:620px;margin:0 auto 20px;color:var(--mut);font-size:16px}
+.sec{margin:34px 0}.sec h2{text-align:center;font-size:22px;margin-bottom:16px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0 28px}.fg .card{margin:0}.fi{font-size:26px}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}.plan{margin:0;display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);padding:18px}.plan.hot{border-color:var(--ac);border-top:3px solid var(--ac)}.price{font-size:26px;font-weight:300}.plan ul{padding-left:18px;flex:1;margin:8px 0}
+.badge{display:inline-block;background:var(--ac2);color:var(--ac);padding:3px 12px;font-size:12px;font-weight:400}
+.faq details{border-bottom:1px solid var(--line);padding:12px 0}.faq summary{font-weight:400;cursor:pointer}
 .foot{margin:40px 0 20px;text-align:center;color:var(--mut);font-size:13px}.foot a,.legal a{color:var(--ac)}
 .legal{max-width:760px;margin:0 auto}.legal h3{margin-top:20px}
-a{color:var(--ac)}.chips{display:flex;gap:8px;overflow-x:auto;margin:0 0 14px;padding-bottom:4px;scrollbar-width:none}.ch{flex:none;padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px inherit;cursor:pointer}.ch.on{background:var(--ac);color:var(--onac);border-color:var(--ac)}
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+a{color:var(--ac)}.chips{display:flex;gap:18px;overflow-x:auto;margin:0 0 12px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.ch{flex:none;padding:6px 0 7px;border:0;border-bottom:2px solid transparent;background:none;color:var(--mut);font:300 16px 'Outfit',system-ui,sans-serif;cursor:pointer}.ch.on{color:var(--ink);border-bottom-color:var(--ac)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:40}
 @media print{#pv td,#pv th{white-space:normal}#app,#toast{display:none!important}#pv{display:block}body{background:#fff}}
 </style></head><body><div class="wrap" id="app"><p style="padding:24px;font-family:sans-serif">Memuat Zui Akuntansi… <span id="ld"></span></p></div><div id="pv"></div><div id="toast"></div>
 <script>
@@ -115,7 +123,7 @@ terms:['Syarat Layanan','Terms of Service'],privacy:['Kebijakan Privasi','Privac
 l_badge:['Pembukuan untuk usaha kecil dan menengah','Bookkeeping for small businesses'],l_h:['Pembukuan rapi, laporan siap kapan saja','Tidy books, reports whenever you need them'],
 l_p:['Catat jurnal, buat faktur, dan pantau laporan dalam Rupiah, Ringgit, dan US Dollar. Aman, mudah, dan bisa dipakai bersama tim.','Record journals, issue invoices, and track reports in Rupiah, Ringgit, and US Dollar. Secure, simple, and ready for your team.'],
 l_cta:['Daftar gratis','Start free'],l_f:['Semua yang Anda butuhkan','Everything you need'],l_pl:['Pilih paket','Choose a plan'],l_pop:['Terpopuler','Most popular'],l_soon:['Langganan berbayar dibuka bertahap.','Paid plans open gradually.'],
-l_lang:['Empat bahasa tersedia. Sebagian label baru di 中文 dan العربية masih tampil dalam bahasa Inggris.','Four languages available. Some newer labels in 中文 and العربية still appear in English.'],theme:['Tema tampilan','Theme'],th_biru:['Biru','Blue'],th_hijau:['Hijau','Green'],th_gelap:['Gelap','Dark'],th_emas:['Emas','Gold'],prof:['Profil','Profile'],myprof:['Profil saya','My profile'],photo:['Ganti foto','Change photo'],pname:['Nama tampilan','Display name'],
+l_lang:['Empat bahasa tersedia. Sebagian label baru di 中文 dan العربية masih tampil dalam bahasa Inggris.','Four languages available. Some newer labels in 中文 and العربية still appear in English.'],theme:['Tema tampilan','Theme'],th_auto:['Otomatis','Auto','自动','تلقائي'],th_terang:['Terang','Light','浅色','فاتح'],th_gelap:['Gelap','Dark','深色','داكن'],prof:['Profil','Profile'],myprof:['Profil saya','My profile'],photo:['Ganti foto','Change photo'],pname:['Nama tampilan','Display name'],
 bprof:['Profil usaha (tampil di faktur dan laporan)','Business profile (shown on invoices and reports)'],addr:['Alamat','Address'],phone:['Telepon','Phone'],taxid:['No. pajak (NPWP/SSM)','Tax ID'],
 saved:['Tersimpan','Saved'],badimg:['Gambar tidak bisa dibaca. Coba JPG atau PNG.','Could not read the image. Try a JPG or PNG.'],profErr:['Profil belum tersimpan.','Profile not saved.'],
 acctsec:['Keamanan akun','Account security'],npw:['Kata sandi baru','New password'],npw2:['Ulangi kata sandi','Repeat password'],chpw:['Ubah kata sandi','Change password'],outall:['Keluar dari semua perangkat','Sign out everywhere'],
@@ -129,11 +137,19 @@ a1100:['Kas & Bank','Cash & Bank','现金及银行','النقد والبنك'],a
 a2100:['Utang usaha','Accounts payable','应付账款','الذمم الدائنة'],a3100:['Modal pemilik','Owner capital','所有者资本','رأس المال'],
 a4100:['Pendapatan jasa','Service revenue','服务收入','إيرادات الخدمات'],a5100:['Beban gaji','Payroll expense','工资费用','مصروف الرواتب'],
 a5200:['Beban sewa','Rent expense','租金费用','مصروف الإيجار']};
-let mopen=false,mhide=false,view='land',vb='land',cs='prof',th='biru',me={},prof={},gm={},sb,ws,ver=0,role='owner',rec=false,busy=false,msg='',li=0,st,disp='IDR',tab='dash',idle,fails=0,until=0;
+let slide=0,sw=false,view='land',vb='land',cs='prof',th='auto',me={},prof={},gm={},sb,ws,ver=0,role='owner',rec=false,busy=false,msg='',li=0,st,disp='IDR',tab='dash',idle,fails=0,until=0;
 const t=k=>{const a=S[k]||[k];return a[li]??a[1]??a[0]};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const b64=b=>{let s='';for(const x of new Uint8Array(b))s+=String.fromCharCode(x);return btoa(s)},ub=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',enc.encode(s)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+const normTh=v=>v==='gelap'||v==='terang'?v:'auto';
+const TABS=['dash','rep','gl','jrn','inv','bank','aut','cfg'];
+function applyTh(){const dk=th==='gelap'||(th==='auto'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.dataset.th=dk?'gelap':'terang';const m=document.querySelector('meta[name=theme-color]');if(m)m.content=dk?'#10171E':'#EDF0F3'}
+try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>th==='auto'&&applyTh())}catch(e){}
+function go(k){const a=TABS.indexOf(tab),b=TABS.indexOf(k);if(a===b)return;slide=b>a?1:-1;tab=k;draw();scrollTo(0,0)}
+let tx=0,ty=0,tt=0;
+addEventListener('touchstart',e=>{const q=e.touches[0];tx=q.clientX;ty=q.clientY;tt=Date.now();sw=!e.target.closest('.sc,input,select,textarea,.pivot,.chips')},{passive:true});
+addEventListener('touchend',e=>{if(!sw||!st||!$('.pivot'))return;const q=e.changedTouches[0],dx=q.clientX-tx,dy=q.clientY-ty;if(Math.abs(dx)>70&&Math.abs(dy)<45&&Date.now()-tt<600){const i=TABS.indexOf(tab)+(dx<0?1:-1)*(li===3?-1:1);if(i>=0&&i<TABS.length)go(TABS[i])}},{passive:true});
 const ymNow=()=>{const d=new Date();return d.getUTCFullYear()*100+d.getUTCMonth()+1};
 let LM={n:0,mYm:0,mBase:0},bill=null,fapp,fau,fdb,FS,AU;
 const D=(...p)=>FS.doc(fdb,...p),C=(...p)=>FS.collection(fdb,...p);
@@ -173,7 +189,7 @@ const addM=(d,m)=>{const x=new Date(d+'T00:00:00Z');x.setUTCMonth(x.getUTCMonth(
 async function post(date,desc,cur,lines,auto){if(role==='viewer'){toast(t('ro'));throw new Error('ro')}const prev=st.entries.length?st.entries.at(-1).hash:'0';const e={id:st.entries.length+1,date,desc,cur,rate:st.rates[cur],lines,auto:!!auto,prev};e.hash=await sha(prev+JSON.stringify([e.id,date,desc,cur,e.rate,lines]));st.entries.push(e)}
 async function autorun(){let n=0;for(const r of st.rules){while(r.next<=today()&&n++<120){await post(r.next,r.desc,r.cur,[{a:r.d,dr:r.amt,cr:0},{a:r.c,dr:0,cr:r.amt}],true);r.next=addM(r.next,r.every)}}if(n)await save()}
 const cfgOk=()=>!!(FB_CFG.apiKey&&FB_CFG.projectId&&window.FB);
-async function boot(){try{const p=JSON.parse(localStorage.getItem('lgp')||'{}');if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<4)li=p.li;if(['biru','hijau','gelap','emas'].includes(p.th))th=p.th}catch(e){}
+async function boot(){try{const p=JSON.parse(localStorage.getItem('lgp')||'{}');if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<4)li=p.li;if(p.th)th=normTh(p.th)}catch(e){}
 try{const k=sessionStorage.getItem('zmsg');if(k){sessionStorage.removeItem('zmsg');setTimeout(()=>toast(t(k)),400)}}catch(e){}
 if(!cfgOk()){draw();return}
 FS=FB.Fs;AU=FB.Au;fapp=FB.A.initializeApp(FB_CFG);fau=AU.getAuth(fapp);fdb=FS.getFirestore(fapp);
@@ -245,12 +261,12 @@ const IC={dash:'📊',rep:'📑',gl:'📚',jrn:'✍️',inv:'🧾',bank:'🏦',a
 function setTheme(k){th=k;savePref();draw()}
 const dispName=()=>prof.name||gm.full_name||gm.name||me.email||'';
 const avSrc=()=>prof.avatar||gm.avatar_url||gm.picture||'';
-const avatarHtml=(n=32)=>{const a=avSrc();return a?`<img src="${esc(a)}" referrerpolicy="no-referrer" alt="" style="width:${n}px;height:${n}px;border-radius:50%;object-fit:cover">`:`<span style="width:${n}px;height:${n}px;border-radius:50%;background:var(--ac);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:600">${esc((dispName()[0]||'?').toUpperCase())}</span>`};
+const avatarHtml=(n=32)=>{const a=avSrc();return a?`<img src="${esc(a)}" referrerpolicy="no-referrer" alt="" style="width:${n}px;height:${n}px;object-fit:cover">`:`<span style="width:${n}px;height:${n}px;background:var(--ac);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:600">${esc((dispName()[0]||'?').toUpperCase())}</span>`};
 const meChip=()=>`<span style="display:inline-flex;align-items:center;gap:6px;cursor:pointer" onclick="tab='cfg';cs='prof';draw()">${avatarHtml(30)}<span class="mut" style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(dispName())}</span></span>`;
 const coBlock=()=>{const c=st.coInfo||{};return`<p><b>${esc(st.co||'')}</b><br>${esc(c.addr||'')}<br>${esc(c.phone||'')} ${esc(c.tax||'')}</p>`};
 function fixCur(){const u=new Set([...st.entries.map(e=>e.cur),...st.rules.map(r=>r.cur),...st.invoices.map(v=>v.cur)]);for(const c of Object.keys(st.rates))if(!['IDR','MYR','USD'].includes(c)&&!u.has(c))delete st.rates[c];st.rates.IDR=1;st.rates.MYR??=3800;st.rates.USD??=16000;if(!st.rates[disp])disp='IDR'}
 async function loadProfile(){try{const s=await FS.getDoc(D('users',me.id));
-if(s.exists()){const data=s.data();prof={name:data.name||'',avatar:data.avatar||''};const p=data.prefs||{};if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<4)li=p.li;if(['biru','hijau','gelap','emas'].includes(p.th))th=p.th}}catch(e){}}
+if(s.exists()){const data=s.data();prof={name:data.name||'',avatar:data.avatar||''};const p=data.prefs||{};if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<4)li=p.li;if(p.th)th=normTh(p.th)}}catch(e){}}
 async function upProf(){try{await FS.setDoc(D('users',me.id),{name:prof.name||'',avatar:prof.avatar||'',prefs:{disp,li,th}});return true}catch(e){toast(t('profErr'));return false}}
 function savePref(){try{localStorage.setItem('lgp',JSON.stringify({disp,li,th}))}catch(e){}if(fdb&&me.id)upProf()}
 function setDisp(v){disp=v;savePref();draw()}
@@ -267,7 +283,7 @@ return`<div class="card"><h3>${t('myprof')}</h3><div class="row" style="align-it
 <div class="row" style="margin-top:12px"><label>${t('pname')}<input id="pn" value="${esc(prof.name||gm.full_name||'')}"></label><label>${t('email')}<input value="${esc(me.email||'')}" disabled></label><button class="b" onclick="saveProf()">${t('save')}</button></div></div>
 <div class="card"><h3>${t('bprof')}</h3><div class="row" style="align-items:center">${lg}<div><label class="b g" style="display:inline-block;cursor:pointer">${t('logo')}<input type="file" accept="image/*" hidden onchange="setLogo(this)"></label></div></div>
 <div class="row" style="margin-top:12px"><label>${t('company')}<input id="cn" value="${esc(st.co||'')}"></label><label>${t('addr')}<input id="ca" value="${esc(c.addr||'')}"></label><label>${t('phone')}<input id="cp" value="${esc(c.phone||'')}"></label><label>${t('taxid')}<input id="ct" value="${esc(c.tax||'')}"></label><button class="b" onclick="saveCo()">${t('save')}</button></div></div>
-<div class="card"><h3>${t('theme')}</h3><div class="row">${[['biru','#2563eb'],['hijau','#15803d'],['gelap','#0e1420'],['emas','#a16207']].map(([k,c])=>`<button class="b g" style="border-color:${c};${th===k?'background:'+c+';color:#fff':'color:inherit'}" onclick="setTheme('${k}')">${t('th_'+k)}</button>`).join('')}</div></div>`}
+<div class="card"><h3>${t('theme')}</h3><div class="row">${['auto','terang','gelap'].map(k=>`<button class="b ${th===k?'':'g'}" onclick="setTheme('${k}')">${t('th_'+k)}</button>`).join('')}</div></div>`}
 async function chPw(){const a=$('#np1').value,b=$('#np2').value,m=$('#pe');if(a.length<8){m.className='bad';m.textContent=t('short');return}if(a!==b){m.className='bad';m.textContent=t('pwmis');return}
 try{await AU.updatePassword(fau.currentUser,a);m.className='ok';m.textContent=t('pwok');$('#np1').value='';$('#np2').value=''}catch(e){m.className='bad';m.textContent=aerr(e)}}
 function printReport(){const cards=[...document.querySelectorAll('#app .sc')].map(e=>e.parentElement.outerHTML).join(''),lg=st.logo&&st.logo.startsWith('data:image/')?`<img src="${esc(st.logo)}" style="max-height:60px;max-width:180px">`:'<span></span>';
@@ -277,7 +293,7 @@ function exportTB(){const b=bals(),rows=[['code','name','debit','credit']];st.ac
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(qq).join(',')).join('\n')],{type:'text/csv'}));a.download='neraca-saldo-'+disp+'.csv';a.click()}
 const KONTAK='[isi email kontak]',OWNER='[isi nama pemilik/usaha]',LEGAL_DRAFT=true;
 const L2=a=>a[li===0?0:1];
-const LOGO='<svg width="30" height="30" viewBox="0 0 30 30"><rect width="30" height="30" rx="9" fill="var(--ac)"/><path d="M9 9h12L9 21h12" stroke="var(--onac)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const LOGO='<svg width="30" height="30" viewBox="0 0 30 30"><rect width="30" height="30" rx="0" fill="var(--ac)"/><path d="M9 9h12L9 21h12" stroke="var(--onac)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const FEATS=[['✍️',['Jurnal dan buku besar','Journal and ledger'],['Jurnal multi-baris yang tidak bisa diubah, koreksi lewat jurnal balik, dan buku besar per akun.','Multi-line immutable journal, corrections by reversal, and a ledger per account.']],
 ['🧾',['Faktur profesional','Professional invoices'],['Banyak item, pajak, nomor otomatis, logo usaha, dan cetak atau simpan sebagai PDF.','Multiple items, tax, automatic numbering, your logo, and print or save as PDF.']],
 ['📊',['Laporan lengkap','Complete reports'],['Neraca saldo, laba rugi, posisi keuangan, dan arus kas, bisa dicetak atau diekspor.','Trial balance, income statement, balance sheet, and cash flow, printable and exportable.']],
@@ -343,7 +359,7 @@ return`<div class="card"><h3>${t('planh')}: ${nm}${i.trial?' · '+t('trialn'):''
 <p>${t('ptx')}: <b>${used}</b> / ${L.tx??t('unl')}</p>${bar(used,L.tx)}</div>
 <div class="card"><p>${t('upg')}</p><p><code id="wid" style="user-select:all">${esc(ws)}</code></p><div class="row"><button class="b" onclick="navigator.clipboard&&navigator.clipboard.writeText(ws).then(()=>toast(t('copied')))">${t('copy')}</button></div><p class="mut">${esc(KONTAK)}</p></div>`}
 function cfg(){const body={prof:profileTab,team:teamTab,plan:planTab,sec:settings,bhs:bhsTab,mc:curTab,out:outTab}[cs]();
-return`<div class="chips">${[['prof','👤'],['team','👥'],['plan','💎'],['sec','🔒'],['bhs','🌐'],['mc','💱'],['out','🚪']].map(([k,e])=>`<button class="ch ${cs===k?'on':''}" onclick="cs='${k}';draw()">${e} ${t('c_'+k)}</button>`).join('')}</div><div class="cc">${body}</div><p class="mut" style="font-size:13px"><a href="#" onclick="openLegal('terms','land');return false" style="color:var(--ac)">${t('terms')}</a> · <a href="#" onclick="openLegal('privacy','land');return false" style="color:var(--ac)">${t('privacy')}</a></p>`}
+return`<div class="chips">${[['prof'],['team'],['plan'],['sec'],['bhs'],['mc'],['out']].map(([k])=>`<button class="ch ${cs===k?'on':''}" onclick="cs='${k}';draw()">${t('c_'+k)}</button>`).join('')}</div><div class="cc">${body}</div><p class="mut" style="font-size:13px"><a href="#" onclick="openLegal('terms','land');return false" style="color:var(--ac)">${t('terms')}</a> · <a href="#" onclick="openLegal('privacy','land');return false" style="color:var(--ac)">${t('privacy')}</a></p>`}
 function toggleMenu(){if(matchMedia('(min-width:900px)').matches)mhide=!mhide;else mopen=!mopen;const sh=$('.shell');if(!sh)return;sh.classList.toggle('hide',mhide);$('nav').classList.toggle('open',mopen);$('#scrim').classList.toggle('on',mopen)}
 function report(){const b=bals(),D=c=>conv(c,'IDR',disp);
 const sum=ty=>st.accts.filter(a=>a.y===ty).reduce((s,a)=>s+b[a.c],0);
@@ -399,7 +415,7 @@ async function setRate(c,v){v=parseFloat(v);if(v>0){st.rates[c]=v;await save()}}
 async function verify(){let prev='0';for(const e of st.entries){const h=await sha(prev+JSON.stringify([e.id,e.date,e.desc,e.cur,e.rate,e.lines]));if(e.prev!==prev||e.hash!==h){$('#vr').innerHTML=`<span class="bad">${t('tamp')}${e.id}</span>`;return}prev=e.hash}
 $('#vr').innerHTML=`<span class="ok">${t('good')} ${st.entries.length}</span>`}
 async function wipe(){if(confirm('?')){st=seed();await save();draw()}}
-function draw(){document.documentElement.dataset.th=th;document.documentElement.lang=L[li];document.documentElement.dir=li===3?'rtl':'ltr';
+function draw(){applyTh();document.documentElement.lang=L[li];document.documentElement.dir=li===3?'rtl':'ltr';
 const sel=`<select aria-label="language" onchange="setLang(+this.value)">${[['0','Indonesia'],['1','English'],['2','中文'],['3','العربية']].map(([v,l])=>`<option value="${v}"${+v===li?' selected':''}>${l}</option>`).join('')}</select>`;
 if(view==='terms'||view==='privacy'){legal();return}
 if(!st&&view==='land'&&!rec&&!msg){landing(sel);return}
@@ -408,7 +424,10 @@ const body=!cfgOk()?`<p class="bad">${FB_CFG.apiKey?t('sdkfail')+' ('+esc(window
 :`<p>${bt('g','google')}</p><div class="row" style="flex-direction:column;align-items:stretch"><input id="em" type="email" autocomplete="email" placeholder="${esc(t('email'))}"><input id="pw" type="password" autocomplete="current-password" placeholder="${esc(t('pw'))}" onkeydown="if(event.key==='Enter')authGo('in')"></div><p>${bt('in','signin')} ${bt('up','signup','g')} ${bt('f','forgot','g')}</p>`;
 $('#app').innerHTML=`<div class="card" id="lock"><h1>Zui Akuntansi</h1><p class="mut">${t('l_badge')}</p>${body}<p class="bad" id="m">${esc(msg)}</p><p class="mut" style="font-size:13px">${t('l_agree')} <a href="#" onclick="openLegal('terms','auth');return false">${t('terms')}</a> ${t('l_and')} <a href="#" onclick="openLegal('privacy','auth');return false">${t('privacy')}</a>.</p><div class="row">${sel}<button class="b g" onclick="view='land';msg='';draw()">←</button></div></div>`;return}
 const v={dash:dashboard,rep:report,gl:ledgerTab,jrn:journal,inv:invoices,bank:bank,aut:auto,cfg:cfg}[tab]();
-$('#app').innerHTML=`<header><h1 style="margin:0;display:flex;gap:10px;align-items:center"><button class="lg" onclick="toggleMenu()" aria-label="Menu" title="Menu"><svg width="30" height="30" viewBox="0 0 30 30"><rect width="30" height="30" rx="9" fill="var(--ac)"/><path d="M9 9h12L9 21h12" stroke="var(--onac)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>Zui Akuntansi</h1><div class="row">${meChip()}${wsSel()}</div></header><div class="shell${mhide?' hide':''}"><nav class="${mopen?'open':''}">${['dash','rep','gl','jrn','inv','bank','aut','cfg'].map(k=>`<button class="${k===tab?'on':''}" onclick="tab='${k}';mopen=false;draw()">${IC[k]} ${t(k)}</button>`).join('')}</nav><div id="scrim" class="${mopen?'on':''}" onclick="toggleMenu()"></div><main>${v}</main></div>`;if(tab==='cfg'&&cs==='team')teamLoad()}
+const ps=($('.pivot')||{}).scrollLeft||0,an=slide;slide=0;
+$('#app').innerHTML=`<header><div class="top"><span class="app">${LOGO}Zui Akuntansi</span><div class="row" style="align-items:center">${meChip()}${wsSel()}</div></div><div class="pivot" role="tablist"><div class="pvi">${TABS.map(k=>`<button role="tab" aria-selected="${k===tab}" class="${k===tab?'on':''}" onclick="go('${k}')">${t(k)}</button>`).join('')}</div></div></header><main class="${an>0?'f':an<0?'b':''}">${v}</main>`;
+const pv=$('.pivot');if(pv){pv.scrollLeft=ps;const on=pv.querySelector('.on');if(on&&on.scrollIntoView)on.scrollIntoView({inline:'start',block:'nearest',behavior:an?'smooth':'auto'})}
+if(tab==='cfg'&&cs==='team')teamLoad()}
 window.__boot=boot;
 </script>
 <script type="module">
