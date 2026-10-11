@@ -76,6 +76,9 @@ input,select,textarea{border-radius:8px}
 .badge{border-radius:99px}
 #toast{border-radius:10px}
 @media(prefers-reduced-motion:reduce){.pivot button.on{animation:none}.pivot button,.b{transition:none}}
+#app{position:relative}
+main{touch-action:pan-y}
+.nb{position:absolute;pointer-events:none;will-change:transform;padding-top:6px}
 </style></head><body><div class="wrap" id="app"><p style="padding:24px;font-family:sans-serif">Memuat Zui Akuntansi… <span id="ld"></span></p></div><div id="pv"></div><div id="toast"></div>
 <script>
 const FB_CFG={apiKey:'AIzaSyA2sNMzxL0OHMSISirTJ-odR6xzGyY7SIc',authDomain:'akuntansi-zuisystem.firebaseapp.com',projectId:'akuntansi-zuisystem',storageBucket:'akuntansi-zuisystem.firebasestorage.app',messagingSenderId:'185991014669',appId:'1:185991014669:web:02e913399e410e6c27a844'};
@@ -161,8 +164,29 @@ function applyTh(){const dk=th==='gelap'||(th==='auto'&&matchMedia('(prefers-col
 try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>th==='auto'&&applyTh())}catch(e){}
 function go(k){const a=TABS.indexOf(tab),b=TABS.indexOf(k);if(a===b)return;slide=b>a?1:-1;tab=k;draw();scrollTo(0,0)}
 let tx=0,ty=0,tt=0;
-addEventListener('touchstart',e=>{const q=e.touches[0];tx=q.clientX;ty=q.clientY;tt=Date.now();sw=!e.target.closest('.sc,input,select,textarea,.pivot,.chips')},{passive:true});
-addEventListener('touchend',e=>{if(!sw||!st||!$('.pivot'))return;const q=e.changedTouches[0],dx=q.clientX-tx,dy=q.clientY-ty;if(Math.abs(dx)>70&&Math.abs(dy)<45&&Date.now()-tt<600){const i=TABS.indexOf(tab)+(dx<0?1:-1)*(li===3?-1:1);if(i>=0&&i<TABS.length)go(TABS[i])}},{passive:true});
+let dg=0,dgK=null,dgSide=0,dgNb=null,dgBase=null,dgBusy=false;
+const vf=k=>({dash:dashboard,rep:report,gl:ledgerTab,jrn:journal,inv:invoices,bank:bank,aut:auto,cfg:cfg})[k]();
+const nextTab=dx=>{const i=TABS.indexOf(tab)+(dx<0?1:-1)*(li===3?-1:1);return i>=0&&i<TABS.length?TABS[i]:null};
+function dgPivot(k,p){const pv=$('.pivot');if(!pv)return;const on=pv.querySelector('.on'),tb=k!=null?pv.querySelectorAll('button')[TABS.indexOf(k)]:null;if(dgBase===null)dgBase=pv.scrollLeft;if(on&&tb)pv.scrollLeft=dgBase+(tb.offsetLeft-on.offsetLeft)*p;else if(p===0)pv.scrollLeft=dgBase}
+function dragMove(dx){const m=$('main');if(!m)return;const W=innerWidth,k=nextTab(dx),side=dx<0?1:-1;
+if(dg===1&&dgBase===null){dgBase=($('.pivot')||{}).scrollLeft||0;m.style.animation='none';m.style.willChange='transform'}
+if(k!==dgK||side!==dgSide){if(dgNb){dgNb.remove();dgNb=null}dgK=k;dgSide=side;
+if(k){dgNb=document.createElement('div');dgNb.className='nb';dgNb.innerHTML=vf(k);dgNb.style.top=m.offsetTop+'px';dgNb.style.left=m.offsetLeft+'px';dgNb.style.width=m.offsetWidth+'px';m.parentNode.insertBefore(dgNb,m.nextSibling)}}
+const mx=k?Math.max(-W,Math.min(W,dx)):dx*.3;m.style.transition='none';m.style.transform='translateX('+mx+'px)';
+if(dgNb){dgNb.style.transition='none';dgNb.style.transform='translateX('+(side*W+mx)+'px)'}
+dgPivot(k,k?Math.min(1,Math.abs(mx)/W):0)}
+function dragFinish(dx){const m=$('main'),W=innerWidth,k=dgK,fl=Date.now()-tt<320&&Math.abs(dx)>40,ok=!!k&&(Math.abs(dx)>W*.28||fl),T='transform .22s ease-out';
+const end=()=>{dg=0;dgK=null;dgNb=null;dgBase=null;dgSide=0;dgBusy=false};
+if(!m){end();return}
+dgBusy=true;m.style.transition=T;if(dgNb)dgNb.style.transition=T;
+const pv=$('.pivot');if(pv)pv.style.scrollBehavior='smooth';
+if(ok){m.style.transform='translateX('+(-dgSide*W)+'px)';dgNb.style.transform='translateX(0px)';dgPivot(k,1)}
+else{m.style.transform='translateX(0px)';if(dgNb)dgNb.style.transform='translateX('+(dgSide*W)+'px)';dgPivot(null,0)}
+setTimeout(()=>{if(ok){tab=k;slide=0;end();draw();scrollTo(0,0)}else{if(dgNb)dgNb.remove();const m2=$('main');if(m2){m2.style.transition='';m2.style.transform='';m2.style.willChange=''}if(pv)pv.style.scrollBehavior='';end()}},230)}
+addEventListener('touchstart',e=>{const q=e.touches[0];tx=q.clientX;ty=q.clientY;tt=Date.now();dg=0;sw=!dgBusy&&!!st&&!!$('.pivot')&&!e.target.closest('.sc,input,select,textarea,.pivot,.chips')},{passive:true});
+addEventListener('touchmove',e=>{if(!sw)return;const q=e.touches[0],dx=q.clientX-tx,dy=q.clientY-ty;if(!dg){if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.2)dg=1;else if(Math.abs(dy)>10)dg=-1}if(dg===1)dragMove(dx)},{passive:true});
+addEventListener('touchend',e=>{if(dg===1&&sw)dragFinish(e.changedTouches[0].clientX-tx);else dg=0},{passive:true});
+addEventListener('touchcancel',()=>{if(dg===1&&sw)dragFinish(0);else dg=0},{passive:true});
 const ymNow=()=>{const d=new Date();return d.getUTCFullYear()*100+d.getUTCMonth()+1};
 let LM={n:0,mYm:0,mBase:0},bill=null,fapp,fau,fdb,FS,AU;
 const D=(...p)=>FS.doc(fdb,...p),C=(...p)=>FS.collection(fdb,...p);
