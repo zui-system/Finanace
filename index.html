@@ -6,6 +6,19 @@
 <script>try{const p=JSON.parse(localStorage.getItem('lgp')||'{}'),d=p.th==='gelap'||(p.th!=='terang'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.dataset.th=d?'gelap':'terang'}catch(e){}</script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
+  /* Gaya Zui Jurnal untuk Zui Akuntansi. Muat SETELAH </style> di index.html. */
+body,td,input,select,textarea{font-weight:400}
+.pivot button{color:var(--ink);opacity:.45;transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);transform-origin:left bottom}
+.pivot button.on{opacity:1;animation:zpop .4s cubic-bezier(.34,1.56,.64,1)}
+.pivot button:active{transform:scale(.9)}
+.b:active{transform:scale(.97)}
+@keyframes zpop{0%{transform:scale(.88)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+.app{letter-spacing:.03em}
+input,select,textarea{border-radius:8px}
+.b{border-radius:10px}
+.badge{border-radius:99px}
+#toast{border-radius:10px}
+@media(prefers-reduced-motion:reduce){.pivot button.on{animation:none}.pivot button,.b{transition:none}}
 :root,html[data-th="terang"]{--bg:#EDF0F3;--card:#EDF0F3;--ink:#16202A;--mut:#5B6B78;--line:#C9D1D8;--ac:#1D6E8C;--ac2:#DCE7ED;--onac:#fff;--brass:#B9791A;--bad:#B3402F;--ok:#2E7D5B;color-scheme:light}
 html[data-th="gelap"]{--bg:#10171E;--card:#10171E;--ink:#E7ECF0;--mut:#8FA0AD;--line:#27333D;--ac:#5BB4D2;--ac2:#1B2A35;--onac:#10171E;--brass:#B9791A;--bad:#E0796A;--ok:#2E7D5B;color-scheme:dark}
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
