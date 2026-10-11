@@ -19,17 +19,20 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 0;ma
 .app{display:flex;gap:10px;align-items:center;font-size:24px;font-weight:600;line-height:1.2}
 @media(max-width:600px){.app{font-size:22px}}
 html,body{overflow-x:clip}
-.pivot{contain:paint;position:relative;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-top:12px;border-bottom:1px solid var(--line);overscroll-behavior-x:contain}.pivot::-webkit-scrollbar{display:none}
-.pvi{display:flex;width:max-content;min-width:100%;padding-inline-end:55vw}
+body.fx{overflow:hidden;height:100vh;height:100dvh}
+.appv{display:flex;flex-direction:column;height:100vh;height:100dvh;padding-bottom:0}
+.appv header{position:relative;flex:none;margin:0;padding:12px 0 0}
+.pivot{contain:paint;position:relative;overflow:hidden;margin-top:10px;border-bottom:1px solid var(--line)}
+.pvi{display:flex;width:max-content;will-change:transform}
 .pivot button{flex:none;background:none;border:0;font:300 20px/1.3 'Outfit',system-ui,sans-serif;color:var(--mut);opacity:.6;padding:4px 20px 10px 0;cursor:pointer;transition:opacity .2s,color .2s;white-space:nowrap}
 [dir=rtl] .pivot button{padding:4px 0 10px 20px}
 .pivot button.on{color:var(--ink);opacity:1}
 @media(max-width:600px){.pivot button{font-size:17px;padding-right:16px}}
-main{min-width:0;padding-top:6px}
-main.f{animation:slf .26s ease-out both}main.b{animation:slb .26s ease-out both}
-@keyframes slf{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:none}}
-@keyframes slb{from{opacity:0;transform:translateX(-32px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){main.f,main.b{animation:none}.pivot button{transition:none}}
+.track{flex:1;min-height:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}.track::-webkit-scrollbar{display:none}
+.pan{flex:0 0 100%;min-width:0;height:100%;overflow-y:auto;overflow-x:hidden;scroll-snap-align:start;scroll-snap-stop:always;padding:14px 0 calc(90px + env(safe-area-inset-bottom,0px));overscroll-behavior-y:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.fab{position:fixed;inset-inline-end:clamp(14px,3vw,36px);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;border:0;background:var(--ac);color:var(--onac);font:400 15px 'Outfit',system-ui,sans-serif;padding:12px 22px;border-radius:999px!important;cursor:pointer}
+.fab.hide{display:none}
+@media(prefers-reduced-motion:reduce){.pivot button{transition:none}.track{scroll-behavior:auto}}
 .cc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:0 36px;align-items:start}.cc>.card{margin:0}
 .row>label input,.row>label select{width:100%}
 .lnav,.hero,.foot{margin-left:auto;margin-right:auto;max-width:1100px}.sec{margin:34px auto;max-width:1100px}
@@ -63,22 +66,6 @@ td.n,th.n{text-align:end;font-variant-numeric:tabular-nums}tr.t td{font-weight:6
 a{color:var(--ac)}.chips{display:flex;gap:18px;overflow-x:auto;margin:0 0 12px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.ch{flex:none;padding:6px 0 7px;border:0;border-bottom:2px solid transparent;background:none;color:var(--mut);font:300 16px 'Outfit',system-ui,sans-serif;cursor:pointer}.ch.on{color:var(--ink);border-bottom-color:var(--ac)}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:40}
 @media print{#pv td,#pv th{white-space:normal}#app,#toast{display:none!important}#pv{display:block}body{background:#fff}}
-/* gaya Zui Jurnal */
-body,td,input,select,textarea{font-weight:400}
-.pivot button{color:var(--ink);opacity:.45;transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);transform-origin:left bottom}
-.pivot button.on{opacity:1;animation:zpop .4s cubic-bezier(.34,1.56,.64,1)}
-.pivot button:active{transform:scale(.9)}
-.b:active{transform:scale(.97)}
-@keyframes zpop{0%{transform:scale(.88)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
-.app{letter-spacing:.03em}
-input,select,textarea{border-radius:8px}
-.b{border-radius:10px}
-.badge{border-radius:99px}
-#toast{border-radius:10px}
-@media(prefers-reduced-motion:reduce){.pivot button.on{animation:none}.pivot button,.b{transition:none}}
-#app{position:relative}
-main{touch-action:pan-y}
-.nb{position:absolute;pointer-events:none;will-change:transform;padding-top:6px}
 </style></head><body><div class="wrap" id="app"><p style="padding:24px;font-family:sans-serif">Memuat Zui Akuntansi… <span id="ld"></span></p></div><div id="pv"></div><div id="toast"></div>
 <script>
 const FB_CFG={apiKey:'AIzaSyA2sNMzxL0OHMSISirTJ-odR6xzGyY7SIc',authDomain:'akuntansi-zuisystem.firebaseapp.com',projectId:'akuntansi-zuisystem',storageBucket:'akuntansi-zuisystem.firebasestorage.app',messagingSenderId:'185991014669',appId:'1:185991014669:web:02e913399e410e6c27a844'};
@@ -147,13 +134,13 @@ pwh:['Akun Google juga bisa membuat kata sandi di sini, agar bisa masuk dengan e
 sent:['Cek email Anda untuk tautan konfirmasi/pemulihan.','Check your email for the confirmation/recovery link.','请查收邮件中的确认/恢复链接。','تحقق من بريدك للحصول على رابط التأكيد/الاستعادة.'],
 setpw:['Simpan kata sandi baru','Save new passphrase','保存新密码','حفظ العبارة الجديدة'],
 sdkfail:['Konfigurasi sudah terisi, tetapi pustaka Firebase gagal dimuat. Periksa internet/VPN/pemblokir iklan lalu muat ulang (Ctrl+F5).','Config is set, but the Firebase library failed to load. Check your connection/VPN/ad blocker and hard-reload.'],conf:['Isi FB_CFG di index.html dengan konfigurasi aplikasi web Firebase Anda (lihat README).','Fill FB_CFG in index.html with your Firebase web app config (see README).','请在 index.html 中填写 Firebase 网页应用配置 FB_CFG（见 README）。','املأ FB_CFG في index.html بإعدادات تطبيق Firebase (انظر README).'],
-c_plan:['Paket','Plan'],planh:['Paket Anda','Your plan'],trialn:['Masa percobaan Pro','Pro trial'],activen:['Aktif','Active'],freen:['Gratis','Free'],until:['Berlaku sampai','Valid until'],pmem:['Anggota tim','Team members'],ptx:['Transaksi bulan ini','Entries this month'],unl:['tak terbatas','unlimited'],upg:['Untuk upgrade atau perpanjang, hubungi kami dan sertakan ID buku ini:','To upgrade or renew, contact us and include this book ID:'],copy:['Salin ID','Copy ID'],copied:['ID disalin','ID copied'],limit:['Perubahan ditolak server: batas paket tercapai atau peran Anda berubah. Memuat ulang…','Change rejected by the server: plan limit reached or your role changed. Reloading…'],limMem:['Batas anggota paket tercapai. Upgrade paket untuk menambah anggota.','Plan member limit reached. Upgrade to add members.'],verifyfirst:['Email belum diverifikasi. Kami kirim ulang tautan verifikasi, cek kotak masuk/spam lalu masuk lagi.','Email not verified. We re-sent the verification link; check your inbox/spam and sign in again.'],badcred:['Email atau kata sandi salah.','Wrong email or password.'],emailused:['Email sudah terdaftar. Silakan masuk.','Email already registered. Please sign in.'],toomany:['Terlalu banyak percobaan. Coba lagi nanti.','Too many attempts. Try again later.'],relogin:['Demi keamanan, keluar lalu masuk lagi sebelum mengganti kata sandi.','For security, sign out and back in before changing your password.'],neterr:['Jaringan bermasalah. Coba lagi.','Network problem. Try again.'],
+c_plan:['Paket','Plan'],fab:['Catat jurnal','New entry'],more:['Menampilkan jurnal terbaru; daftar lengkap ada di Buku besar:','Showing the latest entries; the full list is in the General ledger:'],planh:['Paket Anda','Your plan'],trialn:['Masa percobaan Pro','Pro trial'],activen:['Aktif','Active'],freen:['Gratis','Free'],until:['Berlaku sampai','Valid until'],pmem:['Anggota tim','Team members'],ptx:['Transaksi bulan ini','Entries this month'],unl:['tak terbatas','unlimited'],upg:['Untuk upgrade atau perpanjang, hubungi kami dan sertakan ID buku ini:','To upgrade or renew, contact us and include this book ID:'],copy:['Salin ID','Copy ID'],copied:['ID disalin','ID copied'],limit:['Perubahan ditolak server: batas paket tercapai atau peran Anda berubah. Memuat ulang…','Change rejected by the server: plan limit reached or your role changed. Reloading…'],limMem:['Batas anggota paket tercapai. Upgrade paket untuk menambah anggota.','Plan member limit reached. Upgrade to add members.'],verifyfirst:['Email belum diverifikasi. Kami kirim ulang tautan verifikasi, cek kotak masuk/spam lalu masuk lagi.','Email not verified. We re-sent the verification link; check your inbox/spam and sign in again.'],badcred:['Email atau kata sandi salah.','Wrong email or password.'],emailused:['Email sudah terdaftar. Silakan masuk.','Email already registered. Please sign in.'],toomany:['Terlalu banyak percobaan. Coba lagi nanti.','Too many attempts. Try again later.'],relogin:['Demi keamanan, keluar lalu masuk lagi sebelum mengganti kata sandi.','For security, sign out and back in before changing your password.'],neterr:['Jaringan bermasalah. Coba lagi.','Network problem. Try again.'],
 big:['Buku sudah terlalu besar untuk satu dokumen. Hubungi kami untuk arsip tahunan.','The book is too large for one document. Contact us about yearly archiving.'],conflict:['Data berubah di perangkat lain. Memuat ulang...','Data changed elsewhere. Reloading...','数据已在别处更改，正在重新加载…','تغيّرت البيانات في مكان آخر. جارٍ إعادة التحميل…'],
 a1100:['Kas & Bank','Cash & Bank','现金及银行','النقد والبنك'],a1200:['Piutang usaha','Accounts receivable','应收账款','الذمم المدينة'],
 a2100:['Utang usaha','Accounts payable','应付账款','الذمم الدائنة'],a3100:['Modal pemilik','Owner capital','所有者资本','رأس المال'],
 a4100:['Pendapatan jasa','Service revenue','服务收入','إيرادات الخدمات'],a5100:['Beban gaji','Payroll expense','工资费用','مصروف الرواتب'],
 a5200:['Beban sewa','Rent expense','租金费用','مصروف الإيجار']};
-let slide=0,sw=false,view='land',vb='land',cs='prof',th='auto',me={},prof={},gm={},sb,ws,ver=0,role='owner',rec=false,busy=false,msg='',li=0,st,disp='IDR',tab='dash',idle,fails=0,until=0;
+let view='land',vb='land',cs='prof',th='auto',me={},prof={},gm={},sb,ws,ver=0,role='owner',rec=false,busy=false,msg='',li=0,st,disp='IDR',tab='dash',idle,fails=0,until=0;
 const t=k=>{const a=S[k]||[k];return a[li]??a[1]??a[0]};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const b64=b=>{let s='';for(const x of new Uint8Array(b))s+=String.fromCharCode(x);return btoa(s)},ub=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
@@ -162,31 +149,18 @@ const normTh=v=>v==='gelap'||v==='terang'?v:'auto';
 const TABS=['dash','rep','gl','jrn','inv','bank','aut','cfg'];
 function applyTh(){const dk=th==='gelap'||(th==='auto'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.dataset.th=dk?'gelap':'terang';const m=document.querySelector('meta[name=theme-color]');if(m)m.content=dk?'#10171E':'#EDF0F3'}
 try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>th==='auto'&&applyTh())}catch(e){}
-function go(k){const a=TABS.indexOf(tab),b=TABS.indexOf(k);if(a===b)return;slide=b>a?1:-1;tab=k;draw();scrollTo(0,0)}
-let tx=0,ty=0,tt=0;
-let dg=0,dgK=null,dgSide=0,dgNb=null,dgBase=null,dgBusy=false;
-const vf=k=>({dash:dashboard,rep:report,gl:ledgerTab,jrn:journal,inv:invoices,bank:bank,aut:auto,cfg:cfg})[k]();
-const nextTab=dx=>{const i=TABS.indexOf(tab)+(dx<0?1:-1)*(li===3?-1:1);return i>=0&&i<TABS.length?TABS[i]:null};
-function dgPivot(k,p){const pv=$('.pivot');if(!pv)return;const on=pv.querySelector('.on'),tb=k!=null?pv.querySelectorAll('button')[TABS.indexOf(k)]:null;if(dgBase===null)dgBase=pv.scrollLeft;if(on&&tb)pv.scrollLeft=dgBase+(tb.offsetLeft-on.offsetLeft)*p;else if(p===0)pv.scrollLeft=dgBase}
-function dragMove(dx){const m=$('main');if(!m)return;const W=innerWidth,k=nextTab(dx),side=dx<0?1:-1;
-if(dg===1&&dgBase===null){dgBase=($('.pivot')||{}).scrollLeft||0;m.style.animation='none';m.style.willChange='transform'}
-if(k!==dgK||side!==dgSide){if(dgNb){dgNb.remove();dgNb=null}dgK=k;dgSide=side;
-if(k){dgNb=document.createElement('div');dgNb.className='nb';dgNb.innerHTML=vf(k);dgNb.style.top=m.offsetTop+'px';dgNb.style.left=m.offsetLeft+'px';dgNb.style.width=m.offsetWidth+'px';m.parentNode.insertBefore(dgNb,m.nextSibling)}}
-const mx=k?Math.max(-W,Math.min(W,dx)):dx*.3;m.style.transition='none';m.style.transform='translateX('+mx+'px)';
-if(dgNb){dgNb.style.transition='none';dgNb.style.transform='translateX('+(side*W+mx)+'px)'}
-dgPivot(k,k?Math.min(1,Math.abs(mx)/W):0)}
-function dragFinish(dx){const m=$('main'),W=innerWidth,k=dgK,fl=Date.now()-tt<320&&Math.abs(dx)>40,ok=!!k&&(Math.abs(dx)>W*.28||fl),T='transform .22s ease-out';
-const end=()=>{dg=0;dgK=null;dgNb=null;dgBase=null;dgSide=0;dgBusy=false};
-if(!m){end();return}
-dgBusy=true;m.style.transition=T;if(dgNb)dgNb.style.transition=T;
-const pv=$('.pivot');if(pv)pv.style.scrollBehavior='smooth';
-if(ok){m.style.transform='translateX('+(-dgSide*W)+'px)';dgNb.style.transform='translateX(0px)';dgPivot(k,1)}
-else{m.style.transform='translateX(0px)';if(dgNb)dgNb.style.transform='translateX('+(dgSide*W)+'px)';dgPivot(null,0)}
-setTimeout(()=>{if(ok){tab=k;slide=0;end();draw();scrollTo(0,0)}else{if(dgNb)dgNb.remove();const m2=$('main');if(m2){m2.style.transition='';m2.style.transform='';m2.style.willChange=''}if(pv)pv.style.scrollBehavior='';end()}},230)}
-addEventListener('touchstart',e=>{const q=e.touches[0];tx=q.clientX;ty=q.clientY;tt=Date.now();dg=0;sw=!dgBusy&&!!st&&!!$('.pivot')&&!e.target.closest('.sc,input,select,textarea,.pivot,.chips')},{passive:true});
-addEventListener('touchmove',e=>{if(!sw)return;const q=e.touches[0],dx=q.clientX-tx,dy=q.clientY-ty;if(!dg){if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.2)dg=1;else if(Math.abs(dy)>10)dg=-1}if(dg===1)dragMove(dx)},{passive:true});
-addEventListener('touchend',e=>{if(dg===1&&sw)dragFinish(e.changedTouches[0].clientX-tx);else dg=0},{passive:true});
-addEventListener('touchcancel',()=>{if(dg===1&&sw)dragFinish(0);else dg=0},{passive:true});
+let pOff=[],pRaf=0,pIdx=-1,stale=new Set(),PSV={},idleT=0;
+const FN=()=>({dash:dashboard,rep:report,gl:ledgerTab,jrn:journal,inv:invoices,bank:bank,aut:auto,cfg:cfg});
+function ensure(k){if(!stale.has(k))return;const e=$('.pan[data-k='+k+']');if(!e)return;stale.delete(k);e.firstChild.innerHTML=FN()[k]();e.scrollTop=PSV[k]||0}
+function idleFill(){clearTimeout(idleT);if(!stale.size)return;idleT=setTimeout(()=>{const o=[...stale].sort((a,b)=>Math.abs(TABS.indexOf(a)-pIdx)-Math.abs(TABS.indexOf(b)-pIdx));ensure(o[0]);idleFill()},70)}
+const trk=()=>$('.track');
+function measure(){const v=$('.pvi');if(!v)return;const rt=li===3,vr=v.getBoundingClientRect();pOff=[...v.children].map(b=>{const q=b.getBoundingClientRect();return rt?vr.right-q.right:q.left-vr.left})}
+function onTrack(){if(pRaf)return;pRaf=requestAnimationFrame(()=>{pRaf=0;const T=trk(),v=$('.pvi');if(!T||!v||!T.clientWidth)return;const rt=li===3,x=Math.abs(T.scrollLeft)/T.clientWidth;ensure(TABS[Math.min(TABS.length-1,Math.floor(x))]);ensure(TABS[Math.min(TABS.length-1,Math.ceil(x))]);const i=Math.min(TABS.length-1,Math.max(0,Math.floor(x))),f=Math.min(1,x-i),a=pOff[i]||0,b=pOff[i+1]??a,pos=a+(b-a)*f;v.style.transform=`translateX(${rt?pos:-pos}px)`;
+const k=Math.min(TABS.length-1,Math.max(0,Math.round(x)));if(k!==pIdx){pIdx=k;tab=TABS[k];[...v.children].forEach((e,j)=>{e.classList.toggle('on',j===k);e.setAttribute('aria-selected',j===k)});const fb=$('.fab');if(fb)fb.classList.toggle('hide',tab==='cfg');if(tab==='cfg'&&cs==='team')teamLoad()}})}
+function go(k){const T=trk();if(!T)return;const i=TABS.indexOf(k);T.scrollTo({left:i*T.clientWidth*(li===3?-1:1),behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+try{document.fonts&&document.fonts.ready.then(()=>{measure();onTrack()})}catch(e){}
+addEventListener('resize',()=>{const T=trk();if(!T)return;measure();T.style.scrollBehavior='auto';T.scrollLeft=TABS.indexOf(tab)*T.clientWidth*(li===3?-1:1);T.style.scrollBehavior='';onTrack()});
+function newEntry(){ensure('jrn');go('jrn');setTimeout(()=>{const e=$('.pan[data-k=jrn] input[type=text],.pan[data-k=jrn] input:not([type])');if(e)e.focus({preventScroll:true})},450)}
 const ymNow=()=>{const d=new Date();return d.getUTCFullYear()*100+d.getUTCMonth()+1};
 let LM={n:0,mYm:0,mBase:0},bill=null,fapp,fau,fdb,FS,AU;
 const D=(...p)=>FS.doc(fdb,...p),C=(...p)=>FS.collection(fdb,...p);
@@ -276,7 +250,7 @@ return`<div class="row" style="margin-bottom:12px"><label>${t('acct')}<select on
 <tr class="t"><td colspan="5">${t('g_open')}</td><td class="n">${fmt(g.open)}</td></tr>${body}
 <tr class="t"><td colspan="3">${t('tot')}</td><td class="n">${fmt(g.td)}</td><td class="n">${fmt(g.tc)}</td><td></td></tr>
 <tr class="t"><td colspan="5">${t('g_close')}</td><td class="n">${fmt(g.close)}</td></tr></table></div>`}
-function printLedger(){const g=glData(),card=document.querySelector('#app .sc'),lg=st.logo&&st.logo.startsWith('data:image/')?`<img src="${esc(st.logo)}" style="max-height:60px;max-width:180px">`:'<span></span>';
+function printLedger(){ensure('gl');const g=glData(),card=document.querySelector('.pan[data-k=gl] .sc'),lg=st.logo&&st.logo.startsWith('data:image/')?`<img src="${esc(st.logo)}" style="max-height:60px;max-width:180px">`:'<span></span>';
 $('#pv').innerHTML=`<div style="padding:24px;max-width:900px;margin:auto"><div style="display:flex;justify-content:space-between;align-items:center">${lg}<div style="text-align:right"><b style="font-size:20px">${t('gl')}</b><br>${disp}</div></div>${coBlock()}${card?card.outerHTML:''}</div>`;window.print()}
 function toast(m){const e=$('#toast');e.textContent=m;e.style.opacity=1;setTimeout(()=>e.style.opacity=0,3000)}
 let mem=[];
@@ -323,7 +297,7 @@ return`<div class="card"><h3>${t('myprof')}</h3><div class="row" style="align-it
 <div class="card"><h3>${t('theme')}</h3><div class="row">${['auto','terang','gelap'].map(k=>`<button class="b ${th===k?'':'g'}" onclick="setTheme('${k}')">${t('th_'+k)}</button>`).join('')}</div></div>`}
 async function chPw(){const a=$('#np1').value,b=$('#np2').value,m=$('#pe');if(a.length<8){m.className='bad';m.textContent=t('short');return}if(a!==b){m.className='bad';m.textContent=t('pwmis');return}
 try{await AU.updatePassword(fau.currentUser,a);m.className='ok';m.textContent=t('pwok');$('#np1').value='';$('#np2').value=''}catch(e){m.className='bad';m.textContent=aerr(e)}}
-function printReport(){const cards=[...document.querySelectorAll('#app .sc')].map(e=>e.parentElement.outerHTML).join(''),lg=st.logo&&st.logo.startsWith('data:image/')?`<img src="${esc(st.logo)}" style="max-height:60px;max-width:180px">`:'<span></span>';
+function printReport(){ensure('rep');const cards=[...document.querySelectorAll('.pan[data-k=rep] .sc')].map(e=>e.parentElement.outerHTML).join(''),lg=st.logo&&st.logo.startsWith('data:image/')?`<img src="${esc(st.logo)}" style="max-height:60px;max-width:180px">`:'<span></span>';
 $('#pv').innerHTML=`<div style="padding:24px;max-width:800px;margin:auto"><div style="display:flex;justify-content:space-between;align-items:center">${lg}<div style="text-align:right"><b style="font-size:20px">${t('rep')}</b><br>${today()} · ${disp}</div></div>${coBlock()}${cards}</div>`;window.print()}
 const qq=x=>{x=String(x);if(/^[=+\-@]/.test(x))x="'"+x;return'"'+x.replace(/"/g,'""')+'"'};
 function exportTB(){const b=bals(),rows=[['code','name','debit','credit']];st.accts.forEach(a=>{const v=conv(b[a.c],'IDR',disp);rows.push([a.c,nm(a),v>0?v.toFixed(2):'',v<0?(-v).toFixed(2):''])});
@@ -411,11 +385,11 @@ return`<div class="row" style="margin-bottom:16px"><label>${t('disp')}<select on
 <div class="card"><h3>${t('tb')}</h3><div class="sc"><table><tr><th>${t('code')}</th><th>${t('name')}</th><th class="n">${t('dr')}</th><th class="n">${t('cr')}</th></tr>${tb}</table></div></div>
 <div class="card"><div class="row"><label>${t('code')}<input id="ac" size="6"></label><label>${t('name')}<input id="an"></label><label>${t('type')}<select id="ay">${opt(['A','Li','E','R','X'].map(k=>[k,t(k)]),'A')}</select></label><button class="b" onclick="addAcc()">${t('add')}</button></div></div>`}
 async function addAcc(){const c=$('#ac').value.trim(),n=$('#an').value.trim();if(!c||!n||st.accts.some(a=>a.c===c))return;st.accts.push({c,n,y:$('#ay').value});await save();draw()}
-function journal(){const rows=[...st.entries].reverse().map(e=>{const tot=e.lines.reduce((s,l)=>s+l.dr,0);return`<tr><td>#${e.id}</td><td>${esc(e.date)}</td><td>${esc(e.desc)}${e.auto?` <span class="mut">(${t('auto')})</span>`:''}</td><td>${e.lines.map(l=>esc(l.a)).join(', ')}</td><td class="n">${fmt(tot,e.cur)}</td><td><button class="b g" onclick="rev(${e.id})">${t('rev')}</button></td></tr>`}).join('');
+function journal(){const rows=[...st.entries].reverse().slice(0,200).map(e=>{const tot=e.lines.reduce((s,l)=>s+l.dr,0);return`<tr><td>#${e.id}</td><td>${esc(e.date)}</td><td>${esc(e.desc)}${e.auto?` <span class="mut">(${t('auto')})</span>`:''}</td><td>${e.lines.map(l=>esc(l.a)).join(', ')}</td><td class="n">${fmt(tot,e.cur)}</td><td><button class="b g" onclick="rev(${e.id})">${t('rev')}</button></td></tr>`}).join('');
 return`<div class="card"><div class="row"><label>${t('date')}<input type="date" id="jd" value="${today()}"></label><label>${t('desc')}<input id="jt"></label><label>${t('cur')}<select id="jc">${opt(curs(),disp)}</select></label></div>
 <div id="jl" style="margin:12px 0">${jrow('1100')}${jrow('4100')}</div>
 <div class="row"><button class="b g" onclick="$('#jl').insertAdjacentHTML('beforeend',jrow());jbal()">+ ${t('line')}</button><button class="b" onclick="addJ()">${t('post')}</button><span id="jb" class="mut"></span></div><p class="bad" id="je"></p></div>
-<div class="card sc"><table><tr><th>#</th><th>${t('date')}</th><th>${t('desc')}</th><th>${t('acct')}</th><th class="n">${t('amt')}</th><th></th></tr>${rows}</table></div>`}
+<div class="card sc"><table><tr><th>#</th><th>${t('date')}</th><th>${t('desc')}</th><th>${t('acct')}</th><th class="n">${t('amt')}</th><th></th></tr>${rows}</table>${st.entries.length>200?`<p class="mut">${t('more')} 200 / ${st.entries.length}</p>`:''}</div>`}
 const jrow=(a='')=>`<div class="row jr" style="margin-bottom:6px"><select class="ja">${opt(accOpts(),a)}</select><input class="jdv" type="number" min="0" step="any" placeholder="${t('dr')}" style="width:120px" oninput="jbal()"><input class="jcv" type="number" min="0" step="any" placeholder="${t('cr')}" style="width:120px" oninput="jbal()"></div>`;
 function jlines(){return[...document.querySelectorAll('.jr')].map(r=>({a:r.querySelector('.ja').value,dr:parseFloat(r.querySelector('.jdv').value)||0,cr:parseFloat(r.querySelector('.jcv').value)||0})).filter(l=>l.dr||l.cr)}
 function jbal(){const q=jlines();$('#jb').textContent=t('diff')+': '+(q.reduce((s,l)=>s+l.dr,0)-q.reduce((s,l)=>s+l.cr,0)).toFixed(2)}
@@ -452,7 +426,7 @@ async function setRate(c,v){v=parseFloat(v);if(v>0){st.rates[c]=v;await save()}}
 async function verify(){let prev='0';for(const e of st.entries){const h=await sha(prev+JSON.stringify([e.id,e.date,e.desc,e.cur,e.rate,e.lines]));if(e.prev!==prev||e.hash!==h){$('#vr').innerHTML=`<span class="bad">${t('tamp')}${e.id}</span>`;return}prev=e.hash}
 $('#vr').innerHTML=`<span class="ok">${t('good')} ${st.entries.length}</span>`}
 async function wipe(){if(confirm('?')){st=seed();await save();draw()}}
-function draw(){applyTh();document.documentElement.lang=L[li];document.documentElement.dir=li===3?'rtl':'ltr';
+function draw(){applyTh();document.body.classList.remove('fx');$('#app').className='wrap';document.documentElement.lang=L[li];document.documentElement.dir=li===3?'rtl':'ltr';
 const sel=`<select aria-label="language" onchange="setLang(+this.value)">${[['0','Indonesia'],['1','English'],['2','中文'],['3','العربية']].map(([v,l])=>`<option value="${v}"${+v===li?' selected':''}>${l}</option>`).join('')}</select>`;
 if(view==='terms'||view==='privacy'){legal();return}
 if(!st&&view==='land'&&!rec&&!msg){landing(sel);return}
@@ -461,9 +435,11 @@ const body=!cfgOk()?`<p class="bad">${FB_CFG.apiKey?t('sdkfail')+' ('+esc(window
 :`<p>${bt('g','google')}</p><div class="row" style="flex-direction:column;align-items:stretch"><input id="em" type="email" autocomplete="email" placeholder="${esc(t('email'))}"><input id="pw" type="password" autocomplete="current-password" placeholder="${esc(t('pw'))}" onkeydown="if(event.key==='Enter')authGo('in')"></div><p>${bt('in','signin')} ${bt('up','signup','g')} ${bt('f','forgot','g')}</p>`;
 $('#app').innerHTML=`<div class="card" id="lock"><h1>Zui Akuntansi</h1><p class="mut">${t('l_badge')}</p>${body}<p class="bad" id="m">${esc(msg)}</p><p class="mut" style="font-size:13px">${t('l_agree')} <a href="#" onclick="openLegal('terms','auth');return false">${t('terms')}</a> ${t('l_and')} <a href="#" onclick="openLegal('privacy','auth');return false">${t('privacy')}</a>.</p><div class="row">${sel}<button class="b g" onclick="view='land';msg='';draw()">←</button></div></div>`;return}
 const v={dash:dashboard,rep:report,gl:ledgerTab,jrn:journal,inv:invoices,bank:bank,aut:auto,cfg:cfg}[tab]();
-const ps=($('.pivot')||{}).scrollLeft||0,an=slide;slide=0;
-$('#app').innerHTML=`<header><div class="top"><span class="app">${LOGO}Zui Akuntansi</span><div class="row" style="align-items:center">${meChip()}${wsSel()}</div></div><div class="pivot" role="tablist"><div class="pvi">${TABS.map(k=>`<button role="tab" aria-selected="${k===tab}" class="${k===tab?'on':''}" onclick="go('${k}')">${t(k)}</button>`).join('')}</div></div></header><main class="${an>0?'f':an<0?'b':''}">${v}</main>`;
-const pv=$('.pivot');if(pv){pv.scrollLeft=ps;const on=pv.querySelector('.on');if(on&&on.scrollIntoView)on.scrollIntoView({inline:'start',block:'nearest',behavior:an?'smooth':'auto'})}
+document.querySelectorAll('.pan').forEach(e=>PSV[e.dataset.k]=e.scrollTop);const fn=FN();stale=new Set(TABS.filter(k=>k!==tab));
+$('#app').className='wrap appv';document.body.classList.add('fx');
+$('#app').innerHTML=`<header><div class="top"><span class="app">${LOGO}Zui Akuntansi</span><div class="row" style="align-items:center">${meChip()}${wsSel()}</div></div><div class="pivot" role="tablist"><div class="pvi">${TABS.map(k=>`<button role="tab" aria-selected="${k===tab}" class="${k===tab?'on':''}" onclick="go('${k}')">${t(k)}</button>`).join('')}</div></div></header><div class="track" tabindex="-1">${TABS.map(k=>`<section class="pan" data-k="${k}" role="tabpanel"><div class="pin">${k===tab?fn[k]():''}</div></section>`).join('')}</div><button class="fab${tab==='cfg'?' hide':''}" onclick="newEntry()">+ ${t('fab')}</button>`;
+const T=trk(),ix=TABS.indexOf(tab);document.querySelectorAll('.pan').forEach(e=>e.scrollTop=PSV[e.dataset.k]||0);
+measure();T.style.scrollBehavior='auto';T.scrollLeft=ix*T.clientWidth*(li===3?-1:1);pIdx=ix;T.style.scrollBehavior='';T.onscroll=onTrack;onTrack();idleFill();
 if(tab==='cfg'&&cs==='team')teamLoad()}
 window.__boot=boot;
 </script>
