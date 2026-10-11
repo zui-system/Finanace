@@ -55,14 +55,9 @@ td.n,th.n{text-align:end;font-variant-numeric:tabular-nums}tr.t td{font-weight:7
 a{color:var(--ac)}.chips{display:flex;gap:8px;overflow-x:auto;margin:0 0 14px;padding-bottom:4px;scrollbar-width:none}.ch{flex:none;padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px inherit;cursor:pointer}.ch.on{background:var(--ac);color:var(--onac);border-color:var(--ac)}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 @media print{#pv td,#pv th{white-space:normal}#app,#toast{display:none!important}#pv{display:block}body{background:#fff}}
-</style></head><body><div class="wrap" id="app"></div><div id="pv"></div><div id="toast"></div>
+</style></head><body><div class="wrap" id="app"><p style="padding:24px;font-family:sans-serif">Memuat Zui Akuntansi… <span id="ld"></span></p></div><div id="pv"></div><div id="toast"></div>
 <script>
-const FB_CFG={ apiKey: "AIzaSyA2sNMzxL0OHMSISirTJ-odR6xzGyY7SIc",
-  authDomain: "akuntansi-zuisystem.firebaseapp.com",
-  projectId: "akuntansi-zuisystem",
-  storageBucket: "akuntansi-zuisystem.firebasestorage.app",
-  messagingSenderId: "185991014669",
-  appId: "1:185991014669:web:02e913399e410e6c27a844"};
+const FB_CFG={apiKey:'AIzaSyA2sNMzxL0OHMSISirTJ-odR6xzGyY7SIc',authDomain:'akuntansi-zuisystem.firebaseapp.com',projectId:'akuntansi-zuisystem',storageBucket:'akuntansi-zuisystem.firebasestorage.app',messagingSenderId:'185991014669',appId:'1:185991014669:web:02e913399e410e6c27a844'};
 const $=s=>document.querySelector(s),enc=new TextEncoder(),dec=new TextDecoder();
 const L=['id','en','zh','ar'],LOC=['id-ID','en-US','zh-CN','ar'];
 const S={
@@ -127,7 +122,7 @@ acctsec:['Keamanan akun','Account security'],npw:['Kata sandi baru','New passwor
 pwh:['Akun Google juga bisa membuat kata sandi di sini, agar bisa masuk dengan email. Minimal 8 karakter.','Google accounts can set a password here too, to sign in with email. Minimum 8 characters.'],pwmis:['Kata sandi tidak sama','Passwords do not match'],pwok:['Kata sandi diperbarui','Password updated'],google:['Masuk dengan Google','Continue with Google','使用 Google 登录','المتابعة عبر Google'],
 sent:['Cek email Anda untuk tautan konfirmasi/pemulihan.','Check your email for the confirmation/recovery link.','请查收邮件中的确认/恢复链接。','تحقق من بريدك للحصول على رابط التأكيد/الاستعادة.'],
 setpw:['Simpan kata sandi baru','Save new passphrase','保存新密码','حفظ العبارة الجديدة'],
-conf:['Isi FB_CFG di index.html dengan konfigurasi aplikasi web Firebase Anda (lihat README).','Fill FB_CFG in index.html with your Firebase web app config (see README).','请在 index.html 中填写 Firebase 网页应用配置 FB_CFG（见 README）。','املأ FB_CFG في index.html بإعدادات تطبيق Firebase (انظر README).'],
+sdkfail:['Konfigurasi sudah terisi, tetapi pustaka Firebase gagal dimuat. Periksa internet/VPN/pemblokir iklan lalu muat ulang (Ctrl+F5).','Config is set, but the Firebase library failed to load. Check your connection/VPN/ad blocker and hard-reload.'],conf:['Isi FB_CFG di index.html dengan konfigurasi aplikasi web Firebase Anda (lihat README).','Fill FB_CFG in index.html with your Firebase web app config (see README).','请在 index.html 中填写 Firebase 网页应用配置 FB_CFG（见 README）。','املأ FB_CFG في index.html بإعدادات تطبيق Firebase (انظر README).'],
 c_plan:['Paket','Plan'],planh:['Paket Anda','Your plan'],trialn:['Masa percobaan Pro','Pro trial'],activen:['Aktif','Active'],freen:['Gratis','Free'],until:['Berlaku sampai','Valid until'],pmem:['Anggota tim','Team members'],ptx:['Transaksi bulan ini','Entries this month'],unl:['tak terbatas','unlimited'],upg:['Untuk upgrade atau perpanjang, hubungi kami dan sertakan ID buku ini:','To upgrade or renew, contact us and include this book ID:'],copy:['Salin ID','Copy ID'],copied:['ID disalin','ID copied'],limit:['Perubahan ditolak server: batas paket tercapai atau peran Anda berubah. Memuat ulang…','Change rejected by the server: plan limit reached or your role changed. Reloading…'],limMem:['Batas anggota paket tercapai. Upgrade paket untuk menambah anggota.','Plan member limit reached. Upgrade to add members.'],verifyfirst:['Email belum diverifikasi. Kami kirim ulang tautan verifikasi, cek kotak masuk/spam lalu masuk lagi.','Email not verified. We re-sent the verification link; check your inbox/spam and sign in again.'],badcred:['Email atau kata sandi salah.','Wrong email or password.'],emailused:['Email sudah terdaftar. Silakan masuk.','Email already registered. Please sign in.'],toomany:['Terlalu banyak percobaan. Coba lagi nanti.','Too many attempts. Try again later.'],relogin:['Demi keamanan, keluar lalu masuk lagi sebelum mengganti kata sandi.','For security, sign out and back in before changing your password.'],neterr:['Jaringan bermasalah. Coba lagi.','Network problem. Try again.'],
 big:['Buku sudah terlalu besar untuk satu dokumen. Hubungi kami untuk arsip tahunan.','The book is too large for one document. Contact us about yearly archiving.'],conflict:['Data berubah di perangkat lain. Memuat ulang...','Data changed elsewhere. Reloading...','数据已在别处更改，正在重新加载…','تغيّرت البيانات في مكان آخر. جارٍ إعادة التحميل…'],
 a1100:['Kas & Bank','Cash & Bank','现金及银行','النقد والبنك'],a1200:['Piutang usaha','Accounts receivable','应收账款','الذمم المدينة'],
@@ -409,7 +404,7 @@ const sel=`<select aria-label="language" onchange="setLang(+this.value)">${[['0'
 if(view==='terms'||view==='privacy'){legal();return}
 if(!st&&view==='land'&&!rec&&!msg){landing(sel);return}
 if(!st){const bt=(m,l,c='')=>`<button class="b ${c}" onclick="authGo('${m}')">${t(l)}</button>`;
-const body=!cfgOk()?`<p class="bad">${t('conf')}</p>`
+const body=!cfgOk()?`<p class="bad">${FB_CFG.apiKey?t('sdkfail')+' ('+esc(window.FBERR||'?')+')':t('conf')}</p>`
 :`<p>${bt('g','google')}</p><div class="row" style="flex-direction:column;align-items:stretch"><input id="em" type="email" autocomplete="email" placeholder="${esc(t('email'))}"><input id="pw" type="password" autocomplete="current-password" placeholder="${esc(t('pw'))}" onkeydown="if(event.key==='Enter')authGo('in')"></div><p>${bt('in','signin')} ${bt('up','signup','g')} ${bt('f','forgot','g')}</p>`;
 $('#app').innerHTML=`<div class="card" id="lock"><h1>Zui Akuntansi</h1><p class="mut">${t('l_badge')}</p>${body}<p class="bad" id="m">${esc(msg)}</p><p class="mut" style="font-size:13px">${t('l_agree')} <a href="#" onclick="openLegal('terms','auth');return false">${t('terms')}</a> ${t('l_and')} <a href="#" onclick="openLegal('privacy','auth');return false">${t('privacy')}</a>.</p><div class="row">${sel}<button class="b g" onclick="view='land';msg='';draw()">←</button></div></div>`;return}
 const v={dash:dashboard,rep:report,gl:ledgerTab,jrn:journal,inv:invoices,bank:bank,aut:auto,cfg:cfg}[tab]();
@@ -417,11 +412,11 @@ $('#app').innerHTML=`<header><h1 style="margin:0;display:flex;gap:10px;align-ite
 window.__boot=boot;
 </script>
 <script type="module">
-try {
-const firebaseConfig = {
- apiKey: "AIzaSyA2sNMzxL0OHMSISirTJ-odR6xzGyY7SIc",authDomain: "akuntansi-zuisystem.firebaseapp.com",projectId: "akuntansi-zuisystem",storageBucket: "akuntansi-zuisystem.firebasestorage.app",messagingSenderId: "185991014669",appId: "1:185991014669:web:02e913399e410e6c27a844"};
+const V='10.14.1',SRC=[[`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`,`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`,`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`],
+[`https://cdn.jsdelivr.net/npm/firebase@${V}/app/+esm`,`https://cdn.jsdelivr.net/npm/firebase@${V}/auth/+esm`,`https://cdn.jsdelivr.net/npm/firebase@${V}/firestore/+esm`],
+[`https://esm.sh/firebase@${V}/app`,`https://esm.sh/firebase@${V}/auth`,`https://esm.sh/firebase@${V}/firestore`]];
+window.FB=null;const errs=[];
+for(const s of SRC){const l=document.getElementById('ld');if(l)l.textContent='('+new URL(s[0]).host+')';try{const to=new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),8000)),[A,Au,Fs]=await Promise.race([Promise.all(s.map(u=>import(u))),to]);window.FB={A,Au,Fs};break}catch(e){errs.push(new URL(s[0]).host)}}
+if(!window.FB)window.FBERR='gagal: '+errs.join(', ');
 window.__boot();
-} catch (err) {
- console.error(err);
-}
 </script></body></html>
