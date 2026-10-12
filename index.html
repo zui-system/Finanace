@@ -16,7 +16,9 @@ h1,h2,h3{margin:0 0 .5em;font-weight:300;letter-spacing:0}h3{font-size:17px}
 .wrap{max-width:none;margin:0;padding:0 clamp(14px,3vw,36px) 48px}
 header{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 0;margin:0 0 14px}
 .top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.app,.brand,#lock h1{text-transform:uppercase;letter-spacing:.06em}
 .app{display:flex;gap:10px;align-items:center;font-size:24px;font-weight:600;line-height:1.2}
+.brand{font-weight:600}
 @media(max-width:600px){.app{font-size:22px}}
 html,body{overflow-x:clip}
 body.fx{overflow:hidden;height:100vh;height:100dvh}
@@ -70,76 +72,194 @@ a{color:var(--ac)}.chips{display:flex;gap:18px;overflow-x:auto;margin:0 0 12px;s
 <script>
 const FB_CFG={apiKey:'AIzaSyA2sNMzxL0OHMSISirTJ-odR6xzGyY7SIc',authDomain:'akuntansi-zuisystem.firebaseapp.com',projectId:'akuntansi-zuisystem',storageBucket:'akuntansi-zuisystem.firebasestorage.app',messagingSenderId:'185991014669',appId:'1:185991014669:web:02e913399e410e6c27a844'};
 const $=s=>document.querySelector(s),enc=new TextEncoder(),dec=new TextDecoder();
-const L=['id','en','zh','ar'],LOC=['id-ID','en-US','zh-CN','ar'];
+const L=['id','en','ms'],LOC=['id-ID','en-US','ms-MY'];
 const S={
-sub:['Pembukuan multi-pengguna yang aman','Secure multi-user bookkeeping','安全的多用户账簿','دفاتر آمنة متعددة المستخدمين'],
-pw:['Kata sandi (min. 8 karakter)','Passphrase (min. 8 characters)','密码（至少8位）','عبارة المرور (8 أحرف على الأقل)'],
-open:['Buka atau buat brankas','Unlock or create vault','解锁或创建保险库','فتح أو إنشاء الخزنة'],
-short:['Minimal 8 karakter','Minimum 8 characters','至少8个字符','8 أحرف على الأقل'],
-wrong:['Kata sandi salah. Coba lagi dalam (detik):','Wrong passphrase. Retry in (s):','密码错误。请在（秒）后重试：','عبارة خاطئة. أعد المحاولة بعد (ثانية):'],
-lock:['Kunci','Lock','锁定','قفل'],
-rep:['Laporan','Reports','报表','التقارير'],jrn:['Jurnal','Journal','日记账','اليومية'],
-aut:['Otomatis','Automation','自动化','الأتمتة'],set:['Keamanan','Security','安全','الأمان'],
-date:['Tanggal','Date','日期','التاريخ'],desc:['Keterangan','Description','摘要','البيان'],
-dr:['Debit','Debit','借','مدين'],cr:['Kredit','Credit','贷','دائن'],amt:['Jumlah','Amount','金额','المبلغ'],
-cur:['Mata uang','Currency','币种','العملة'],disp:['Tampilkan dalam','Show in','显示币种','عرض بـ'],
-post:['Catat jurnal','Post entry','记账','تسجيل القيد'],rev:['Balik','Reverse','冲销','عكس'],
-tb:['Neraca saldo','Trial balance','试算平衡表','ميزان المراجعة'],is:['Laba rugi','Income statement','利润表','قائمة الدخل'],
-bs:['Posisi keuangan','Balance sheet','资产负债表','المركز المالي'],net:['Laba bersih','Net income','净利润','صافي الدخل'],
-A:['Aset','Assets','资产','الأصول'],Li:['Liabilitas','Liabilities','负债','الخصوم'],E:['Ekuitas','Equity','权益','حقوق الملكية'],
-R:['Pendapatan','Revenue','收入','الإيرادات'],X:['Beban','Expenses','费用','المصروفات'],
-tot:['Total','Total','合计','المجموع'],code:['Kode','Code','编号','الرمز'],name:['Nama akun','Account name','账户名称','اسم الحساب'],
-type:['Jenis','Type','类型','النوع'],add:['Tambah','Add','添加','إضافة'],
-rate:['Kurs ke mata uang dasar (IDR)','Rate to base currency (IDR)','兑基础货币(IDR)汇率','السعر مقابل العملة الأساسية (IDR)'],
-every:['Ulangi tiap (bulan)','Repeat every (months)','每隔（月）','كل (شهر)'],first:['Mulai','Start','开始','البداية'],
-rules:['Aturan jurnal berulang','Recurring rules','定期分录规则','قواعد متكررة'],
-ruleh:['Aturan jatuh tempo dicatat otomatis setiap kali brankas dibuka.','Due rules post automatically each time the vault opens.','到期规则在每次打开保险库时自动记账。','تُسجَّل القواعد المستحقة تلقائيًا عند كل فتح للخزنة.'],
-verify:['Verifikasi rantai audit','Verify audit chain','验证审计链','التحقق من سلسلة التدقيق'],
-good:['Rantai utuh:','Chain intact:','链完整：','السلسلة سليمة:'],tamp:['Perubahan terdeteksi pada entri #','Tampering found at entry #','在分录 #发现篡改','تم اكتشاف تلاعب في القيد #'],
-wipe:['Hapus semua data','Erase all data','清除所有数据','محو كل البيانات'],
-sec:['Masuk lewat Google atau email terverifikasi. Data disimpan di Firebase dengan Firestore Security Rules: tiap pengguna hanya melihat buku miliknya. Otomatis keluar setelah 5 menit tidak aktif. Jurnal tidak bisa diubah; koreksi lewat jurnal balik.','Sign in with Google or a verified email. Data lives in Firebase with Firestore Security Rules: each user sees only their own books. Auto sign-out after 5 idle minutes. Entries are immutable; correct them with reversals.','通过 Google 或已验证邮箱登录。数据存于启用安全规则的 Firebase：用户只能看到自己的账簿。闲置5分钟自动退出。分录不可修改，请用冲销更正。','سجّل الدخول عبر Google أو بريد موثّق. البيانات في Firebase بقواعد أمان Firestore: يرى كل مستخدم دفاتره فقط. خروج تلقائي بعد 5 دقائق خمول. القيود غير قابلة للتعديل وتُصحَّح بالعكس.'],
-unb:['Debit dan kredit harus berbeda dan jumlah > 0','Debit and credit must differ and amount must be > 0','借贷科目须不同且金额 > 0','يجب اختلاف المدين والدائن والمبلغ > 0'],
-auto:['otomatis','auto','自动','تلقائي'],
-email:['Email','Email','邮箱','البريد الإلكتروني'],bademail:['Format email tidak valid','Invalid email','邮箱格式无效','بريد غير صالح'],
-exists:['Email sudah terdaftar di perangkat ini','Email already registered on this device','该邮箱已在此设备注册','البريد مسجّل على هذا الجهاز'],
-noacct:['Akun tidak ditemukan','Account not found','未找到账户','الحساب غير موجود'],
-signin:['Masuk','Sign in','登录','دخول'],signup:['Daftar','Sign up','注册','تسجيل'],
-forgot:['Lupa kata sandi?','Forgot passphrase?','忘记密码？','نسيت العبارة؟'],back:['Kembali','Back','返回','رجوع'],
-recover:['Pulihkan akses','Recover access','恢复访问','استعادة الوصول'],rkey:['Kunci pemulihan','Recovery key','恢复密钥','مفتاح الاستعادة'],
-rkh:['Simpan kunci ini di tempat aman. Hanya ini yang bisa memulihkan data jika kata sandi lupa, dan tidak akan ditampilkan lagi.','Store this key safely. It is the only way to recover your data if you forget your passphrase, and it will not be shown again.','请妥善保存此密钥。忘记密码时只有它能恢复数据，且不会再次显示。','احفظ هذا المفتاح. هو الوسيلة الوحيدة لاستعادة بياناتك ولن يُعرض مجددًا.'],
-rkok:['Sudah saya simpan','I saved it','我已保存','لقد حفظته'],newpw:['Kata sandi baru','New passphrase','新密码','عبارة جديدة'],
-gnote:['Verifikasi Google butuh server dan belum aktif; email di sini hanya label brankas lokal.','Google verification needs a server and is not active; email here only labels a local vault.','Google 验证需要服务器，尚未启用；此处邮箱仅用于标记本地保险库。','التحقق عبر Google يتطلب خادمًا وغير مفعّل؛ البريد هنا مجرد تسمية للخزنة المحلية.'],
-inv:['Faktur','Invoices','发票','الفواتير'],who:['Pelanggan','Customer','客户','العميل'],due:['Jatuh tempo','Due','到期','الاستحقاق'],
-paid:['Lunas','Paid','已付','مدفوعة'],mark:['Tandai lunas','Mark paid','标记已付','تحديد كمدفوعة'],
-bank:['Rekonsiliasi','Reconcile','对账','التسوية'],bankh:['Tempel mutasi bank, satu baris per transaksi: tanggal,keterangan,jumlah (masuk +, keluar −).','Paste bank lines, one per transaction: date,description,amount (in +, out −).','粘贴银行流水，每行一笔：日期,摘要,金额（收入+，支出−）。','الصق حركات البنك، سطر لكل عملية: التاريخ,البيان,المبلغ (وارد +، صادر −).'],
-run:['Cocokkan','Match','匹配','مطابقة'],match:['Cocok dengan jurnal','Matches entry','匹配分录','مطابق للقيد'],unm:['Belum cocok','Unmatched','未匹配','غير مطابق'],
-exp:['Ekspor CSV jurnal','Export journal CSV','导出日记账 CSV','تصدير اليومية CSV'],
-dash:['Ringkasan','Dashboard'],gl:['Buku besar','Ledger'],team:['Tim','Team'],
-rvx:['Pendapatan vs beban (6 bulan)','Revenue vs expenses (6 months)'],cf:['Arus kas (6 bulan)','Cash flow (6 months)'],cin:['Masuk','In'],cout:['Keluar','Out'],
-bal:['Saldo','Balance'],acct:['Akun','Account'],line:['Baris','Line'],diff:['Selisih','Difference'],notbal:['Debit dan kredit harus seimbang (min. 2 baris)','Debits and credits must balance (min. 2 lines)'],
-item:['Barang/jasa','Item'],qty:['Jml','Qty'],price:['Harga','Price'],tax:['Pajak %','Tax %'],sub:['Subtotal','Subtotal'],print:['Cetak / PDF','Print / PDF'],
-company:['Nama usaha','Business name'],logo:['Logo','Logo'],invite:['Undang','Invite'],role:['Peran','Role'],pending:['menunggu','pending'],remove:['Hapus','Remove'],save:['Simpan','Save'],ws:['Nama buku','Book name'],
-ro:['Akun Anda hanya bisa melihat (viewer).','Your account is view-only (viewer).'],onlyowner:['Hanya owner yang bisa mengelola tim. Peran Anda:','Only the owner can manage the team. Your role:'],
-inve:['Undangan aktif saat orang itu masuk dengan email tersebut.','The invite activates when that person signs in with that email.'],
-a2200:['Utang pajak','Tax payable'],g_from:['Dari','From'],g_to:['Sampai','To'],g_per:['Periode','Period'],g_sd:['s.d.','to'],g_open:['Saldo awal','Opening balance'],g_close:['Saldo akhir','Closing balance'],cfg:['Pengaturan','Settings'],c_prof:['Profil','Profile'],c_team:['Tim','Team'],c_sec:['Keamanan','Security'],c_bhs:['Bahasa','Language'],c_mc:['Mata uang','Currency'],c_out:['Keluar','Log out'],
-terms:['Syarat Layanan','Terms of Service'],privacy:['Kebijakan Privasi','Privacy Policy'],eff:['Berlaku sejak','Effective'],l_agree:['Dengan masuk, Anda menyetujui','By continuing, you agree to the'],l_and:['dan','and'],
-l_badge:['Pembukuan untuk usaha kecil dan menengah','Bookkeeping for small businesses'],l_h:['Pembukuan rapi, laporan siap kapan saja','Tidy books, reports whenever you need them'],
-l_p:['Catat jurnal, buat faktur, dan pantau laporan dalam Rupiah, Ringgit, dan US Dollar. Aman, mudah, dan bisa dipakai bersama tim.','Record journals, issue invoices, and track reports in Rupiah, Ringgit, and US Dollar. Secure, simple, and ready for your team.'],
-l_cta:['Daftar gratis','Start free'],l_f:['Semua yang Anda butuhkan','Everything you need'],l_pl:['Pilih paket','Choose a plan'],l_pop:['Terpopuler','Most popular'],l_soon:['Langganan berbayar dibuka bertahap.','Paid plans open gradually.'],
-l_lang:['Empat bahasa tersedia. Sebagian label baru di 中文 dan العربية masih tampil dalam bahasa Inggris.','Four languages available. Some newer labels in 中文 and العربية still appear in English.'],theme:['Tema tampilan','Theme'],th_auto:['Otomatis','Auto','自动','تلقائي'],th_terang:['Terang','Light','浅色','فاتح'],th_gelap:['Gelap','Dark','深色','داكن'],prof:['Profil','Profile'],myprof:['Profil saya','My profile'],photo:['Ganti foto','Change photo'],pname:['Nama tampilan','Display name'],
-bprof:['Profil usaha (tampil di faktur dan laporan)','Business profile (shown on invoices and reports)'],addr:['Alamat','Address'],phone:['Telepon','Phone'],taxid:['No. pajak (NPWP/SSM)','Tax ID'],
-saved:['Tersimpan','Saved'],badimg:['Gambar tidak bisa dibaca. Coba JPG atau PNG.','Could not read the image. Try a JPG or PNG.'],profErr:['Profil belum tersimpan.','Profile not saved.'],
-acctsec:['Keamanan akun','Account security'],npw:['Kata sandi baru','New password'],npw2:['Ulangi kata sandi','Repeat password'],chpw:['Ubah kata sandi','Change password'],outall:['Keluar dari semua perangkat','Sign out everywhere'],
-pwh:['Akun Google juga bisa membuat kata sandi di sini, agar bisa masuk dengan email. Minimal 8 karakter.','Google accounts can set a password here too, to sign in with email. Minimum 8 characters.'],pwmis:['Kata sandi tidak sama','Passwords do not match'],pwok:['Kata sandi diperbarui','Password updated'],google:['Masuk dengan Google','Continue with Google','使用 Google 登录','المتابعة عبر Google'],
-sent:['Cek email Anda untuk tautan konfirmasi/pemulihan.','Check your email for the confirmation/recovery link.','请查收邮件中的确认/恢复链接。','تحقق من بريدك للحصول على رابط التأكيد/الاستعادة.'],
-setpw:['Simpan kata sandi baru','Save new passphrase','保存新密码','حفظ العبارة الجديدة'],
-sdkfail:['Konfigurasi sudah terisi, tetapi pustaka Firebase gagal dimuat. Periksa internet/VPN/pemblokir iklan lalu muat ulang (Ctrl+F5).','Config is set, but the Firebase library failed to load. Check your connection/VPN/ad blocker and hard-reload.'],conf:['Isi FB_CFG di index.html dengan konfigurasi aplikasi web Firebase Anda (lihat README).','Fill FB_CFG in index.html with your Firebase web app config (see README).','请在 index.html 中填写 Firebase 网页应用配置 FB_CFG（见 README）。','املأ FB_CFG في index.html بإعدادات تطبيق Firebase (انظر README).'],
-c_plan:['Paket','Plan'],fab:['Catat jurnal','New entry'],more:['Menampilkan jurnal terbaru; daftar lengkap ada di Buku besar:','Showing the latest entries; the full list is in the General ledger:'],planh:['Paket Anda','Your plan'],trialn:['Masa percobaan Pro','Pro trial'],activen:['Aktif','Active'],freen:['Gratis','Free'],until:['Berlaku sampai','Valid until'],pmem:['Anggota tim','Team members'],ptx:['Transaksi bulan ini','Entries this month'],unl:['tak terbatas','unlimited'],upg:['Untuk upgrade atau perpanjang, hubungi kami dan sertakan ID buku ini:','To upgrade or renew, contact us and include this book ID:'],copy:['Salin ID','Copy ID'],copied:['ID disalin','ID copied'],limit:['Perubahan ditolak server: batas paket tercapai atau peran Anda berubah. Memuat ulang…','Change rejected by the server: plan limit reached or your role changed. Reloading…'],limMem:['Batas anggota paket tercapai. Upgrade paket untuk menambah anggota.','Plan member limit reached. Upgrade to add members.'],verifyfirst:['Email belum diverifikasi. Kami kirim ulang tautan verifikasi, cek kotak masuk/spam lalu masuk lagi.','Email not verified. We re-sent the verification link; check your inbox/spam and sign in again.'],badcred:['Email atau kata sandi salah.','Wrong email or password.'],emailused:['Email sudah terdaftar. Silakan masuk.','Email already registered. Please sign in.'],toomany:['Terlalu banyak percobaan. Coba lagi nanti.','Too many attempts. Try again later.'],relogin:['Demi keamanan, keluar lalu masuk lagi sebelum mengganti kata sandi.','For security, sign out and back in before changing your password.'],neterr:['Jaringan bermasalah. Coba lagi.','Network problem. Try again.'],
-big:['Buku sudah terlalu besar untuk satu dokumen. Hubungi kami untuk arsip tahunan.','The book is too large for one document. Contact us about yearly archiving.'],conflict:['Data berubah di perangkat lain. Memuat ulang...','Data changed elsewhere. Reloading...','数据已在别处更改，正在重新加载…','تغيّرت البيانات في مكان آخر. جارٍ إعادة التحميل…'],
-a1100:['Kas & Bank','Cash & Bank','现金及银行','النقد والبنك'],a1200:['Piutang usaha','Accounts receivable','应收账款','الذمم المدينة'],
-a2100:['Utang usaha','Accounts payable','应付账款','الذمم الدائنة'],a3100:['Modal pemilik','Owner capital','所有者资本','رأس المال'],
-a4100:['Pendapatan jasa','Service revenue','服务收入','إيرادات الخدمات'],a5100:['Beban gaji','Payroll expense','工资费用','مصروف الرواتب'],
-a5200:['Beban sewa','Rent expense','租金费用','مصروف الإيجار']};
+"sub":["Subtotal", "Subtotal", "Subjumlah"],
+"pw":["Kata sandi (min. 8 karakter)", "Passphrase (min. 8 characters)", "Kata laluan (min. 8 aksara)"],
+"open":["Buka atau buat brankas", "Unlock or create vault", "Buka atau cipta peti besi"],
+"short":["Minimal 8 karakter", "Minimum 8 characters", "Minimum 8 aksara"],
+"wrong":["Kata sandi salah. Coba lagi dalam (detik):", "Wrong passphrase. Retry in (s):", "Kata laluan salah. Cuba lagi dalam (saat):"],
+"lock":["Kunci", "Lock", "Kunci"],
+"rep":["Laporan", "Reports", "Laporan"],
+"jrn":["Jurnal", "Journal", "Jurnal"],
+"aut":["Otomatis", "Automation", "Automatik"],
+"set":["Keamanan", "Security", "Keselamatan"],
+"date":["Tanggal", "Date", "Tarikh"],
+"desc":["Keterangan", "Description", "Keterangan"],
+"dr":["Debit", "Debit", "Debit"],
+"cr":["Kredit", "Credit", "Kredit"],
+"amt":["Jumlah", "Amount", "Jumlah"],
+"cur":["Mata uang", "Currency", "Mata wang"],
+"disp":["Tampilkan dalam", "Show in", "Papar dalam"],
+"post":["Catat jurnal", "Post entry", "Catat jurnal"],
+"rev":["Balik", "Reverse", "Balikkan"],
+"tb":["Neraca saldo", "Trial balance", "Kunci kira-kira percubaan"],
+"is":["Laba rugi", "Income statement", "Untung rugi"],
+"bs":["Posisi keuangan", "Balance sheet", "Kedudukan kewangan"],
+"net":["Laba bersih", "Net income", "Untung bersih"],
+"A":["Aset", "Assets", "Aset"],
+"Li":["Liabilitas", "Liabilities", "Liabiliti"],
+"E":["Ekuitas", "Equity", "Ekuiti"],
+"R":["Pendapatan", "Revenue", "Hasil"],
+"X":["Beban", "Expenses", "Perbelanjaan"],
+"tot":["Total", "Total", "Jumlah besar"],
+"code":["Kode", "Code", "Kod"],
+"name":["Nama akun", "Account name", "Nama akaun"],
+"type":["Jenis", "Type", "Jenis"],
+"add":["Tambah", "Add", "Tambah"],
+"rate":["Kurs ke mata uang dasar (IDR)", "Rate to base currency (IDR)", "Kadar tukaran ke mata wang asas (IDR)"],
+"every":["Ulangi tiap (bulan)", "Repeat every (months)", "Ulang setiap (bulan)"],
+"first":["Mulai", "Start", "Mula"],
+"rules":["Aturan jurnal berulang", "Recurring rules", "Peraturan jurnal berulang"],
+"ruleh":["Aturan jatuh tempo dicatat otomatis setiap kali brankas dibuka.", "Due rules post automatically each time the vault opens.", "Peraturan yang tiba tempoh dicatat secara automatik setiap kali peti besi dibuka."],
+"verify":["Verifikasi rantai audit", "Verify audit chain", "Sahkan rantaian audit"],
+"good":["Rantai utuh:", "Chain intact:", "Rantaian utuh:"],
+"tamp":["Perubahan terdeteksi pada entri #", "Tampering found at entry #", "Perubahan dikesan pada catatan #"],
+"wipe":["Hapus semua data", "Erase all data", "Padam semua data"],
+"sec":["Masuk lewat Google atau email terverifikasi. Data disimpan di Firebase dengan Firestore Security Rules: tiap pengguna hanya melihat buku miliknya. Otomatis keluar setelah 5 menit tidak aktif. Jurnal tidak bisa diubah; koreksi lewat jurnal balik.", "Sign in with Google or a verified email. Data lives in Firebase with Firestore Security Rules: each user sees only their own books. Auto sign-out after 5 idle minutes. Entries are immutable; correct them with reversals.", "Log masuk melalui Google atau e-mel yang disahkan. Data disimpan dalam Firebase dengan Firestore Security Rules: setiap pengguna hanya melihat bukunya sendiri. Log keluar automatik selepas 5 minit tidak aktif. Jurnal tidak boleh diubah; pembetulan melalui jurnal songsang."],
+"unb":["Debit dan kredit harus berbeda dan jumlah > 0", "Debit and credit must differ and amount must be > 0", "Debit dan kredit mesti berbeza dan jumlah > 0"],
+"auto":["otomatis", "auto", "automatik"],
+"email":["Email", "Email", "E-mel"],
+"bademail":["Format email tidak valid", "Invalid email", "Format e-mel tidak sah"],
+"exists":["Email sudah terdaftar di perangkat ini", "Email already registered on this device", "E-mel sudah didaftarkan pada peranti ini"],
+"noacct":["Akun tidak ditemukan", "Account not found", "Akaun tidak dijumpai"],
+"signin":["Masuk", "Sign in", "Log masuk"],
+"signup":["Daftar", "Sign up", "Daftar"],
+"forgot":["Lupa kata sandi?", "Forgot passphrase?", "Lupa kata laluan?"],
+"back":["Kembali", "Back", "Kembali"],
+"recover":["Pulihkan akses", "Recover access", "Pulihkan akses"],
+"rkey":["Kunci pemulihan", "Recovery key", "Kunci pemulihan"],
+"rkh":["Simpan kunci ini di tempat aman. Hanya ini yang bisa memulihkan data jika kata sandi lupa, dan tidak akan ditampilkan lagi.", "Store this key safely. It is the only way to recover your data if you forget your passphrase, and it will not be shown again.", "Simpan kunci ini di tempat selamat. Hanya ini yang dapat memulihkan data jika kata laluan terlupa, dan ia tidak akan dipaparkan lagi."],
+"rkok":["Sudah saya simpan", "I saved it", "Sudah saya simpan"],
+"newpw":["Kata sandi baru", "New passphrase", "Kata laluan baharu"],
+"gnote":["Verifikasi Google butuh server dan belum aktif; email di sini hanya label brankas lokal.", "Google verification needs a server and is not active; email here only labels a local vault.", "Pengesahan Google memerlukan pelayan dan belum aktif; e-mel di sini hanya label peti besi setempat."],
+"inv":["Faktur", "Invoices", "Invois"],
+"who":["Pelanggan", "Customer", "Pelanggan"],
+"due":["Jatuh tempo", "Due", "Tarikh akhir"],
+"paid":["Lunas", "Paid", "Telah dibayar"],
+"mark":["Tandai lunas", "Mark paid", "Tandakan dibayar"],
+"bank":["Rekonsiliasi", "Reconcile", "Penyesuaian bank"],
+"bankh":["Tempel mutasi bank, satu baris per transaksi: tanggal,keterangan,jumlah (masuk +, keluar −).", "Paste bank lines, one per transaction: date,description,amount (in +, out −).", "Tampal penyata bank, satu baris setiap transaksi: tarikh,keterangan,jumlah (masuk +, keluar −)."],
+"run":["Cocokkan", "Match", "Padankan"],
+"match":["Cocok dengan jurnal", "Matches entry", "Sepadan dengan jurnal"],
+"unm":["Belum cocok", "Unmatched", "Belum sepadan"],
+"exp":["Ekspor CSV jurnal", "Export journal CSV", "Eksport CSV jurnal"],
+"dash":["Ringkasan", "Dashboard", "Ringkasan"],
+"gl":["Buku besar", "Ledger", "Lejar am"],
+"team":["Tim", "Team", "Pasukan"],
+"rvx":["Pendapatan vs beban (6 bulan)", "Revenue vs expenses (6 months)", "Hasil lwn perbelanjaan (6 bulan)"],
+"cf":["Arus kas (6 bulan)", "Cash flow (6 months)", "Aliran tunai (6 bulan)"],
+"cin":["Masuk", "In", "Masuk"],
+"cout":["Keluar", "Out", "Keluar"],
+"bal":["Saldo", "Balance", "Baki"],
+"acct":["Akun", "Account", "Akaun"],
+"line":["Baris", "Line", "Baris"],
+"diff":["Selisih", "Difference", "Perbezaan"],
+"notbal":["Debit dan kredit harus seimbang (min. 2 baris)", "Debits and credits must balance (min. 2 lines)", "Debit dan kredit mesti seimbang (min. 2 baris)"],
+"item":["Barang/jasa", "Item", "Barang/perkhidmatan"],
+"qty":["Jml", "Qty", "Kuantiti"],
+"price":["Harga", "Price", "Harga"],
+"tax":["Pajak %", "Tax %", "Cukai %"],
+"print":["Cetak / PDF", "Print / PDF", "Cetak / PDF"],
+"company":["Nama usaha", "Business name", "Nama perniagaan"],
+"logo":["Logo", "Logo", "Logo"],
+"invite":["Undang", "Invite", "Jemput"],
+"role":["Peran", "Role", "Peranan"],
+"pending":["menunggu", "pending", "menunggu"],
+"remove":["Hapus", "Remove", "Buang"],
+"save":["Simpan", "Save", "Simpan"],
+"ws":["Nama buku", "Book name", "Nama buku"],
+"ro":["Akun Anda hanya bisa melihat (viewer).", "Your account is view-only (viewer).", "Akaun anda hanya boleh melihat (viewer)."],
+"onlyowner":["Hanya owner yang bisa mengelola tim. Peran Anda:", "Only the owner can manage the team. Your role:", "Hanya pemilik (owner) boleh mengurus pasukan. Peranan anda:"],
+"inve":["Undangan aktif saat orang itu masuk dengan email tersebut.", "The invite activates when that person signs in with that email.", "Jemputan aktif apabila orang itu log masuk dengan e-mel tersebut."],
+"a2200":["Utang pajak", "Tax payable", "Hutang cukai"],
+"g_from":["Dari", "From", "Dari"],
+"g_to":["Sampai", "To", "Hingga"],
+"g_per":["Periode", "Period", "Tempoh"],
+"g_sd":["s.d.", "to", "hingga"],
+"g_open":["Saldo awal", "Opening balance", "Baki awal"],
+"g_close":["Saldo akhir", "Closing balance", "Baki akhir"],
+"cfg":["Pengaturan", "Settings", "Tetapan"],
+"c_prof":["Profil", "Profile", "Profil"],
+"c_team":["Tim", "Team", "Pasukan"],
+"c_sec":["Keamanan", "Security", "Keselamatan"],
+"c_bhs":["Bahasa", "Language", "Bahasa"],
+"c_mc":["Mata uang", "Currency", "Mata wang"],
+"c_out":["Keluar", "Log out", "Log keluar"],
+"terms":["Syarat Layanan", "Terms of Service", "Terma Perkhidmatan"],
+"privacy":["Kebijakan Privasi", "Privacy Policy", "Dasar Privasi"],
+"eff":["Berlaku sejak", "Effective", "Berkuat kuasa sejak"],
+"l_agree":["Dengan masuk, Anda menyetujui", "By continuing, you agree to the", "Dengan meneruskan, anda bersetuju dengan"],
+"l_and":["dan", "and", "dan"],
+"l_badge":["Pembukuan untuk usaha kecil dan menengah", "Bookkeeping for small businesses", "Perakaunan untuk perniagaan kecil dan sederhana"],
+"l_h":["Pembukuan rapi, laporan siap kapan saja", "Tidy books, reports whenever you need them", "Buku kemas, laporan sedia pada bila-bila masa"],
+"l_p":["Catat jurnal, buat faktur, dan pantau laporan dalam Rupiah, Ringgit, dan US Dollar. Aman, mudah, dan bisa dipakai bersama tim.", "Record journals, issue invoices, and track reports in Rupiah, Ringgit, and US Dollar. Secure, simple, and ready for your team.", "Catat jurnal, keluarkan invois dan pantau laporan dalam Rupiah, Ringgit dan Dolar AS. Selamat, mudah dan boleh digunakan bersama pasukan."],
+"l_cta":["Daftar gratis", "Start free", "Daftar percuma"],
+"l_f":["Semua yang Anda butuhkan", "Everything you need", "Semua yang anda perlukan"],
+"l_pl":["Pilih paket", "Choose a plan", "Pilih pelan"],
+"l_pop":["Terpopuler", "Most popular", "Paling popular"],
+"l_soon":["Langganan berbayar dibuka bertahap.", "Paid plans open gradually.", "Langganan berbayar dibuka secara berperingkat."],
+"l_lang":["Tiga bahasa tersedia: Indonesia, English, dan Bahasa Melayu.", "Three languages available: Indonesia, English, and Bahasa Melayu.", "Tiga bahasa tersedia: Indonesia, English dan Bahasa Melayu."],
+"theme":["Tema tampilan", "Theme", "Tema paparan"],
+"th_auto":["Otomatis", "Auto", "Automatik"],
+"th_terang":["Terang", "Light", "Cerah"],
+"th_gelap":["Gelap", "Dark", "Gelap"],
+"prof":["Profil", "Profile", "Profil"],
+"myprof":["Profil saya", "My profile", "Profil saya"],
+"photo":["Ganti foto", "Change photo", "Tukar foto"],
+"pname":["Nama tampilan", "Display name", "Nama paparan"],
+"bprof":["Profil usaha (tampil di faktur dan laporan)", "Business profile (shown on invoices and reports)", "Profil perniagaan (dipaparkan pada invois dan laporan)"],
+"addr":["Alamat", "Address", "Alamat"],
+"phone":["Telepon", "Phone", "Telefon"],
+"taxid":["No. pajak (NPWP/SSM)", "Tax ID", "No. cukai (NPWP/SSM)"],
+"saved":["Tersimpan", "Saved", "Disimpan"],
+"badimg":["Gambar tidak bisa dibaca. Coba JPG atau PNG.", "Could not read the image. Try a JPG or PNG.", "Imej tidak dapat dibaca. Cuba JPG atau PNG."],
+"profErr":["Profil belum tersimpan.", "Profile not saved.", "Profil belum disimpan."],
+"acctsec":["Keamanan akun", "Account security", "Keselamatan akaun"],
+"npw":["Kata sandi baru", "New password", "Kata laluan baharu"],
+"npw2":["Ulangi kata sandi", "Repeat password", "Ulang kata laluan"],
+"chpw":["Ubah kata sandi", "Change password", "Tukar kata laluan"],
+"outall":["Keluar dari semua perangkat", "Sign out everywhere", "Log keluar dari semua peranti"],
+"pwh":["Akun Google juga bisa membuat kata sandi di sini, agar bisa masuk dengan email. Minimal 8 karakter.", "Google accounts can set a password here too, to sign in with email. Minimum 8 characters.", "Akaun Google juga boleh menetapkan kata laluan di sini untuk log masuk dengan e-mel. Minimum 8 aksara."],
+"pwmis":["Kata sandi tidak sama", "Passwords do not match", "Kata laluan tidak sama"],
+"pwok":["Kata sandi diperbarui", "Password updated", "Kata laluan dikemas kini"],
+"google":["Masuk dengan Google", "Continue with Google", "Teruskan dengan Google"],
+"sent":["Cek email Anda untuk tautan konfirmasi/pemulihan.", "Check your email for the confirmation/recovery link.", "Semak e-mel anda untuk pautan pengesahan/pemulihan."],
+"setpw":["Simpan kata sandi baru", "Save new passphrase", "Simpan kata laluan baharu"],
+"sdkfail":["Konfigurasi sudah terisi, tetapi pustaka Firebase gagal dimuat. Periksa internet/VPN/pemblokir iklan lalu muat ulang (Ctrl+F5).", "Config is set, but the Firebase library failed to load. Check your connection/VPN/ad blocker and hard-reload.", "Konfigurasi sudah diisi, tetapi pustaka Firebase gagal dimuatkan. Semak internet/VPN/penyekat iklan kemudian muat semula (Ctrl+F5)."],
+"conf":["Isi FB_CFG di index.html dengan konfigurasi aplikasi web Firebase Anda (lihat README).", "Fill FB_CFG in index.html with your Firebase web app config (see README).", "Isi FB_CFG dalam index.html dengan konfigurasi aplikasi web Firebase anda (lihat README)."],
+"c_plan":["Paket", "Plan", "Pelan"],
+"fab":["Catat jurnal", "New entry", "Catat jurnal"],
+"more":["Menampilkan jurnal terbaru; daftar lengkap ada di Buku besar:", "Showing the latest entries; the full list is in the General ledger:", "Memaparkan jurnal terkini; senarai penuh ada di Lejar am:"],
+"planh":["Paket Anda", "Your plan", "Pelan anda"],
+"trialn":["Masa percobaan Pro", "Pro trial", "Percubaan Pro"],
+"activen":["Aktif", "Active", "Aktif"],
+"freen":["Gratis", "Free", "Percuma"],
+"until":["Berlaku sampai", "Valid until", "Sah sehingga"],
+"pmem":["Anggota tim", "Team members", "Ahli pasukan"],
+"ptx":["Transaksi bulan ini", "Entries this month", "Transaksi bulan ini"],
+"unl":["tak terbatas", "unlimited", "tanpa had"],
+"upg":["Untuk upgrade atau perpanjang, hubungi kami dan sertakan ID buku ini:", "To upgrade or renew, contact us and include this book ID:", "Untuk menaik taraf atau memperbaharui, hubungi kami dan sertakan ID buku ini:"],
+"copy":["Salin ID", "Copy ID", "Salin ID"],
+"copied":["ID disalin", "ID copied", "ID disalin"],
+"limit":["Perubahan ditolak server: batas paket tercapai atau peran Anda berubah. Memuat ulang…", "Change rejected by the server: plan limit reached or your role changed. Reloading…", "Perubahan ditolak pelayan: had pelan dicapai atau peranan anda berubah. Memuat semula…"],
+"limMem":["Batas anggota paket tercapai. Upgrade paket untuk menambah anggota.", "Plan member limit reached. Upgrade to add members.", "Had ahli bagi pelan dicapai. Naik taraf pelan untuk menambah ahli."],
+"verifyfirst":["Email belum diverifikasi. Kami kirim ulang tautan verifikasi, cek kotak masuk/spam lalu masuk lagi.", "Email not verified. We re-sent the verification link; check your inbox/spam and sign in again.", "E-mel belum disahkan. Kami hantar semula pautan pengesahan; semak peti masuk/spam kemudian log masuk semula."],
+"badcred":["Email atau kata sandi salah.", "Wrong email or password.", "E-mel atau kata laluan salah."],
+"emailused":["Email sudah terdaftar. Silakan masuk.", "Email already registered. Please sign in.", "E-mel sudah didaftarkan. Sila log masuk."],
+"toomany":["Terlalu banyak percobaan. Coba lagi nanti.", "Too many attempts. Try again later.", "Terlalu banyak percubaan. Cuba lagi nanti."],
+"relogin":["Demi keamanan, keluar lalu masuk lagi sebelum mengganti kata sandi.", "For security, sign out and back in before changing your password.", "Demi keselamatan, log keluar kemudian log masuk semula sebelum menukar kata laluan."],
+"neterr":["Jaringan bermasalah. Coba lagi.", "Network problem. Try again.", "Masalah rangkaian. Cuba lagi."],
+"big":["Buku sudah terlalu besar untuk satu dokumen. Hubungi kami untuk arsip tahunan.", "The book is too large for one document. Contact us about yearly archiving.", "Buku sudah terlalu besar untuk satu dokumen. Hubungi kami untuk pengarkiban tahunan."],
+"conflict":["Data berubah di perangkat lain. Memuat ulang...", "Data changed elsewhere. Reloading...", "Data berubah di peranti lain. Memuat semula..."],
+"a1100":["Kas & Bank", "Cash & Bank", "Tunai & Bank"],
+"a1200":["Piutang usaha", "Accounts receivable", "Akaun belum terima"],
+"a2100":["Utang usaha", "Accounts payable", "Akaun belum bayar"],
+"a3100":["Modal pemilik", "Owner capital", "Modal pemilik"],
+"a4100":["Pendapatan jasa", "Service revenue", "Hasil perkhidmatan"],
+"a5100":["Beban gaji", "Payroll expense", "Perbelanjaan gaji"],
+"a5200":["Beban sewa", "Rent expense", "Perbelanjaan sewa"]
+};
 let view='land',vb='land',cs='prof',th='auto',me={},prof={},gm={},sb,ws,ver=0,role='owner',rec=false,busy=false,msg='',li=0,st,disp='IDR',tab='dash',idle,fails=0,until=0;
 const t=k=>{const a=S[k]||[k];return a[li]??a[1]??a[0]};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -159,9 +279,9 @@ function onTrack(){if(pRaf)return;pRaf=requestAnimationFrame(()=>{pRaf=0;const T
 [...v.children].forEach((e,j)=>{e.style.opacity=(.45+.55*Math.max(0,1-Math.abs(x-j))).toFixed(3)});
 const k=Math.min(TABS.length-1,Math.max(0,Math.round(x)));if(k!==pIdx){pIdx=k;tab=TABS[k];[...v.children].forEach((e,j)=>{e.classList.toggle('on',j===k);e.setAttribute('aria-selected',j===k)});reveal(v.children[k]);const fb=$('.fab');if(fb)fb.classList.toggle('hide',tab==='cfg');if(tab==='cfg'&&cs==='team')teamLoad()}})}
 function reveal(b){const P=$('.pivot');if(!P||!b)return;const pr=P.getBoundingClientRect(),br=b.getBoundingClientRect(),pad=24;let d=0;if(br.left<pr.left+pad)d=br.left-pr.left-pad;else if(br.right>pr.right-pad)d=br.right-pr.right+pad;if(d)P.scrollBy({left:d,behavior:'smooth'})}
-function go(k){const T=trk();if(!T)return;const i=TABS.indexOf(k);T.scrollTo({left:i*T.clientWidth*(li===3?-1:1),behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+function go(k){const T=trk();if(!T)return;const i=TABS.indexOf(k);T.scrollTo({left:i*T.clientWidth*1,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
 try{document.fonts&&document.fonts.ready.then(()=>{measure();onTrack()})}catch(e){}
-addEventListener('resize',()=>{const T=trk();if(!T)return;measure();T.style.scrollBehavior='auto';T.scrollLeft=TABS.indexOf(tab)*T.clientWidth*(li===3?-1:1);T.style.scrollBehavior='';onTrack()});
+addEventListener('resize',()=>{const T=trk();if(!T)return;measure();T.style.scrollBehavior='auto';T.scrollLeft=TABS.indexOf(tab)*T.clientWidth*1;T.style.scrollBehavior='';onTrack()});
 function newEntry(){ensure('jrn');go('jrn');setTimeout(()=>{const e=$('.pan[data-k=jrn] input[type=text],.pan[data-k=jrn] input:not([type])');if(e)e.focus({preventScroll:true})},450)}
 const ymNow=()=>{const d=new Date();return d.getUTCFullYear()*100+d.getUTCMonth()+1};
 let LM={n:0,mYm:0,mBase:0},bill=null,fapp,fau,fdb,FS,AU;
@@ -202,7 +322,7 @@ const addM=(d,m)=>{const x=new Date(d+'T00:00:00Z');x.setUTCMonth(x.getUTCMonth(
 async function post(date,desc,cur,lines,auto){if(role==='viewer'){toast(t('ro'));throw new Error('ro')}const prev=st.entries.length?st.entries.at(-1).hash:'0';const e={id:st.entries.length+1,date,desc,cur,rate:st.rates[cur],lines,auto:!!auto,prev};e.hash=await sha(prev+JSON.stringify([e.id,date,desc,cur,e.rate,lines]));st.entries.push(e)}
 async function autorun(){let n=0;for(const r of st.rules){while(r.next<=today()&&n++<120){await post(r.next,r.desc,r.cur,[{a:r.d,dr:r.amt,cr:0},{a:r.c,dr:0,cr:r.amt}],true);r.next=addM(r.next,r.every)}}if(n)await save()}
 const cfgOk=()=>!!(FB_CFG.apiKey&&FB_CFG.projectId&&window.FB);
-async function boot(){try{const p=JSON.parse(localStorage.getItem('lgp')||'{}');if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<4)li=p.li;if(p.th)th=normTh(p.th)}catch(e){}
+async function boot(){try{const p=JSON.parse(localStorage.getItem('lgp')||'{}');if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<3)li=p.li;if(p.th)th=normTh(p.th)}catch(e){}
 try{const k=sessionStorage.getItem('zmsg');if(k){sessionStorage.removeItem('zmsg');setTimeout(()=>toast(t(k)),400)}}catch(e){}
 if(!cfgOk()){draw();return}
 FS=FB.Fs;AU=FB.Au;fapp=FB.A.initializeApp(FB_CFG);fau=AU.getAuth(fapp);fdb=FS.getFirestore(fapp);
@@ -279,7 +399,7 @@ const meChip=()=>`<span style="display:inline-flex;align-items:center;gap:6px;cu
 const coBlock=()=>{const c=st.coInfo||{};return`<p><b>${esc(st.co||'')}</b><br>${esc(c.addr||'')}<br>${esc(c.phone||'')} ${esc(c.tax||'')}</p>`};
 function fixCur(){const u=new Set([...st.entries.map(e=>e.cur),...st.rules.map(r=>r.cur),...st.invoices.map(v=>v.cur)]);for(const c of Object.keys(st.rates))if(!['IDR','MYR','USD'].includes(c)&&!u.has(c))delete st.rates[c];st.rates.IDR=1;st.rates.MYR??=3800;st.rates.USD??=16000;if(!st.rates[disp])disp='IDR'}
 async function loadProfile(){try{const s=await FS.getDoc(D('users',me.id));
-if(s.exists()){const data=s.data();prof={name:data.name||'',avatar:data.avatar||''};const p=data.prefs||{};if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<4)li=p.li;if(p.th)th=normTh(p.th)}}catch(e){}}
+if(s.exists()){const data=s.data();prof={name:data.name||'',avatar:data.avatar||''};const p=data.prefs||{};if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<3)li=p.li;if(p.th)th=normTh(p.th)}}catch(e){}}
 async function upProf(){try{await FS.setDoc(D('users',me.id),{name:prof.name||'',avatar:prof.avatar||'',prefs:{disp,li,th}});return true}catch(e){toast(t('profErr'));return false}}
 function savePref(){try{localStorage.setItem('lgp',JSON.stringify({disp,li,th}))}catch(e){}if(fdb&&me.id)upProf()}
 function setDisp(v){disp=v;savePref();draw()}
@@ -305,26 +425,26 @@ const qq=x=>{x=String(x);if(/^[=+\-@]/.test(x))x="'"+x;return'"'+x.replace(/"/g,
 function exportTB(){const b=bals(),rows=[['code','name','debit','credit']];st.accts.forEach(a=>{const v=conv(b[a.c],'IDR',disp);rows.push([a.c,nm(a),v>0?v.toFixed(2):'',v<0?(-v).toFixed(2):''])});
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(qq).join(',')).join('\n')],{type:'text/csv'}));a.download='neraca-saldo-'+disp+'.csv';a.click()}
 const KONTAK='[isi email kontak]',OWNER='[isi nama pemilik/usaha]',LEGAL_DRAFT=true;
-const L2=a=>a[li===0?0:1];
+const L2=a=>a[li]??a[1];
 const LOGO='<svg width="30" height="30" viewBox="0 0 30 30"><rect width="30" height="30" rx="0" fill="var(--ac)"/><path d="M9 9h12L9 21h12" stroke="var(--onac)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const FEATS=[['✍️',['Jurnal dan buku besar','Journal and ledger'],['Jurnal multi-baris yang tidak bisa diubah, koreksi lewat jurnal balik, dan buku besar per akun.','Multi-line immutable journal, corrections by reversal, and a ledger per account.']],
-['🧾',['Faktur profesional','Professional invoices'],['Banyak item, pajak, nomor otomatis, logo usaha, dan cetak atau simpan sebagai PDF.','Multiple items, tax, automatic numbering, your logo, and print or save as PDF.']],
-['📊',['Laporan lengkap','Complete reports'],['Neraca saldo, laba rugi, posisi keuangan, dan arus kas, bisa dicetak atau diekspor.','Trial balance, income statement, balance sheet, and cash flow, printable and exportable.']],
-['💱',['Multi mata uang','Multi-currency'],['Rupiah, Ringgit Malaysia, dan US Dollar dengan kurs yang bisa Anda atur.','Rupiah, Malaysian Ringgit, and US Dollar with exchange rates you control.']],
-['👥',['Tim dan peran','Team and roles'],['Undang anggota sebagai owner, editor, atau viewer, dan kelola akses kapan saja.','Invite members as owner, editor, or viewer, and manage access any time.']],
-['🔁',['Otomatisasi','Automation'],['Jurnal berulang seperti sewa atau gaji tercatat sendiri saat jatuh tempo.','Recurring entries such as rent or payroll post themselves when due.']],
-['🏦',['Rekonsiliasi bank','Bank reconciliation'],['Cocokkan mutasi bank dengan catatan kas untuk menemukan selisih.','Match bank lines with your cash records to find differences.']],
-['🔒',['Aman','Secure'],['Login Google atau email terverifikasi, akses per pengguna, dan rantai audit untuk setiap jurnal.','Google or verified email sign-in, per-user access, and an audit chain for every entry.']]];
+const FEATS=[['✍️',['Jurnal dan buku besar','Journal and ledger','Jurnal dan lejar'],['Jurnal multi-baris yang tidak bisa diubah, koreksi lewat jurnal balik, dan buku besar per akun.','Multi-line immutable journal, corrections by reversal, and a ledger per account.','Jurnal berbilang baris yang tidak boleh diubah, pembetulan melalui jurnal songsang, dan lejar bagi setiap akaun.']],
+['🧾',['Faktur profesional','Professional invoices','Invois profesional'],['Banyak item, pajak, nomor otomatis, logo usaha, dan cetak atau simpan sebagai PDF.','Multiple items, tax, automatic numbering, your logo, and print or save as PDF.','Berbilang item, cukai, nombor automatik, logo perniagaan, serta cetak atau simpan sebagai PDF.']],
+['📊',['Laporan lengkap','Complete reports','Laporan lengkap'],['Neraca saldo, laba rugi, posisi keuangan, dan arus kas, bisa dicetak atau diekspor.','Trial balance, income statement, balance sheet, and cash flow, printable and exportable.','Kunci kira-kira percubaan, untung rugi, kedudukan kewangan dan aliran tunai, boleh dicetak atau dieksport.']],
+['💱',['Multi mata uang','Multi-currency','Berbilang mata wang'],['Rupiah, Ringgit Malaysia, dan US Dollar dengan kurs yang bisa Anda atur.','Rupiah, Malaysian Ringgit, and US Dollar with exchange rates you control.','Rupiah, Ringgit Malaysia dan Dolar AS dengan kadar tukaran yang anda tetapkan.']],
+['👥',['Tim dan peran','Team and roles','Pasukan dan peranan'],['Undang anggota sebagai owner, editor, atau viewer, dan kelola akses kapan saja.','Invite members as owner, editor, or viewer, and manage access any time.','Jemput ahli sebagai owner, editor atau viewer, dan urus akses pada bila-bila masa.']],
+['🔁',['Otomatisasi','Automation','Automasi'],['Jurnal berulang seperti sewa atau gaji tercatat sendiri saat jatuh tempo.','Recurring entries such as rent or payroll post themselves when due.','Jurnal berulang seperti sewa atau gaji dicatat sendiri apabila tiba tempoh.']],
+['🏦',['Rekonsiliasi bank','Bank reconciliation','Penyesuaian bank'],['Cocokkan mutasi bank dengan catatan kas untuk menemukan selisih.','Match bank lines with your cash records to find differences.','Padankan penyata bank dengan rekod tunai untuk mencari perbezaan.']],
+['🔒',['Aman','Secure','Selamat'],['Login Google atau email terverifikasi, akses per pengguna, dan rantai audit untuk setiap jurnal.','Google or verified email sign-in, per-user access, and an audit chain for every entry.','Log masuk Google atau e-mel disahkan, akses bagi setiap pengguna, dan rantaian audit untuk setiap jurnal.']]];
 /* UBAH HARGA DAN FITUR PAKET DI SINI */
-const PLANS=[{n:'Gratis',p:'Rp 0',per:['selamanya','forever'],f:[['1 buku usaha, 1 anggota','1 business book, 1 member'],['Hingga 50 transaksi per bulan','Up to 50 entries per month'],['Jurnal, buku besar, dan laporan','Journal, ledger, and reports'],['3 mata uang','3 currencies'],['Cetak faktur','Invoice printing']]},
-{n:'Pro',p:'Rp 49.000',per:['per bulan','per month'],hot:1,soon:1,f:[['Semua fitur Gratis','Everything in Free'],['Hingga 3 anggota (owner, editor, viewer)','Up to 3 members (owner, editor, viewer)'],['Transaksi tanpa batas','Unlimited entries'],['Percobaan gratis 14 hari','14-day free trial'],['Rekonsiliasi dan jurnal berulang','Reconciliation and recurring entries'],['Dukungan prioritas','Priority support']]},
-{n:'Bisnis',p:'Rp 99.000',per:['per bulan','per month'],soon:1,f:[['Semua fitur Pro','Everything in Pro'],['Beberapa buku usaha','Multiple business books'],['Hingga 10 anggota tim','Up to 10 team members'],['Ekspor lanjutan','Advanced export']]}];
-const FAQ=[[['Apakah data saya aman?','Is my data safe?'],['Login memakai Google atau email terverifikasi, data tersimpan di server dengan aturan akses per pengguna, dan setiap jurnal tercatat dalam rantai audit. Tidak ada sistem yang 100% aman, jadi simpan cadangan laporan penting.','Sign-in uses Google or verified email, data is stored on servers with per-user access rules, and every entry is recorded in an audit chain. No system is 100% secure, so keep backups of important reports.']],
-[['Apakah ini pengganti akuntan?','Does this replace an accountant?'],['Tidak. Zui Akuntansi membantu pencatatan dan laporan. Untuk pajak dan keputusan akuntansi penting, konsultasikan dengan profesional.','No. Zui Akuntansi helps with record-keeping and reports. For tax and major accounting decisions, consult a professional.']],
-[['Bagaimana cara berhenti berlangganan?','How do I cancel?'],['Anda bisa berhenti kapan saja. Akses berbayar tetap berlaku sampai akhir periode yang sudah dibayar. Rinciannya ada di Syarat Layanan.','You can cancel any time. Paid access stays until the end of the period already paid. Details are in the Terms of Service.']],
-[['Mata uang apa yang didukung?','Which currencies are supported?'],['Rupiah (Rp), Ringgit Malaysia (RM), dan US Dollar (US$). Kurs diatur secara manual.','Rupiah (Rp), Malaysian Ringgit (RM), and US Dollar (US$). Rates are set manually.']]];
+const PLANS=[{n:'Gratis',p:'Rp 0',per:['selamanya','forever','selama-lamanya'],f:[['1 buku usaha, 1 anggota','1 business book, 1 member','1 buku perniagaan, 1 ahli'],['Hingga 50 transaksi per bulan','Up to 50 entries per month','Sehingga 50 transaksi sebulan'],['Jurnal, buku besar, dan laporan','Journal, ledger, and reports','Jurnal, lejar dan laporan'],['3 mata uang','3 currencies','3 mata wang'],['Cetak faktur','Invoice printing','Cetak invois']]},
+{n:'Pro',p:'Rp 49.000',per:['per bulan','per month','sebulan'],hot:1,soon:1,f:[['Semua fitur Gratis','Everything in Free','Semua ciri Percuma'],['Hingga 3 anggota (owner, editor, viewer)','Up to 3 members (owner, editor, viewer)','Sehingga 3 ahli (owner, editor, viewer)'],['Transaksi tanpa batas','Unlimited entries','Transaksi tanpa had'],['Percobaan gratis 14 hari','14-day free trial','Percubaan percuma 14 hari'],['Rekonsiliasi dan jurnal berulang','Reconciliation and recurring entries','Penyesuaian dan jurnal berulang'],['Dukungan prioritas','Priority support','Sokongan keutamaan']]},
+{n:'Bisnis',p:'Rp 99.000',per:['per bulan','per month','sebulan'],soon:1,f:[['Semua fitur Pro','Everything in Pro','Semua ciri Pro'],['Beberapa buku usaha','Multiple business books','Berbilang buku perniagaan'],['Hingga 10 anggota tim','Up to 10 team members','Sehingga 10 ahli pasukan'],['Ekspor lanjutan','Advanced export','Eksport lanjutan']]}];
+const FAQ=[[['Apakah data saya aman?','Is my data safe?','Adakah data saya selamat?'],['Login memakai Google atau email terverifikasi, data tersimpan di server dengan aturan akses per pengguna, dan setiap jurnal tercatat dalam rantai audit. Tidak ada sistem yang 100% aman, jadi simpan cadangan laporan penting.','Sign-in uses Google or verified email, data is stored on servers with per-user access rules, and every entry is recorded in an audit chain. No system is 100% secure, so keep backups of important reports.','Log masuk menggunakan Google atau e-mel yang disahkan, data disimpan di pelayan dengan peraturan akses bagi setiap pengguna, dan setiap jurnal direkodkan dalam rantaian audit. Tiada sistem yang 100% selamat, jadi simpan sandaran laporan penting.']],
+[['Apakah ini pengganti akuntan?','Does this replace an accountant?','Adakah ini menggantikan akauntan?'],['Tidak. Zui Akuntansi membantu pencatatan dan laporan. Untuk pajak dan keputusan akuntansi penting, konsultasikan dengan profesional.','No. Zui Akuntansi helps with record-keeping and reports. For tax and major accounting decisions, consult a professional.','Tidak. Zui Akuntansi membantu pencatatan dan laporan. Untuk cukai dan keputusan perakaunan penting, rujuk profesional.']],
+[['Bagaimana cara berhenti berlangganan?','How do I cancel?','Bagaimana untuk berhenti melanggan?'],['Anda bisa berhenti kapan saja. Akses berbayar tetap berlaku sampai akhir periode yang sudah dibayar. Rinciannya ada di Syarat Layanan.','You can cancel any time. Paid access stays until the end of the period already paid. Details are in the Terms of Service.','Anda boleh berhenti pada bila-bila masa. Akses berbayar kekal sehingga akhir tempoh yang telah dibayar. Butiran ada dalam Terma Perkhidmatan.']],
+[['Mata uang apa yang didukung?','Which currencies are supported?','Mata wang apa yang disokong?'],['Rupiah (Rp), Ringgit Malaysia (RM), dan US Dollar (US$). Kurs diatur secara manual.','Rupiah (Rp), Malaysian Ringgit (RM), and US Dollar (US$). Rates are set manually.','Rupiah (Rp), Ringgit Malaysia (RM) dan Dolar AS (US$). Kadar ditetapkan secara manual.']]];
 function landing(sel){const go='onclick="view=\'auth\';draw()"';
-$('#app').innerHTML=`<div class="lnav"><h1 style="display:flex;gap:8px;align-items:center;margin:0;font-size:20px">${LOGO} Zui Akuntansi</h1><div class="row" style="align-items:center">${sel}<button class="b g" ${go}>${t('signin')}</button><button class="b" ${go}>${t('l_cta')}</button></div></div>
+$('#app').innerHTML=`<div class="lnav"><h1 class="brand" style="margin:0;font-size:20px">Zui Akuntansi</h1><div class="row" style="align-items:center">${sel}<button class="b g" ${go}>${t('signin')}</button><button class="b" ${go}>${t('l_cta')}</button></div></div>
 <section class="hero"><span class="badge">${t('l_badge')}</span><h1>${t('l_h')}</h1><p>${t('l_p')}</p><button class="b" style="padding:14px 26px;font-size:17px" ${go}>${t('l_cta')}</button></section>
 <section class="sec"><h2>${t('l_f')}</h2><div class="fg">${FEATS.map(x=>`<div class="card"><div class="fi">${x[0]}</div><h3>${L2(x[1])}</h3><p class="mut">${L2(x[2])}</p></div>`).join('')}</div><p class="mut" style="text-align:center;font-size:13px;margin-top:12px">${t('l_lang')}</p></section>
 <section class="sec"><h2>${t('l_pl')}</h2><div class="plans">${PLANS.map(p=>`<div class="card plan ${p.hot?'hot':''}">${p.hot?`<span class="badge" style="align-self:flex-start">${t('l_pop')}</span>`:''}<h3 style="margin:0">${p.n}</h3><div class="price">${p.p}</div><small>${L2(p.per)}</small><ul>${p.f.map(x=>`<li>${L2(x)}</li>`).join('')}</ul><button class="b ${p.hot?'':'g'}" ${go}>${t('l_cta')}</button>${p.soon?`<small style="margin-top:6px">${t('l_soon')}</small>`:''}</div>`).join('')}</div></section>
@@ -357,7 +477,7 @@ const PRIV=[['1. Data yang kami kumpulkan','Data akun (email, nama, foto profil 
 function legal(){const T=view==='terms',D=T?TERMS:PRIV;
 $('#app').innerHTML=`<div class="legal"><button class="b g" onclick="view=vb;draw()">← ${t('back')}</button><h1 style="margin-top:14px">${T?t('terms'):t('privacy')}</h1><p class="mut">${t('eff')} 7 Oktober 2026${LEGAL_DRAFT?' · <b>Draf, belum ditinjau ahli hukum.</b>':''}</p>${D.map(([h,p])=>`<h3>${esc(h)}</h3><p>${esc(p.replace(/\{O\}/g,OWNER).replace(/\{K\}/g,KONTAK))}</p>`).join('')}</div>`}
 let cs0=0;
-const bhsTab=()=>`<div class="card"><h3>${t('c_bhs')}</h3><div class="row">${['Indonesia','English','中文','العربية'].map((x,k)=>`<button class="b ${li===k?'':'g'}" onclick="setLang(${k})">${x}</button>`).join('')}</div><p class="mut" style="font-size:13px">${t('l_lang')}</p></div>`;
+const bhsTab=()=>`<div class="card"><h3>${t('c_bhs')}</h3><div class="row">${['Indonesia','English','Bahasa Melayu'].map((x,k)=>`<button class="b ${li===k?'':'g'}" onclick="setLang(${k})">${x}</button>`).join('')}</div><p class="mut" style="font-size:13px">${t('l_lang')}</p></div>`;
 const curTab=()=>`<div class="card"><h3>${t('c_mc')}</h3><div class="row"><label>${t('disp')}<select onchange="setDisp(this.value)">${opt(curs(),disp)}</select></label></div></div>${RATES()}`;
 const RATES=()=>`<div class="card"><h3>${t('rate')}</h3><div class="row">${Object.keys(st.rates).filter(c=>c!=='IDR').map(c=>`<label>${c}<input type="number" min="0" step="any" value="${st.rates[c]}" style="width:110px" onchange="setRate('${c}',this.value)"></label>`).join('')}</div></div>`;
 const outTab=()=>`<div class="card"><h3>${t('c_out')}</h3><p class="mut">${me.email?esc(me.email):''}</p><div class="row"><button class="b" onclick="lockNow()">${t('c_out')}</button></div></div>`;
@@ -428,8 +548,8 @@ async function setRate(c,v){v=parseFloat(v);if(v>0){st.rates[c]=v;await save()}}
 async function verify(){let prev='0';for(const e of st.entries){const h=await sha(prev+JSON.stringify([e.id,e.date,e.desc,e.cur,e.rate,e.lines]));if(e.prev!==prev||e.hash!==h){$('#vr').innerHTML=`<span class="bad">${t('tamp')}${e.id}</span>`;return}prev=e.hash}
 $('#vr').innerHTML=`<span class="ok">${t('good')} ${st.entries.length}</span>`}
 async function wipe(){if(confirm('?')){st=seed();await save();draw()}}
-function draw(){applyTh();document.body.classList.remove('fx');$('#app').className='wrap';document.documentElement.lang=L[li];document.documentElement.dir=li===3?'rtl':'ltr';
-const sel=`<select aria-label="language" onchange="setLang(+this.value)">${[['0','Indonesia'],['1','English'],['2','中文'],['3','العربية']].map(([v,l])=>`<option value="${v}"${+v===li?' selected':''}>${l}</option>`).join('')}</select>`;
+function draw(){applyTh();document.body.classList.remove('fx');$('#app').className='wrap';document.documentElement.lang=L[li];document.documentElement.dir='ltr';
+const sel=`<select aria-label="language" onchange="setLang(+this.value)">${[['0','Indonesia'],['1','English'],['2','Bahasa Melayu']].map(([v,l])=>`<option value="${v}"${+v===li?' selected':''}>${l}</option>`).join('')}</select>`;
 if(view==='terms'||view==='privacy'){legal();return}
 if(!st&&view==='land'&&!rec&&!msg){landing(sel);return}
 if(!st){const bt=(m,l,c='')=>`<button class="b ${c}" onclick="authGo('${m}')">${t(l)}</button>`;
@@ -439,9 +559,9 @@ $('#app').innerHTML=`<div class="card" id="lock"><h1>Zui Akuntansi</h1><p class=
 const v={dash:dashboard,rep:report,gl:ledgerTab,jrn:journal,inv:invoices,bank:bank,aut:auto,cfg:cfg}[tab]();
 document.querySelectorAll('.pan').forEach(e=>PSV[e.dataset.k]=e.scrollTop);const fn=FN();stale=new Set(TABS.filter(k=>k!==tab));
 $('#app').className='wrap appv';document.body.classList.add('fx');
-$('#app').innerHTML=`<header><div class="top"><span class="app">${LOGO}Zui Akuntansi</span><div class="row" style="align-items:center">${meChip()}${wsSel()}</div></div><div class="pivot" role="tablist"><div class="pvi">${TABS.map(k=>`<button role="tab" aria-selected="${k===tab}" class="${k===tab?'on':''}" onclick="go('${k}')">${t(k)}</button>`).join('')}</div></div></header><div class="track" tabindex="-1">${TABS.map(k=>`<section class="pan" data-k="${k}" role="tabpanel"><div class="pin">${k===tab?fn[k]():''}</div></section>`).join('')}</div><button class="fab${tab==='cfg'?' hide':''}" onclick="newEntry()">+ ${t('fab')}</button>`;
+$('#app').innerHTML=`<header><div class="top"><span class="app">Zui Akuntansi</span><div class="row" style="align-items:center">${meChip()}${wsSel()}</div></div><div class="pivot" role="tablist"><div class="pvi">${TABS.map(k=>`<button role="tab" aria-selected="${k===tab}" class="${k===tab?'on':''}" onclick="go('${k}')">${t(k)}</button>`).join('')}</div></div></header><div class="track" tabindex="-1">${TABS.map(k=>`<section class="pan" data-k="${k}" role="tabpanel"><div class="pin">${k===tab?fn[k]():''}</div></section>`).join('')}</div><button class="fab${tab==='cfg'?' hide':''}" onclick="newEntry()">+ ${t('fab')}</button>`;
 const T=trk(),ix=TABS.indexOf(tab);document.querySelectorAll('.pan').forEach(e=>e.scrollTop=PSV[e.dataset.k]||0);
-measure();T.style.scrollBehavior='auto';T.scrollLeft=ix*T.clientWidth*(li===3?-1:1);pIdx=ix;T.style.scrollBehavior='';T.onscroll=onTrack;onTrack();idleFill();{const on=$('.pvi .on');if(on)on.scrollIntoView({inline:'nearest',block:'nearest'})}
+measure();T.style.scrollBehavior='auto';T.scrollLeft=ix*T.clientWidth*1;pIdx=ix;T.style.scrollBehavior='';T.onscroll=onTrack;onTrack();idleFill();{const on=$('.pvi .on');if(on)on.scrollIntoView({inline:'nearest',block:'nearest'})}
 if(tab==='cfg'&&cs==='team')teamLoad()}
 window.__boot=boot;
 </script>
