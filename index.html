@@ -396,14 +396,14 @@ let mem=[];
 const wsSel=()=>mem.length>1?`<select aria-label="workspace" onchange="busy=false;load(this.value)">${mem.map(x=>`<option value="${esc(x.workspace_id)}"${x.workspace_id===ws?' selected':''}>${esc((x.workspaces&&x.workspaces.name)||'Buku')} (${esc(x.role)})</option>`).join('')}</select>`:'';
 function teamTab(){if(role!=='owner')return`<div class="card"><p>${t('onlyowner')} ${esc(role)}</p></div>`;const cur=mem.find(x=>x.workspace_id===ws);
 return`<div class="card"><h3>${t('team')}</h3><div class="row"><label>${t('ws')}<input id="wn" value="${esc((cur&&cur.workspaces&&cur.workspaces.name)||'')}"></label><button class="b g" onclick="renWs()">${t('save')}</button></div></div>
-<div class="card"><div class="row"><label>${t('email')}<input id="ie" type="email"></label><label>${t('role')}<select id="ir">${opt([['editor','editor'],['viewer','viewer']],'editor')}</select></label><button class="b" onclick="invite()">${t('invite')}</button></div><p class="mut">${t('inve')}</p><p class="bad" id="te"></p></div><div class="card sc" id="tm"></div>`}
+<div class="card"><div class="row"><label>${t('email')}<input id="ie" type="email"></label><label>${t('role')}<select id="ir">${opt([['editor','editor'],['viewer','viewer']],'editor')}</select></label><button class="b" onclick="invite()">${t('invite')}</button></div><p class="mut">${t('inve')}</p><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" ${mailAuto()?'checked':''} onchange="try{localStorage.setItem('lgm',this.checked?'1':'0')}catch(e){}"> ${t('mailauto')}</label><p class="mut" style="font-size:13px">${t('mailautoh')}</p><p class="bad" id="te"></p></div><div class="card sc" id="tm"></div>`}
 async function teamLoad(){if(role!=='owner'||!fdb)return;const el=$('#tm');if(!el)return;
 const [a,b]=await Promise.all([FS.getDoc(D('workspaces',ws)),FS.getDocs(FS.query(C('invites'),FS.where('workspaceId','==',ws)))]);if(!a.exists())return;
 const w=a.data(),rows=w.memberIds.map(u=>({user_id:u,email:(w.memberInfo[u]||{}).email||u,role:w.roles[u]})),inv=b.docs.map(d=>({id:d.id,...d.data()}));
 el.innerHTML='<table>'+rows.map(x=>`<tr><td>${esc(x.email)}</td><td>${esc(x.role)}</td><td>${x.role==='owner'?'':`<button class="b g" data-u="${esc(x.user_id)}" onclick="rmMem(this.dataset.u)">${t('remove')}</button>`}</td></tr>`).join('')+inv.map(x=>`<tr><td>${esc(x.email)}</td><td>${esc(x.role)} · ${t('pending')}</td><td><button class="b g" data-e="${esc(x.email)}" data-r="${esc(x.role)}" onclick="sendInv(this.dataset.e,this.dataset.r)">✉</button> <button class="b g" data-i="${esc(x.id)}" onclick="delInv(this.dataset.i)">${t('remove')}</button></td></tr>`).join('')+'</table>'}
 async function invite(){const e=$('#ie').value.trim().toLowerCase(),m=$('#te');m.textContent='';if(!/^[^@\s/]+@[^@\s/]+\.[^@\s/]+$/.test(e)){m.textContent=t('bademail');return}
 const cur=mem.find(x=>x.workspace_id===ws);
-try{await FS.setDoc(D('invites',ws+'__'+e),{workspaceId:ws,email:e,role:$('#ir').value,wsName:(cur&&cur.workspaces.name)||'',by:me.id})}catch(x){m.textContent=x.code==='permission-denied'?t('limMem'):aerr(x);return}$('#ie').value='';teamLoad();sendInv(e,$('#ir').value)}
+try{await FS.setDoc(D('invites',ws+'__'+e),{workspaceId:ws,email:e,role:$('#ir').value,wsName:(cur&&cur.workspaces.name)||'',by:me.id})}catch(x){m.textContent=x.code==='permission-denied'?t('limMem'):aerr(x);return}$('#ie').value='';teamLoad();inviteOut(e,$('#ir').value)}
 function sendInv(e,r){const cur=mem.find(x=>x.workspace_id===ws),u=encodeURIComponent,url=location.origin+location.pathname;location.href='mailto:'+e+'?subject='+u(t('mailsub')+' '+((cur&&cur.workspaces.name)||'Zui Finance'))+'&body='+u(t('mailbody')+'\n\n'+url+'\n'+e+' ('+r+')')}
 async function delInv(id){try{await FS.deleteDoc(D('invites',id))}catch(e){}teamLoad()}
 async function rmMem(u){try{await FS.updateDoc(D('workspaces',ws),{memberIds:FS.arrayRemove(u),['roles.'+u]:FS.deleteField(),['memberInfo.'+u]:FS.deleteField()})}catch(e){toast(aerr(e))}teamLoad()}
@@ -423,6 +423,18 @@ cyn:["jurnal","entries","jurnal"],
 cyask:["Tutup buku sampai tahun","Close books up to year","Tutup buku sehingga tahun"],
 arcok:["Arsip utuh, CSV diunduh","Archive intact, CSV downloaded","Arkib utuh, CSV dimuat turun"],
 arcbad:["Arsip tidak cocok dengan catatan!","Archive does not match the record!","Arkib tidak sepadan dengan rekod!"]});
+Object.assign(S,{
+mailauto:["Kirim email undangan otomatis (butuh ekstensi Trigger Email)","Send invite emails automatically (needs Trigger Email extension)","Hantar e-mel jemputan secara automatik (perlu sambungan Trigger Email)"],
+mailautoh:["Jika mati, aplikasi email Anda akan terbuka berisi undangan.","If off, your email app opens with the invitation.","Jika dimatikan, aplikasi e-mel anda akan dibuka dengan jemputan."],
+mailsent:["Undangan dikirim ke email","Invitation emailed","Jemputan dihantar ke e-mel"],
+mailfail:["Email otomatis gagal; membuka aplikasi email.","Automatic email failed; opening your email app.","E-mel automatik gagal; membuka aplikasi e-mel."],
+rcchk:["Cek: tanggal berbeda","Check: different date","Semak: tarikh berbeza"],
+rcrec:["Catat","Record","Catat"],
+rcbank:["Total mutasi bank","Bank total","Jumlah penyata bank"],
+rcjrn:["Total jurnal kas","Cash journal total","Jumlah jurnal tunai"],
+rcjo:["Ada di jurnal, belum di mutasi bank","In journal, not in bank lines","Ada dalam jurnal, belum dalam penyata bank"],
+wipeask:["Hapus semua jurnal, faktur, dan pengaturan buku ini? Arsip tutup buku tahun lalu tidak ikut terhapus. Tindakan ini tidak bisa dibatalkan.","Erase all entries, invoices and settings of this book? Year-end archives are not deleted. This cannot be undone.","Padam semua jurnal, invois dan tetapan buku ini? Arkib tutup buku tahun lepas tidak dipadam. Tindakan ini tidak boleh dibatalkan."],
+bankh:["Tempel mutasi bank, satu baris per transaksi: tanggal;keterangan;jumlah (masuk +, keluar −). Pemisah boleh ; tab atau koma. Format 1.500.000 atau 1,500,000.50 dikenali. Tanggal boleh 2026-10-05 atau 05/10/2026.","Paste bank lines, one per transaction: date;description;amount (in +, out −). Separator can be ; tab or comma. 1.500.000 or 1,500,000.50 are recognised. Dates may be 2026-10-05 or 05/10/2026.","Tampal penyata bank, satu baris setiap transaksi: tarikh;keterangan;jumlah (masuk +, keluar −). Pemisah boleh ; tab atau koma. Format 1.500.000 atau 1,500,000.50 dikenali. Tarikh boleh 2026-10-05 atau 05/10/2026."]});
 const VER='Zui Finance versi 26.01 · dikelola Zui System PT. Zaor Utama Indonesia';
 const hdrLogo=()=>st&&st.logo&&st.logo.startsWith('data:image/')?`<img src="${esc(st.logo)}" alt="">`:'';
 let dip=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e;if(st&&tab==='cfg')draw()});
@@ -459,7 +471,7 @@ $('#pv').innerHTML=`<div style="padding:24px;max-width:800px;margin:auto"><div s
 const qq=x=>{x=String(x);if(/^[=+\-@]/.test(x))x="'"+x;return'"'+x.replace(/"/g,'""')+'"'};
 function exportTB(){const b=bals(),rows=[['code','name','debit','credit']];st.accts.forEach(a=>{const v=conv(b[a.c],'IDR',disp);rows.push([a.c,nm(a),v>0?v.toFixed(2):'',v<0?(-v).toFixed(2):''])});
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(qq).join(',')).join('\n')],{type:'text/csv'}));a.download='neraca-saldo-'+disp+'.csv';a.click()}
-const KONTAK='[isi email kontak]',OWNER='[isi nama pemilik/usaha]',LEGAL_DRAFT=true;
+const KONTAK='[isi email kontak]',OWNER='Zui System (PT. Zaor Utama Indonesia)',LEGAL_DRAFT=true;
 const L2=a=>a[li]??a[1];
 const LOGO='<svg width="30" height="30" viewBox="0 0 30 30"><rect width="30" height="30" rx="0" fill="var(--ac)"/><path d="M9 9h12L9 21h12" stroke="var(--onac)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const FEATS=[['✍️',['Jurnal dan buku besar','Journal and ledger','Jurnal dan lejar'],['Jurnal multi-baris yang tidak bisa diubah, koreksi lewat jurnal balik, dan buku besar per akun.','Multi-line immutable journal, corrections by reversal, and a ledger per account.','Jurnal berbilang baris yang tidak boleh diubah, pembetulan melalui jurnal songsang, dan lejar bagi setiap akaun.']],
@@ -509,8 +521,35 @@ const PRIV=[['1. Data yang kami kumpulkan','Data akun (email, nama, foto profil 
 ['9. Anak-anak','Layanan ditujukan untuk pengguna dewasa dan pelaku usaha, bukan untuk anak di bawah umur.'],
 ['10. Transfer data lintas negara','Data dapat diproses di server di luar negeri, termasuk Singapura, dan oleh penyedia layanan di negara lain.'],
 ['11. Perubahan dan kontak','Kebijakan ini dapat diperbarui, dan tanggal berlaku akan diubah. Pertanyaan dapat dikirim ke {K}.']];
+TERMS.length=0;TERMS.push(
+['1. Penerimaan Syarat','Dengan membuat akun atau memakai Zui Finance (“Layanan”), Anda menyetujui Syarat Layanan ini. Layanan dikelola oleh {O} (“Kami”). Jika tidak setuju, mohon jangan gunakan Layanan.'],
+['2. Tentang Layanan','Zui Finance adalah alat bantu pencatatan keuangan untuk usaha kecil dan menengah: jurnal, buku besar, faktur, laporan, rekonsiliasi, dan tutup buku tahunan. Layanan bukan nasihat akuntansi, pajak, hukum, atau investasi. Anda bertanggung jawab atas ketepatan data, perhitungan, laporan pajak, dan kepatuhan hukum usaha Anda. Untuk keputusan penting, konsultasikan dengan akuntan atau konsultan pajak.'],
+['3. Akun dan keamanan','Anda harus berusia dewasa menurut hukum yang berlaku atau mewakili usaha yang sah. Anda wajib memberi data yang benar, menjaga kerahasiaan kata sandi, dan bertanggung jawab atas semua aktivitas di akun dan buku Anda, termasuk oleh anggota tim yang Anda undang. Segera hubungi Kami jika akun disalahgunakan.'],
+['4. Data Anda','Data pembukuan tetap milik Anda. Anda memberi Kami izin terbatas untuk menyimpan, memproses, dan menampilkan data itu hanya untuk menjalankan, mengamankan, dan memperbaiki Layanan. Anda dapat mengekspor data (termasuk arsip tutup buku) dan meminta penghapusan akun.'],
+['5. Jurnal, arsip, dan tutup buku','Jurnal tidak dapat diubah; koreksi dilakukan dengan jurnal balik. Fitur tutup buku memindahkan jurnal tahun lalu ke arsip yang tidak dapat diubah dan membuat jurnal saldo awal tahun berikutnya. Tutup buku tidak dapat dibatalkan dari aplikasi, jadi periksa laporan sebelum menutup.'],
+['6. Paket dan pembayaran','Layanan menyediakan paket gratis dan berbayar, termasuk masa percobaan Pro 14 hari untuk buku baru. Harga, batas fitur, dan periode tagihan ditampilkan sebelum Anda membayar. Setelah pembayaran tersedia, langganan diperpanjang otomatis sesuai periodenya sampai dibatalkan. Pajak yang berlaku dapat ditambahkan. Pembayaran diproses penyedia pembayaran pihak ketiga. Jika batas paket terlampaui, Kami dapat menolak penambahan data atau anggota baru, tetapi data yang ada tetap dapat dilihat dan diekspor.'],
+['7. Pembatalan dan pengembalian dana','Anda dapat membatalkan kapan saja. Akses berbayar tetap berlaku sampai akhir periode yang sudah dibayar. Pembayaran yang sudah dilakukan pada dasarnya tidak dikembalikan, kecuali diwajibkan hukum atau disetujui Kami secara tertulis.'],
+['8. Penggunaan yang dilarang','Anda dilarang melanggar hukum, mencatat transaksi fiktif untuk menipu pihak lain, mengunggah kode berbahaya, mengganggu atau menguji keamanan Layanan tanpa izin, mengakses data pengguna lain, atau menjual kembali Layanan tanpa persetujuan tertulis Kami.'],
+['9. Ketersediaan dan perubahan','Kami berupaya menjaga Layanan tetap berjalan tetapi tidak menjamin bebas gangguan. Kami dapat mengubah fitur atau harga dengan pemberitahuan yang wajar. Perubahan harga berlaku pada periode tagihan berikutnya.'],
+['10. Batasan tanggung jawab','Sejauh diizinkan hukum, Layanan disediakan “apa adanya”. Kami tidak bertanggung jawab atas kerugian tidak langsung, hilangnya keuntungan, atau denda pajak akibat data atau penggunaan Anda. Total tanggung jawab Kami dibatasi sebesar biaya yang Anda bayar dalam 12 bulan terakhir. Simpan cadangan laporan penting Anda.'],
+['11. Penghentian','Kami dapat menangguhkan atau menutup akun yang melanggar Syarat ini, dengan pemberitahuan bila memungkinkan. Anda dapat berhenti memakai Layanan kapan saja dan mengekspor data sebelum akun ditutup.'],
+['12. Hukum yang berlaku dan sengketa','Syarat ini tunduk pada hukum Republik Indonesia. Sengketa diselesaikan lebih dulu secara musyawarah; jika tidak berhasil, melalui pengadilan yang berwenang di Indonesia. Pertanyaan dapat dikirim ke {K}.'],
+['13. Perubahan Syarat','Kami dapat memperbarui Syarat ini dan mengubah tanggal berlaku. Penggunaan Layanan setelah perubahan berarti Anda menerima Syarat yang baru.']);
+PRIV.length=0;PRIV.push(
+['1. Pengendali data','Layanan dikelola oleh {O}, yang bertindak sebagai pengendali data pribadi atas data akun Anda. Untuk data pembukuan yang Anda masukkan, Anda menentukan isi dan tujuannya, dan Kami memprosesnya atas nama Anda untuk menjalankan Layanan.'],
+['2. Data yang kami kumpulkan','Data akun (email, nama tampilan, dan foto profil jika disediakan Google), data pembukuan yang Anda masukkan (jurnal, faktur, nama pelanggan, profil usaha, logo), data tim (email anggota dan peran), preferensi (bahasa, mata uang, tema), serta data teknis dasar seperti alamat IP dan jenis perangkat yang dicatat penyedia infrastruktur.'],
+['3. Tujuan dan dasar pemrosesan','Untuk menyediakan Layanan, mengautentikasi Anda, mengirim email verifikasi dan undangan tim, menjaga keamanan, memberi dukungan, dan memperbaiki Layanan. Dasarnya adalah persetujuan Anda dan pelaksanaan perjanjian layanan. Kami tidak menjual data pribadi Anda dan tidak memakainya untuk iklan.'],
+['4. Pihak ketiga','Kami memakai Google Firebase (database, autentikasi, dan hosting), Google (login), penyedia pengiriman email untuk verifikasi dan undangan, Google Fonts untuk tampilan, dan penyedia pembayaran saat fitur berbayar tersedia. Pihak-pihak tersebut memproses data sesuai kebijakan dan perjanjian masing-masing.'],
+['5. Penyimpanan di perangkat','Aplikasi menyimpan preferensi (bahasa, mata uang, tema) dan berkas aplikasi untuk penggunaan offline terbatas di browser Anda. Kami tidak memakai pelacak iklan pihak ketiga.'],
+['6. Keamanan','Koneksi memakai HTTPS, akses data dibatasi per pengguna dengan aturan di tingkat database, dan jurnal dicatat dalam rantai audit. Tidak ada sistem yang sepenuhnya aman. Jika terjadi kegagalan perlindungan data pribadi yang berdampak pada Anda, Kami akan memberi tahu Anda dan pihak berwenang sesuai peraturan yang berlaku.'],
+['7. Penyimpanan dan penghapusan','Data disimpan selama akun aktif atau selama diperlukan untuk menjalankan Layanan dan memenuhi kewajiban hukum. Anda dapat meminta penghapusan akun dan data. Salinan cadangan dapat bertahan sementara sesuai kebijakan penyedia infrastruktur.'],
+['8. Berbagi dalam tim','Anggota tim yang Anda undang dapat melihat data buku sesuai perannya (owner, editor, viewer). Owner dapat mengelola dan mencabut akses anggota.'],
+['9. Hak Anda','Sesuai Undang-Undang Pelindungan Data Pribadi (UU No. 27 Tahun 2022) dan peraturan terkait, Anda berhak meminta akses, koreksi, ekspor, atau penghapusan data, membatasi pemrosesan, serta menarik persetujuan. Hubungi {K}; Kami akan menanggapi dalam waktu yang wajar.'],
+['10. Anak-anak','Layanan ditujukan untuk pengguna dewasa dan pelaku usaha, bukan untuk anak di bawah umur.'],
+['11. Transfer data lintas negara','Data dapat diproses di server di luar Indonesia, termasuk Singapura, dan oleh penyedia layanan di negara lain, dengan perlindungan yang setara sesuai peraturan yang berlaku.'],
+['12. Perubahan dan kontak','Kebijakan ini dapat diperbarui, dan tanggal berlaku akan diubah. Pertanyaan dapat dikirim ke {K}.']);
 function legal(){const T=view==='terms',D=T?TERMS:PRIV;
-$('#app').innerHTML=`<div class="legal"><button class="b g" onclick="view=vb;draw()">← ${t('back')}</button><h1 style="margin-top:14px">${T?t('terms'):t('privacy')}</h1><p class="mut">${t('eff')} 7 Oktober 2026${LEGAL_DRAFT?' · <b>Draf, belum ditinjau ahli hukum.</b>':''}</p>${D.map(([h,p])=>`<h3>${esc(h)}</h3><p>${esc(p.replace(/\{O\}/g,OWNER).replace(/\{K\}/g,KONTAK))}</p>`).join('')}</div>`}
+$('#app').innerHTML=`<div class="legal"><button class="b g" onclick="view=vb;draw()">← ${t('back')}</button><h1 style="margin-top:14px">${T?t('terms'):t('privacy')}</h1><p class="mut">${t('eff')} 19 Oktober 2026${LEGAL_DRAFT?' · <b>Draf, belum ditinjau ahli hukum.</b>':''}</p>${D.map(([h,p])=>`<h3>${esc(h)}</h3><p>${esc(p.replace(/\{O\}/g,OWNER).replace(/\{K\}/g,KONTAK))}</p>`).join('')}</div>`}
 let cs0=0;
 const bhsTab=()=>`<div class="card"><h3>${t('c_bhs')}</h3><div class="row">${['Indonesia','English','Bahasa Melayu'].map((x,k)=>`<button class="b ${li===k?'':'g'}" onclick="setLang(${k})">${x}</button>`).join('')}</div><p class="mut" style="font-size:13px">${t('l_lang')}</p></div>`;
 const curTab=()=>`<div class="card"><h3>${t('c_mc')}</h3><div class="row"><label>${t('disp')}<select onchange="setDisp(this.value)">${opt(curs(),disp)}</select></label></div></div>${RATES()}`;
@@ -616,6 +655,32 @@ for(let i=1;i<=c.parts;i++){const s=await FS.getDoc(D('workspaces',ws,'ledgers',
 const ok=(await sha(js.join('')))===c.h,rows=[['id','date','desc','currency','rate','account','debit','credit']];
 js.forEach(j=>JSON.parse(j).entries.forEach(e=>e.lines.forEach(l=>rows.push([e.id,e.date,e.desc,e.cur,e.rate,l.a,l.dr,l.cr]))));
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(qq).join(',')).join('\n')],{type:'text/csv'}));a.download='arsip-'+y+'.csv';a.click();toast(ok?t('arcok'):t('arcbad'))}
+
+const mailAuto=()=>{try{return localStorage.getItem('lgm')==='1'}catch(e){return false}};
+async function inviteOut(e,r){if(!mailAuto()){sendInv(e,r);return}
+const cur=mem.find(x=>x.workspace_id===ws);
+try{await FS.addDoc(C('mail'),{to:e,wsId:ws,template:{name:'undangan',data:{wsName:((cur&&cur.workspaces.name)||'Zui Finance').slice(0,80),role:r,by:(dispName()||me.email||'').slice(0,80)}}});toast(t('mailsent'))}
+catch(x){toast(t('mailfail'));sendInv(e,r)}}
+const pAmt=s=>{s=String(s).trim();const neg=/^\(.*\)$/.test(s)||/^[-\u2212\u2013]/.test(s)||/-$/.test(s);s=s.replace(/[^\d.,]/g,'');if(!s)return NaN;const m=s.match(/^(.*)[.,](\d{1,2})$/),n=m?parseFloat(m[1].replace(/[.,]/g,'')+'.'+m[2]):parseFloat(s.replace(/[.,]/g,''));return neg?-n:n};
+const pDate=s=>{s=String(s).trim();let m=s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);if(m)return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');m=s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})$/);if(m)return(m[3].length===2?'20'+m[3]:m[3])+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');return''};
+const pLine=ln=>{const q=/[;\t]/.test(ln)?ln.split(/[;\t]/):ln.split(','),a=pAmt(q[q.length-1]),dt=pDate(q[0]);return{a,date:dt,d:(q.slice(dt?1:0,-1).join(', ').trim()||'-'),raw:ln}};
+let RC=[];
+function recon(){const cur=$('#bc').value,rows=$('#bt').value.split('\n').map(x=>x.trim()).filter(Boolean).map(pLine);RC=rows;
+const cands=st.entries.filter(e=>e.cur===cur).map(e=>({e,v:e.lines.filter(l=>l.a==='1100').reduce((s,l)=>s+l.dr-l.cr,0)})).filter(x=>x.v);
+const used=new Set(),dd=(a,b)=>Math.abs((Date.parse(a)-Date.parse(b))/864e5),wd=s=>new Set(String(s).toLowerCase().split(/\W+/).filter(w=>w.length>2));
+const find=(r,far)=>{let best=-1,bs=1e9;const wr=wd(r.d);cands.forEach((c,j)=>{if(used.has(j)||Math.abs(c.v-r.a)>=0.005)return;const gap=r.date?dd(r.date,c.e.date):0;if(far?gap<=5:gap>5)return;const wc=wd(c.e.desc),sc=gap*10-[...wr].filter(w=>wc.has(w)).length;if(sc<bs){bs=sc;best=j}});return best};
+rows.forEach((r,i)=>{r.i=i;r.st=isNaN(r.a)?'bad':'no'});
+rows.forEach(r=>{if(r.st!=='no')return;const j=find(r,false);if(j>=0){used.add(j);r.st='ok';r.j=cands[j]}});
+rows.forEach(r=>{if(r.st!=='no')return;const j=find(r,true);if(j>=0){used.add(j);r.st='chk';r.j=cands[j]}});
+const ds=rows.map(r=>r.date).filter(Boolean).sort(),lo=ds[0],hi=ds[ds.length-1],inw=c=>!lo||(c.e.date>=lo&&c.e.date<=hi);
+const left=cands.filter((c,j)=>!used.has(j)&&inw(c)),sumB=rows.reduce((s,r)=>s+(isNaN(r.a)?0:r.a),0),sumJ=cands.filter((c,j)=>used.has(j)||inw(c)).reduce((s,c)=>s+c.v,0);
+const n=k=>rows.filter(r=>r.st===k).length;
+const stc=r=>r.st==='ok'?`<td class="ok">${t('match')} #${r.j.e.id}</td>`:r.st==='chk'?`<td style="color:var(--brass)">${t('rcchk')} #${r.j.e.id}</td>`:r.st==='bad'?`<td class="bad">?</td>`:`<td class="bad">${t('unm')} <button class="b g" onclick="jFrom(${r.i})">${t('rcrec')}</button></td>`;
+$('#br').innerHTML=`<p><b>${n('ok')}</b> ${t('match')} · <b>${n('chk')}</b> ${t('rcchk')} · <b>${n('no')+n('bad')}</b> ${t('unm')}</p><p class="mut">${t('rcbank')}: ${fmt(sumB,cur)} · ${t('rcjrn')}: ${fmt(sumJ,cur)} · ${t('diff')}: ${fmt(sumB-sumJ,cur)}</p><table>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.d)}</td><td class="n">${isNaN(r.a)?'?':fmt(r.a,cur)}</td>${stc(r)}</tr>`).join('')}</table>`
++(left.length?`<h3 style="margin-top:16px">${t('rcjo')}</h3><table>${left.map(c=>`<tr><td>#${c.e.id}</td><td>${esc(c.e.date)}</td><td>${esc(c.e.desc)}</td><td class="n">${fmt(c.v,cur)}</td></tr>`).join('')}</table>`:'')}
+function jFrom(i){const r=RC[i];if(!r||isNaN(r.a))return;jadv=false;stale.add('jrn');ensure('jrn');go('jrn');const cu=($('#bc')||{}).value;
+setTimeout(()=>{const g=q=>document.querySelector('.pan[data-k=jrn] '+q);if(!g('#st'))return;const o=r.a>0?'in':'out';g('#st').value=o;jIo(o);g('#sa').value=Math.abs(r.a);g('#jt').value=r.d;if(r.date)g('#jd').value=r.date;if(cu&&g('#jc'))g('#jc').value=cu},450)}
+async function wipe(){if(role!=='owner'){toast(t('onlyowner')+' '+role);return}if(confirm(t('wipeask'))){st=seed();await save();draw()}}
 
 async function setRate(c,v){v=parseFloat(v);if(v>0){st.rates[c]=v;await save()}}
 async function verify(){let prev=st.chainBase||'0';for(const e of st.entries){const h=await sha(prev+JSON.stringify([e.id,e.date,e.desc,e.cur,e.rate,e.lines]));if(e.prev!==prev||e.hash!==h){$('#vr').innerHTML=`<span class="bad">${t('tamp')}${e.id}</span>`;return}prev=e.hash}
