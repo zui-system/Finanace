@@ -329,14 +329,14 @@ const [ls,bs]=await Promise.all([FS.getDoc(D('workspaces',ws,'ledgers','main')),
 if(!ls.exists())throw new Error('Data buku tidak ditemukan.');
 bill=bs.exists()?bs.data():null;const l=ls.data(),dj=JSON.parse(l.j||'{}');LM={n:l.n||0,mYm:l.mYm||0,mBase:l.mBase||0};
 const fresh=!Object.keys(dj).length;st=fresh?seed():dj;ver=l.version;st.invoices??=[];st.rules??=[];
-if(!st.accts.some(a=>a.c==='2200'))st.accts.push({c:'2200',y:'Li',n:''});
+if(!st.accts.some(a=>a.c==='2200'))st.accts.push({c:'2200',y:'Li',n:''});if(!st.accts.some(a=>a.c==='3200'))st.accts.push({c:'3200',y:'E',n:''});
 if(fresh)await save();await loadProfile();fixCur();await autorun();msg='';ping();draw()}catch(e){st=null;msg=aerr(e)||e.message;draw()}finally{busy=false}}
 const seed=()=>({rates:{IDR:1,MYR:3800,USD:16000},
 accts:[['1100','A'],['1200','A'],['2100','Li'],['2200','Li'],['3100','E'],['4100','R'],['5100','X'],['5200','X']].map(([c,y])=>({c,y,n:''})),entries:[],rules:[],invoices:[]});
 const nm=a=>S['a'+a.c]?t('a'+a.c):a.n;
 const today=()=>new Date().toISOString().slice(0,10);
 const addM=(d,m)=>{const x=new Date(d+'T00:00:00Z');x.setUTCMonth(x.getUTCMonth()+m);return x.toISOString().slice(0,10)};
-async function post(date,desc,cur,lines,auto){if(role==='viewer'){toast(t('ro'));throw new Error('ro')}const prev=st.entries.length?st.entries.at(-1).hash:'0';const e={id:st.entries.length+1,date,desc,cur,rate:st.rates[cur],lines,auto:!!auto,prev};e.hash=await sha(prev+JSON.stringify([e.id,date,desc,cur,e.rate,lines]));st.entries.push(e)}
+async function post(date,desc,cur,lines,auto){if(role==='viewer'){toast(t('ro'));throw new Error('ro')}const prev=st.entries.length?st.entries.at(-1).hash:(st.chainBase||'0');const e={id:Math.max(st.idBase||0,0,...st.entries.map(x=>x.id))+1,date,desc,cur,rate:st.rates[cur],lines,auto:!!auto,prev};e.hash=await sha(prev+JSON.stringify([e.id,date,desc,cur,e.rate,lines]));st.entries.push(e)}
 async function autorun(){let n=0;for(const r of st.rules){while(r.next<=today()&&n++<120){await post(r.next,r.desc,r.cur,[{a:r.d,dr:r.amt,cr:0},{a:r.c,dr:0,cr:r.amt}],true);r.next=addM(r.next,r.every)}}if(n)await save()}
 const cfgOk=()=>!!(FB_CFG.apiKey&&FB_CFG.projectId&&window.FB);
 async function boot(){try{const p=JSON.parse(localStorage.getItem('lgp')||'{}');if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<3)li=p.li;if(p.th)th=normTh(p.th)}catch(e){}
@@ -412,6 +412,17 @@ const IC={dash:'📊',rep:'📑',gl:'📚',jrn:'✍️',inv:'🧾',bank:'🏦',a
 function setTheme(k){th=k;savePref();draw()}
 const dispName=()=>prof.name||gm.full_name||gm.name||me.email||'';
 const avSrc=()=>prof.avatar||gm.avatar_url||gm.picture||'';
+Object.assign(S,{
+a3200:["Laba ditahan","Retained earnings","Untung terkumpul"],
+cytitle:["Tutup buku tahunan","Year-end closing","Tutup buku tahunan"],
+cyh:["Memindahkan jurnal tahun lalu ke arsip dan membawa saldo akun ke saldo awal tahun berikutnya. Laba tahun itu masuk ke Laba ditahan. Arsip tidak bisa diubah dan bisa diunduh sebagai CSV.","Moves last years' entries to the archive and carries account balances into next year's opening balance. That year's profit goes to Retained earnings. Archives are immutable and downloadable as CSV.","Memindahkan jurnal tahun lepas ke arkib dan membawa baki akaun ke baki awal tahun berikutnya. Untung tahun itu masuk ke Untung terkumpul. Arkib tidak boleh diubah dan boleh dimuat turun sebagai CSV."],
+cyyear:["Tutup sampai tahun","Close up to year","Tutup sehingga tahun"],
+cybtn:["Tutup buku","Close books","Tutup buku"],
+cynone:["Belum ada tahun yang bisa ditutup.","No year can be closed yet.","Belum ada tahun yang boleh ditutup."],
+cyn:["jurnal","entries","jurnal"],
+cyask:["Tutup buku sampai tahun","Close books up to year","Tutup buku sehingga tahun"],
+arcok:["Arsip utuh, CSV diunduh","Archive intact, CSV downloaded","Arkib utuh, CSV dimuat turun"],
+arcbad:["Arsip tidak cocok dengan catatan!","Archive does not match the record!","Arkib tidak sepadan dengan rekod!"]});
 const VER='Zui Finance versi 26.01 · dikelola Zui System PT. Zaor Utama Indonesia';
 const hdrLogo=()=>st&&st.logo&&st.logo.startsWith('data:image/')?`<img src="${esc(st.logo)}" alt="">`:'';
 let dip=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e;if(st&&tab==='cfg')draw()});
@@ -576,10 +587,38 @@ return`<div class="card"><h3>${t('rules')}</h3><p class="mut">${t('ruleh')}</p><
 <div class="card sc"><table>${rows}</table></div>`}
 async function addR(){const a=parseFloat($('#ra').value),k=$('#rk').value,o=$('#rt2').value==='in',d=o?'1100':k,c=o?k:'1100';if(!(a>0))return;st.rules.push({desc:$('#rt').value.trim().slice(0,120)||'-',d,c,amt:a,cur:$('#rcu').value,every:Math.max(1,parseInt($('#re').value)||1),next:$('#rf').value||today()});await autorun();await save();draw()}
 async function delR(i){st.rules.splice(i,1);await save();draw()}
-function settings(){return`<div class="card"><h3>${t('acctsec')}</h3><div class="row">${hasPw()?`<label>${t('curpw')}<input id="np0" type="password" autocomplete="current-password"></label>`:''}<label>${t('npw')}<input id="np1" type="password" autocomplete="new-password"></label><label>${t('npw2')}<input id="np2" type="password" autocomplete="new-password"></label><button class="b" onclick="chPw()">${t('chpw')}</button></div><p class="mut">${t('pwh')}</p><p id="pe"></p></div><div class="card"><h3>${t('set')}</h3><p>${t('sec')}</p><div class="row"><button class="b" onclick="verify()">${t('verify')}</button><button class="b g" onclick="exportCsv()">${t('exp')}</button><button class="b g" onclick="wipe()">${t('wipe')}</button></div><p id="vr"></p></div>
+function settings(){return`<div class="card"><h3>${t('acctsec')}</h3><div class="row">${hasPw()?`<label>${t('curpw')}<input id="np0" type="password" autocomplete="current-password"></label>`:''}<label>${t('npw')}<input id="np1" type="password" autocomplete="new-password"></label><label>${t('npw2')}<input id="np2" type="password" autocomplete="new-password"></label><button class="b" onclick="chPw()">${t('chpw')}</button></div><p class="mut">${t('pwh')}</p><p id="pe"></p></div><div class="card"><h3>${t('set')}</h3><p>${t('sec')}</p><div class="row"><button class="b" onclick="verify()">${t('verify')}</button><button class="b g" onclick="exportCsv()">${t('exp')}</button><button class="b g" onclick="wipe()">${t('wipe')}</button></div><p id="vr"></p></div>${closeCard()}
 `}
+const closeCard=()=>{if(role!=='owner')return'';const cy=new Date().getFullYear(),last=(st.closed||[]).length?+st.closed.at(-1).y:0,ys=[...new Set(st.entries.map(e=>+e.date.slice(0,4)).filter(y=>y<cy&&y>last))].sort();
+return`<div class="card"><h3>${t('cytitle')}</h3><p class="mut">${t('cyh')}</p>${ys.length?`<div class="row"><label>${t('cyyear')}<select id="cy">${opt(ys.map(y=>[String(y),String(y)]),String(ys.at(-1)))}</select></label><button class="b" onclick="closeYear()">${t('cybtn')}</button></div>`:`<p class="mut">${t('cynone')}</p>`}${(st.closed||[]).map(c=>`<p>${esc(c.y)} · ${c.n} ${t('cyn')} <button class="b g" onclick="dlArchive('${esc(c.y)}')">${t('exp')}</button></p>`).join('')}</div>`};
+async function closeYear(){if(role!=='owner'){toast(t('onlyowner')+' '+role);return}
+const y=($('#cy')||{}).value;if(!y||!confirm(t('cyask')+' '+y+'?'))return;
+const old=st.entries.filter(e=>e.date.slice(0,4)<=y),keep=st.entries.filter(e=>e.date.slice(0,4)>y);if(!old.length)return;
+try{const b={};st.accts.forEach(a=>b[a.c]=0);old.forEach(e=>e.lines.forEach(l=>b[l.a]=(b[l.a]||0)+(l.dr-l.cr)*e.rate));
+let pl=0;st.accts.forEach(a=>{if(a.y==='R'||a.y==='X')pl+=b[a.c]});b['3200']=(b['3200']||0)+pl;
+const lines=[];st.accts.forEach(a=>{if(a.y==='R'||a.y==='X')return;const v=Math.round(b[a.c]*100)/100;if(Math.abs(v)>=0.005)lines.push({a:a.c,dr:v>0?v:0,cr:v<0?-v:0})});
+const d=Math.round(lines.reduce((s,l)=>s+l.dr-l.cr,0)*100)/100;if(d)lines.push({a:'3200',dr:d<0?-d:0,cr:d>0?d:0});
+const parts=[];for(let i=0;i<old.length;i+=1500)parts.push(JSON.stringify({year:y,entries:old.slice(i,i+1500)}));
+const ah=await sha(parts.join('')),nid=Math.max(st.idBase||0,0,...st.entries.map(e=>e.id));
+const ns={...st,idBase:nid+1,chainBase:await sha('arsip:'+y+':'+ah),closed:[...(st.closed||[]),{y,parts:parts.length,n:old.length,h:ah}]};
+let prev=ns.chainBase;const mk=async e=>{e.prev=prev;e.hash=await sha(prev+JSON.stringify([e.id,e.date,e.desc,e.cur,e.rate,e.lines]));prev=e.hash;return e};
+ns.entries=[await mk({id:nid+1,date:(+y+1)+'-01-01',desc:t('g_open')+' '+(+y+1),cur:'IDR',rate:1,lines,auto:true})];
+for(const e of keep)ns.entries.push(await mk({...e}));
+const j=JSON.stringify(ns);if(j.length>950000)throw new Error('BIG');
+await FS.runTransaction(fdb,async tx=>{const r=D('workspaces',ws,'ledgers','main'),s=await tx.get(r);if(!s.exists()||s.data().version!==ver)throw new Error('CONFLICT');
+const o=s.data(),ym=ymNow(),base=o.mYm===ym?(o.mBase||0):(o.n||0),n=ns.entries.length;
+parts.forEach((p,i)=>tx.set(D('workspaces',ws,'ledgers','y'+y+'_'+(i+1)),{j:p,year:+y,part:i+1,n:Math.min(1500,old.length-i*1500),createdAt:FS.serverTimestamp()}));
+tx.update(r,{j,version:ver+1,n,mYm:ym,mBase:base,updatedAt:FS.serverTimestamp()});LM={n,mYm:ym,mBase:base}});
+ver++;st=ns;toast(t('saved'));draw()}
+catch(e){toast(e.message==='CONFLICT'?t('conflict'):e.message==='BIG'?t('big'):aerr(e)||e.message)}}
+async function dlArchive(y){const c=(st.closed||[]).find(x=>x.y===y);if(!c)return;const js=[];
+for(let i=1;i<=c.parts;i++){const s=await FS.getDoc(D('workspaces',ws,'ledgers','y'+y+'_'+i));if(!s.exists()){toast(t('neterr'));return}js.push(s.data().j)}
+const ok=(await sha(js.join('')))===c.h,rows=[['id','date','desc','currency','rate','account','debit','credit']];
+js.forEach(j=>JSON.parse(j).entries.forEach(e=>e.lines.forEach(l=>rows.push([e.id,e.date,e.desc,e.cur,e.rate,l.a,l.dr,l.cr]))));
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(qq).join(',')).join('\n')],{type:'text/csv'}));a.download='arsip-'+y+'.csv';a.click();toast(ok?t('arcok'):t('arcbad'))}
+
 async function setRate(c,v){v=parseFloat(v);if(v>0){st.rates[c]=v;await save()}}
-async function verify(){let prev='0';for(const e of st.entries){const h=await sha(prev+JSON.stringify([e.id,e.date,e.desc,e.cur,e.rate,e.lines]));if(e.prev!==prev||e.hash!==h){$('#vr').innerHTML=`<span class="bad">${t('tamp')}${e.id}</span>`;return}prev=e.hash}
+async function verify(){let prev=st.chainBase||'0';for(const e of st.entries){const h=await sha(prev+JSON.stringify([e.id,e.date,e.desc,e.cur,e.rate,e.lines]));if(e.prev!==prev||e.hash!==h){$('#vr').innerHTML=`<span class="bad">${t('tamp')}${e.id}</span>`;return}prev=e.hash}
 $('#vr').innerHTML=`<span class="ok">${t('good')} ${st.entries.length}</span>`}
 async function wipe(){if(confirm('?')){st=seed();await save();draw()}}
 function draw(){applyTh();document.body.classList.remove('fx');$('#app').className='wrap';document.documentElement.lang=L[li];document.documentElement.dir='ltr';
