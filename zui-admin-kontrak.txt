@@ -1,0 +1,37 @@
+KONTRAK DATA ZUI FINANCE <-> ZUI ADMIN
+(Asumsi: Zui Admin memakai proyek Firebase yang sama: akuntansi-zuisystem.
+Jika proyek berbeda, Zui Admin harus memakai Firebase Admin SDK/service account.)
+
+0. AKSES ADMIN
+   Buat dokumen  admins/{UID-admin}  di Firestore (isi bebas, mis. {nama:"Budi"}).
+   UID dilihat di Authentication. Admin harus login dengan email terverifikasi.
+   Admin boleh: baca workspaces, baca/tulis billing, planRequests, chats.
+   Admin TIDAK bisa membaca ledgers (data pembukuan pelanggan).
+
+1. PERMINTAAN PAKET   koleksi: planRequests/{idBuku}
+   Diisi pelanggan (owner): plan ("pro"|"bisnis"), period ("monthly"|"yearly"),
+   status ("pending"), by, email, wsName, at (timestamp).
+   Saat admin memproses, update dokumen yang sama:
+     status: "approved" atau "rejected"
+     decidedAt: serverTimestamp
+     note: alasan/catatan singkat (opsional)
+
+2. AKTIVASI PAKET     dokumen: workspaces/{idBuku}/billing/plan
+   Tulis:  { plan: "pro"|"bisnis", until: Timestamp }
+   until = hari ini + 30 hari (bulanan) atau + 365 hari (tahunan).
+   Jika paket masih berlaku, tambahkan dari until yang lama.
+   Aplikasi pelanggan langsung berubah (realtime), tanpa muat ulang.
+   Untuk menurunkan ke Gratis: hapus dokumen atau isi until dengan tanggal lampau.
+
+3. CHAT
+   Ringkasan:  chats/{idBuku}  -> { wsName, email, lastText, lastFrom, lastAt }
+               (urutkan dengan lastAt untuk daftar percakapan; lastFrom=="user" = perlu dibalas)
+   Pesan:      chats/{idBuku}/messages/{auto-id} -> { from, uid, name, text, at }
+   Balasan admin: tambah pesan
+       { from:"admin", uid:UID-admin, name:"Zui Admin", text:"...", at:serverTimestamp }
+     lalu update chats/{idBuku}.lastFrom = "admin", lastText, lastAt.
+   Pelanggan melihat balasan di Pengaturan > Chat dan di ikon lonceng.
+
+4. YANG TAMPIL DI LONCENG PELANGGAN
+   balasan admin baru, keputusan permintaan paket, paket/percobaan akan berakhir
+   (7 hari), dan kuota transaksi paket Gratis hampir habis.
