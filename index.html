@@ -471,7 +471,7 @@ $('#pv').innerHTML=`<div style="padding:24px;max-width:800px;margin:auto"><div s
 const qq=x=>{x=String(x);if(/^[=+\-@]/.test(x))x="'"+x;return'"'+x.replace(/"/g,'""')+'"'};
 function exportTB(){const b=bals(),rows=[['code','name','debit','credit']];st.accts.forEach(a=>{const v=conv(b[a.c],'IDR',disp);rows.push([a.c,nm(a),v>0?v.toFixed(2):'',v<0?(-v).toFixed(2):''])});
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(qq).join(',')).join('\n')],{type:'text/csv'}));a.download='neraca-saldo-'+disp+'.csv';a.click()}
-const KONTAK='[isi email kontak]',OWNER='Zui System (PT. Zaor Utama Indonesia)',LEGAL_DRAFT=true;
+const KONTAK='info.zuisystem@gmail.com',OWNER='Zui System (PT. Zaor Utama Indonesia)',LEGAL_DRAFT=false;
 const L2=a=>a[li]??a[1];
 const LOGO='<svg width="30" height="30" viewBox="0 0 30 30"><rect width="30" height="30" rx="0" fill="var(--ac)"/><path d="M9 9h12L9 21h12" stroke="var(--onac)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const FEATS=[['✍️',['Jurnal dan buku besar','Journal and ledger','Jurnal dan lejar'],['Jurnal multi-baris yang tidak bisa diubah, koreksi lewat jurnal balik, dan buku besar per akun.','Multi-line immutable journal, corrections by reversal, and a ledger per account.','Jurnal berbilang baris yang tidak boleh diubah, pembetulan melalui jurnal songsang, dan lejar bagi setiap akaun.']],
