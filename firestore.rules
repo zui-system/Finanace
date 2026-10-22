@@ -13,7 +13,11 @@ service cloud.firestore {
     function roleOf(w) { return wsData(w).roles[request.auth.uid]; }
     function canWrite(w) { return isMember(w) && roleOf(w) in ['owner', 'editor']; }
     function isOwner(w) { return isMember(w) && roleOf(w) == 'owner'; }
-    function isAdmin() { return signedIn() && exists(/databases/$(db)/documents/admins/$(request.auth.uid)); }
+    // admin: akun Zui Admin (admin.zuisystem.com) atau UID yang punya dokumen admins/{uid}
+    function isAdmin() {
+      return signedIn() && (request.auth.token.email.lower() == 'admin.zuisystem@gmail.com'
+        || exists(/databases/$(db)/documents/admins/$(request.auth.uid)));
+    }
 
     // ---------- paket ----------
     function planOf(w) {
@@ -222,6 +226,11 @@ service cloud.firestore {
           && request.resource.data.at == request.time);
         allow update, delete: if false;
       }
+    }
+
+    // ---------- catatan pemasukan (ditulis Zui Admin saat mengaktifkan paket) ----------
+    match /adminPayments/{id} {
+      allow read, write: if isAdmin();
     }
 
     // ---------- profil pribadi ----------
