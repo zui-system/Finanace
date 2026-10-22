@@ -10,8 +10,9 @@ KONTRAK DATA ZUI FINANCE <-> ZUI ADMIN
    Admin TIDAK bisa membaca ledgers (data pembukuan pelanggan).
 
 1. PERMINTAAN PAKET   koleksi: planRequests/{idBuku}
-   Diisi pelanggan (owner): plan ("pro"|"bisnis"), period ("monthly"|"yearly"),
-   status ("pending"), by, email, wsName, at (timestamp).
+   Diisi pelanggan (owner) setelah membayar: plan ("pro"|"bisnis"), period ("monthly"|"yearly"),
+   status ("pending"), by, email, wsName, at (timestamp),
+   cur ("IDR"|"MYR"), amount (harga saat itu), ref (nomor referensi pembayaran).
    Saat admin memproses, update dokumen yang sama:
      status: "approved" atau "rejected"
      decidedAt: serverTimestamp
@@ -26,7 +27,12 @@ KONTRAK DATA ZUI FINANCE <-> ZUI ADMIN
    "Bisnis selamanya" = plan "bisnis" dengan until 31 Des 2099.
    Saat mengaktifkan dari Antrean, Zui Admin juga menulis catatan pemasukan
      adminPayments/{auto-id} -> { ws, wsName, plan, period, amount, at }
-   amount diambil dari hargaAwal di config.js Zui Admin (harus sama dengan PL di index.html).
+   { ..., cur, ref } ikut disalin dari permintaan.
+
+2b. HARGA & CARA BAYAR   dokumen: zconfig/pay  (diatur di Zui Admin → Harga → ZUI FINANCE)
+   { prices: {pro:{1,12}, bisnis:{1,12}}, pricesMYR: {...}, note, noteMYR, qris, duitnow, wa }
+   1 = bulanan, 12 = tahunan. Selama belum disimpan, Finance memakai PL (Rupiah) dan PLM (Ringgit)
+   di index.html, dan Zui Admin memakai hargaAwal / hargaAwalMYR di config.js.
 
 3. CHAT
    Ringkasan:  chats/{idBuku}  -> { wsName, email, lastText, lastFrom, lastAt }
