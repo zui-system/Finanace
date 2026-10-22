@@ -30,8 +30,10 @@ Jika proyek berbeda, Zui Admin harus memakai Firebase Admin SDK/service account.
    Balasan admin: tambah pesan
        { from:"admin", uid:UID-admin, name:"Zui Admin", text:"...", at:serverTimestamp }
      lalu update chats/{idBuku}.lastFrom = "admin", lastText, lastAt.
-   Pelanggan melihat balasan di Pengaturan > Chat dan di ikon lonceng.
+   Pelanggan melihat balasan lewat ikon chat di pojok kanan atas (ada angka
+   penanda untuk balasan yang belum dibaca).
 
 4. YANG TAMPIL DI LONCENG PELANGGAN
-   balasan admin baru, keputusan permintaan paket, paket/percobaan akan berakhir
-   (7 hari), dan kuota transaksi paket Gratis hampir habis.
+   keputusan permintaan paket, paket/percobaan akan berakhir (7 hari), dan kuota
+   transaksi bulanan hampir habis (80%). Balasan admin tampil di ikon chat, bukan
+   di lonceng.
