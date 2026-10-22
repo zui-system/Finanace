@@ -187,14 +187,17 @@ service cloud.firestore {
 
     // ---------- permintaan paket: satu dokumen per buku ----------
     function validReq(d) {
-      return d.keys().hasOnly(['plan', 'period', 'status', 'by', 'email', 'wsName', 'at'])
+      return d.keys().hasOnly(['plan', 'period', 'status', 'by', 'email', 'wsName', 'at', 'cur', 'amount', 'ref'])
         && d.plan in ['pro', 'bisnis']
         && d.period in ['monthly', 'yearly']
         && d.status == 'pending'
         && d.by is string && d.by.size() <= 60
         && d.email is string && d.email.size() <= 120
         && d.wsName is string && d.wsName.size() <= 80
-        && d.at == request.time;
+        && d.at == request.time
+        && (!('cur' in d) || d.cur in ['IDR', 'MYR'])
+        && (!('amount' in d) || (d.amount is number && d.amount >= 0))
+        && (!('ref' in d) || (d.ref is string && d.ref.size() <= 60));
     }
     match /planRequests/{w} {
       allow read: if isAdmin() || isMember(w);
@@ -226,6 +229,12 @@ service cloud.firestore {
           && request.resource.data.at == request.time);
         allow update, delete: if false;
       }
+    }
+
+    // ---------- harga & cara bayar (diatur di Zui Admin → Harga → ZUI FINANCE) ----------
+    match /zconfig/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
     }
 
     // ---------- catatan pemasukan (ditulis Zui Admin saat mengaktifkan paket) ----------
