@@ -1,0 +1,241 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    // ---------- fungsi bantu ----------
+    function signedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function myEmail() { return request.auth.token.email.lower(); }
+    function wsPath(w) { return /databases/$(db)/documents/workspaces/$(w); }
+    function wsData(w) { return get(wsPath(w)).data; }
+    function isMember(w) { return signedIn() && request.auth.uid in wsData(w).memberIds; }
+    function roleOf(w) { return wsData(w).roles[request.auth.uid]; }
+    function canWrite(w) { return isMember(w) && roleOf(w) in ['owner', 'editor']; }
+    function isOwner(w) { return isMember(w) && roleOf(w) == 'owner'; }
+    function isAdmin() { return signedIn() && exists(/databases/$(db)/documents/admins/$(request.auth.uid)); }
+
+    // ---------- paket ----------
+    function planOf(w) {
+      let b = exists(/databases/$(db)/documents/workspaces/$(w)/billing/plan)
+        ? get(/databases/$(db)/documents/workspaces/$(w)/billing/plan).data : null;
+      return (b != null && b.until > request.time) ? b.plan
+        : (request.time < wsData(w).createdAt + duration.value(14, 'd') ? 'pro' : 'free');
+    }
+    function maxMembers(p) { return p == 'bisnis' ? 10 : (p == 'pro' ? 3 : 1); }
+    function maxEntries(p) { return p == 'free' ? 25 : (p == 'pro' ? 300 : 100000000); }
+
+    // ---------- buku usaha ----------
+    match /workspaces/{w} {
+      allow read: if signedIn() && (request.auth.uid in resource.data.memberIds || isAdmin());
+
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['name', 'owner', 'memberIds', 'roles', 'memberInfo', 'createdAt'])
+        && request.resource.data.owner == request.auth.uid
+        && request.resource.data.memberIds == [request.auth.uid]
+        && request.resource.data.roles.keys().hasOnly([request.auth.uid])
+        && request.resource.data.roles[request.auth.uid] == 'owner'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 80;
+
+      allow update: if signedIn() && (
+        // (a) owner: ganti nama / keluarkan anggota.
+        //     Tidak boleh menambah anggota, mengubah peran, atau mengubah data anggota lain.
+        ( resource.data.roles[request.auth.uid] == 'owner'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'memberIds', 'roles', 'memberInfo'])
+          && request.resource.data.owner == resource.data.owner
+          && request.resource.data.roles[request.auth.uid] == 'owner'
+          && request.auth.uid in request.resource.data.memberIds
+          && resource.data.memberIds.hasAll(request.resource.data.memberIds)
+          && request.resource.data.roles.diff(resource.data.roles).addedKeys().size() == 0
+          && request.resource.data.roles.diff(resource.data.roles).changedKeys().size() == 0
+          && request.resource.data.memberInfo.diff(resource.data.memberInfo).addedKeys().size() == 0
+          && request.resource.data.memberInfo.diff(resource.data.memberInfo).changedKeys().size() == 0
+          && request.resource.data.name is string
+          && request.resource.data.name.size() <= 80 )
+        ||
+        // (b) menerima undangan: hanya lewat undangan atas email yang sama, dan dalam batas paket
+        ( !(request.auth.uid in resource.data.memberIds)
+          && exists(/databases/$(db)/documents/invites/$(w + '__' + myEmail()))
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'roles', 'memberInfo'])
+          && request.resource.data.memberIds.hasAll(resource.data.memberIds)
+          && request.resource.data.memberIds.size() == resource.data.memberIds.size() + 1
+          && request.auth.uid in request.resource.data.memberIds
+          && request.resource.data.roles.diff(resource.data.roles).addedKeys().hasOnly([request.auth.uid])
+          && request.resource.data.roles.diff(resource.data.roles).changedKeys().size() == 0
+          && request.resource.data.roles.diff(resource.data.roles).removedKeys().size() == 0
+          && request.resource.data.roles[request.auth.uid]
+               == get(/databases/$(db)/documents/invites/$(w + '__' + myEmail())).data.role
+          && request.resource.data.memberInfo.diff(resource.data.memberInfo).addedKeys().hasOnly([request.auth.uid])
+          && request.resource.data.memberInfo.diff(resource.data.memberInfo).changedKeys().size() == 0
+          && request.resource.data.memberInfo.diff(resource.data.memberInfo).removedKeys().size() == 0
+          && request.resource.data.memberInfo[request.auth.uid].email == myEmail()
+          && request.resource.data.memberIds.size() <= maxMembers(planOf(w)) )
+      );
+
+      allow delete: if false;
+
+      match /ledgers/{id} {
+        allow read: if isMember(w);
+
+        allow create: if signedIn() && id == 'main'
+          && getAfter(wsPath(w)).data.owner == request.auth.uid
+          && request.resource.data.keys().hasOnly(['j', 'version', 'n', 'mYm', 'mBase', 'updatedAt'])
+          && request.resource.data.version == 1
+          && request.resource.data.n == 0
+          && request.resource.data.mBase == 0
+          && request.resource.data.mYm == request.time.year() * 100 + request.time.month();
+
+        // arsip tutup buku: hanya owner, hanya dibuat sekali, tidak bisa diubah/dihapus
+        allow create: if isOwner(w)
+          && id.matches('^y[0-9]{4}_[0-9]+$')
+          && request.resource.data.keys().hasOnly(['j', 'year', 'part', 'n', 'createdAt'])
+          && request.resource.data.j is string
+          && request.resource.data.j.size() < 950000
+          && request.resource.data.year is int
+          && request.resource.data.part is int
+          && request.resource.data.n is int
+          && request.resource.data.createdAt == request.time;
+
+        allow update: if canWrite(w) && id == 'main'
+          && request.resource.data.keys().hasOnly(['j', 'version', 'n', 'mYm', 'mBase', 'updatedAt'])
+          && request.resource.data.j is string
+          && request.resource.data.j.size() < 950000
+          && request.resource.data.n is int
+          && request.resource.data.mBase is int
+          && request.resource.data.n >= 0
+          && request.resource.data.version == resource.data.version + 1
+          && request.resource.data.mYm == request.time.year() * 100 + request.time.month()
+          && (request.resource.data.mYm == resource.data.mYm
+                ? request.resource.data.mBase == resource.data.mBase
+                : request.resource.data.mBase == resource.data.n)
+          && request.resource.data.n - request.resource.data.mBase <= maxEntries(planOf(w));
+
+        allow delete: if false;
+      }
+
+      match /billing/{id} {
+        allow read: if isMember(w) || isAdmin();
+        allow write: if isAdmin();
+      }
+    }
+
+    // ---------- undangan anggota ----------
+    // id dokumen: <idBuku>__<email huruf kecil>
+    function validInvite(d, iid) {
+      return d.keys().hasOnly(['workspaceId', 'email', 'role', 'wsName', 'by'])
+        && d.email is string
+        && d.email.size() <= 120
+        && d.email.matches('^[^@\\s/]+@[^@\\s/]+\\.[^@\\s/]+$')
+        && d.email == d.email.lower()
+        && d.email != myEmail()
+        && iid == d.workspaceId + '__' + d.email
+        && d.role in ['editor', 'viewer']
+        && d.by == request.auth.uid
+        && d.wsName is string
+        && d.wsName.size() <= 80
+        && wsData(d.workspaceId).memberIds.size() < maxMembers(planOf(d.workspaceId));
+    }
+    match /invites/{iid} {
+      allow read: if signedIn()
+        && (resource.data.email == myEmail() || isOwner(resource.data.workspaceId));
+
+      allow create: if signedIn()
+        && isOwner(request.resource.data.workspaceId)
+        && validInvite(request.resource.data, iid);
+
+      // undang ulang email yang sama (mis. mengubah peran) tanpa menambah anggota
+      allow update: if signedIn()
+        && isOwner(resource.data.workspaceId)
+        && request.resource.data.workspaceId == resource.data.workspaceId
+        && validInvite(request.resource.data, iid);
+
+      allow delete: if signedIn()
+        && (resource.data.email == myEmail() || isOwner(resource.data.workspaceId));
+    }
+
+    // ---------- email undangan (ekstensi Trigger Email) ----------
+    // Hanya owner, hanya ke email yang sudah diundang, hanya memakai templat 'undangan'.
+    match /mail/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['to', 'wsId', 'template'])
+        && request.resource.data.to is string
+        && request.resource.data.wsId is string
+        && isOwner(request.resource.data.wsId)
+        && exists(/databases/$(db)/documents/invites/$(request.resource.data.wsId + '__' + request.resource.data.to))
+        && request.resource.data.template.keys().hasOnly(['name', 'data'])
+        && request.resource.data.template.name == 'undangan'
+        && request.resource.data.template.data.keys().hasOnly(['wsName', 'role', 'by'])
+        && request.resource.data.template.data.wsName is string
+        && request.resource.data.template.data.wsName.size() <= 80
+        && request.resource.data.template.data.role in ['editor', 'viewer']
+        && request.resource.data.template.data.by is string
+        && request.resource.data.template.data.by.size() <= 80;
+      allow read, update, delete: if false;
+    }
+
+    // ---------- admin Zui (dokumen admins/{uid} dibuat lewat Console) ----------
+    match /admins/{u} {
+      allow read: if signedIn() && request.auth.uid == u;
+      allow write: if false;
+    }
+
+    // ---------- permintaan paket: satu dokumen per buku ----------
+    function validReq(d) {
+      return d.keys().hasOnly(['plan', 'period', 'status', 'by', 'email', 'wsName', 'at'])
+        && d.plan in ['pro', 'bisnis']
+        && d.period in ['monthly', 'yearly']
+        && d.status == 'pending'
+        && d.by is string && d.by.size() <= 60
+        && d.email is string && d.email.size() <= 120
+        && d.wsName is string && d.wsName.size() <= 80
+        && d.at == request.time;
+    }
+    match /planRequests/{w} {
+      allow read: if isAdmin() || isMember(w);
+      allow create, update: if isAdmin() || (isOwner(w) && validReq(request.resource.data));
+      allow delete: if isAdmin();
+    }
+
+    // ---------- chat dengan admin ----------
+    match /chats/{w} {
+      allow read: if isAdmin() || isMember(w);
+      allow create, update: if isAdmin() || (isMember(w)
+        && request.resource.data.keys().hasOnly(['wsName', 'email', 'lastText', 'lastFrom', 'lastAt'])
+        && request.resource.data.lastFrom == 'user'
+        && request.resource.data.lastText is string && request.resource.data.lastText.size() <= 200
+        && request.resource.data.wsName is string && request.resource.data.wsName.size() <= 80
+        && request.resource.data.email is string && request.resource.data.email.size() <= 120
+        && request.resource.data.lastAt == request.time);
+      allow delete: if false;
+
+      match /messages/{id} {
+        allow read: if isAdmin() || isMember(w);
+        allow create: if isAdmin() || (isMember(w)
+          && request.resource.data.keys().hasOnly(['from', 'uid', 'name', 'text', 'at'])
+          && request.resource.data.from == 'user'
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.name is string && request.resource.data.name.size() <= 60
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000
+          && request.resource.data.at == request.time);
+        allow update, delete: if false;
+      }
+    }
+
+    // ---------- profil pribadi ----------
+    match /users/{u} {
+      allow read: if signedIn() && request.auth.uid == u;
+      allow create, update: if signedIn() && request.auth.uid == u
+        && request.resource.data.keys().hasOnly(['name', 'avatar', 'prefs'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.avatar is string
+        && request.resource.data.avatar.size() < 100000
+        && request.resource.data.prefs is map;
+    }
+
+    // selain yang tertulis di atas: ditolak
+  }
+}
