@@ -37,7 +37,6 @@ body.fx{overflow:hidden;height:100vh;height:100dvh}
 @media(prefers-reduced-motion:reduce){.track{scroll-behavior:auto}}
 .cc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:0 36px;align-items:start}.cc>.card{margin:0}
 .row>label input,.row>label select{width:100%}
-.lnav,.hero,.foot{margin-left:auto;margin-right:auto;max-width:1100px}.sec{margin:34px auto;max-width:1100px}
 .card{background:none;border:0;border-bottom:1px solid var(--line);padding:16px 0;margin:0}
 input,select,textarea{font:inherit;font-weight:300;padding:8px 10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:0}
 input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ac)}
@@ -56,14 +55,10 @@ td.n,th.n{text-align:end;font-variant-numeric:tabular-nums}tr.t td{font-weight:6
 .kpi{border-top:2px solid var(--ac);border-bottom:0;padding:10px 0 14px}.kpi .big{margin-top:2px}
 #lock{max-width:420px;margin:8vh auto;padding:0 2px;border:0}
 #pv{display:none;--ink:#000;--mut:#444;--line:#999;--card:#fff;--ac:#000;--brass:#000;--bad:#a00;--ok:#060;color:#000;font:13px/1.4 sans-serif}
-#pv .card{border:1px solid #999;padding:12px;margin:12px 0;page-break-inside:avoid}.lnav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 2px 14px}
-.hero{text-align:center;padding:34px 8px 26px}.hero h1{font-size:clamp(26px,5vw,36px);line-height:1.2;margin:12px 0}.hero p{max-width:620px;margin:0 auto 20px;color:var(--mut);font-size:16px}
-.sec{margin:34px 0}.sec h2{text-align:center;font-size:22px;margin-bottom:16px}
-.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0 28px}.fg .card{margin:0}.fi{font-size:26px}
-.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}.plan{margin:0;display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);padding:18px}.plan.hot{border-color:var(--ac);border-top:3px solid var(--ac)}.price{font-size:26px;font-weight:300}.plan ul{padding-left:18px;flex:1;margin:8px 0}
+#pv .card{border:1px solid #999;padding:12px;margin:12px 0;page-break-inside:avoid}
+.plan{margin:0;display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);padding:18px}.plan.hot{border-color:var(--ac);border-top:3px solid var(--ac)}.price{font-size:26px;font-weight:300}.plan ul{padding-left:18px;flex:1;margin:8px 0}
 .badge{display:inline-block;background:var(--ac2);color:var(--ac);padding:3px 12px;font-size:12px;font-weight:400}
-.faq details{border-bottom:1px solid var(--line);padding:12px 0}.faq summary{font-weight:400;cursor:pointer}
-.foot{margin:40px 0 20px;text-align:center;color:var(--mut);font-size:13px}.foot a,.legal a{color:var(--ac)}
+.legal a{color:var(--ac)}
 .legal{max-width:760px;margin:0 auto}.legal h3{margin-top:20px}.legal ul{padding-left:20px}.legal li{margin:4px 0}.legal td{white-space:normal}.lgn{margin:14px 0;padding:12px 14px;border-left:3px solid var(--ac);background:var(--ac2);font-weight:600}.lgf{font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:12px}
 a{color:var(--ac)}.chips{display:flex;gap:18px;overflow-x:auto;margin:0 0 12px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.ch{flex:none;padding:6px 0 7px;border:0;border-bottom:2px solid transparent;background:none;color:var(--mut);font:300 16px 'Outfit',system-ui,sans-serif;cursor:pointer}.ch.on{color:var(--ink);border-bottom-color:var(--ac)}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:40}
@@ -258,13 +253,7 @@ const S={
 "l_agree":["Dengan masuk, Anda menyetujui", "By continuing, you agree to the", "Dengan meneruskan, anda bersetuju dengan"],
 "l_and":["dan", "and", "dan"],
 "l_badge":["Pembukuan untuk usaha kecil dan menengah", "Bookkeeping for small businesses", "Perakaunan untuk perniagaan kecil dan sederhana"],
-"l_h":["Pembukuan rapi, laporan siap kapan saja", "Tidy books, reports whenever you need them", "Buku kemas, laporan sedia pada bila-bila masa"],
-"l_p":["Catat jurnal, buat faktur, dan pantau laporan dalam Rupiah, Ringgit, dan US Dollar. Aman, mudah, dan bisa dipakai bersama tim.", "Record journals, issue invoices, and track reports in Rupiah, Ringgit, and US Dollar. Secure, simple, and ready for your team.", "Catat jurnal, keluarkan invois dan pantau laporan dalam Rupiah, Ringgit dan Dolar AS. Selamat, mudah dan boleh digunakan bersama pasukan."],
-"l_cta":["Daftar gratis", "Start free", "Daftar percuma"],
-"l_f":["Semua yang Anda butuhkan", "Everything you need", "Semua yang anda perlukan"],
-"l_pl":["Pilih paket", "Choose a plan", "Pilih pelan"],
 "l_pop":["Terpopuler", "Most popular", "Paling popular"],
-"l_soon":["Langganan berbayar dibuka bertahap.", "Paid plans open gradually.", "Langganan berbayar dibuka secara berperingkat."],
 "l_lang":["Tiga bahasa tersedia: Indonesia, English, dan Bahasa Melayu.", "Three languages available: Indonesia, English, and Bahasa Melayu.", "Tiga bahasa tersedia: Indonesia, English dan Bahasa Melayu."],
 "theme":["Tema tampilan", "Theme", "Tema paparan"],
 "th_auto":["Otomatis", "Auto", "Automatik"],
@@ -538,29 +527,6 @@ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.ma
 const KONTAK='support@zuisystem.com',OWNER='Zui System (PT. Zaor Utama Indonesia)',LEGAL_DRAFT=false;
 const L2=a=>a[li]??a[1];
 const LOGO='<svg width="30" height="30" viewBox="0 0 30 30"><rect width="30" height="30" rx="0" fill="var(--ac)"/><path d="M9 9h12L9 21h12" stroke="var(--onac)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const FEATS=[['✍️',['Jurnal dan buku besar','Journal and ledger','Jurnal dan lejar'],['Jurnal multi-baris yang tidak bisa diubah, koreksi lewat jurnal balik, dan buku besar per akun.','Multi-line immutable journal, corrections by reversal, and a ledger per account.','Jurnal berbilang baris yang tidak boleh diubah, pembetulan melalui jurnal songsang, dan lejar bagi setiap akaun.']],
-['🧾',['Faktur profesional','Professional invoices','Invois profesional'],['Banyak item, pajak, nomor otomatis, logo usaha, dan cetak atau simpan sebagai PDF.','Multiple items, tax, automatic numbering, your logo, and print or save as PDF.','Berbilang item, cukai, nombor automatik, logo perniagaan, serta cetak atau simpan sebagai PDF.']],
-['📊',['Laporan lengkap','Complete reports','Laporan lengkap'],['Neraca saldo, laba rugi, posisi keuangan, dan arus kas, bisa dicetak atau diekspor.','Trial balance, income statement, balance sheet, and cash flow, printable and exportable.','Kunci kira-kira percubaan, untung rugi, kedudukan kewangan dan aliran tunai, boleh dicetak atau dieksport.']],
-['💱',['Multi mata uang','Multi-currency','Berbilang mata wang'],['Rupiah, Ringgit Malaysia, dan US Dollar dengan kurs yang bisa Anda atur.','Rupiah, Malaysian Ringgit, and US Dollar with exchange rates you control.','Rupiah, Ringgit Malaysia dan Dolar AS dengan kadar tukaran yang anda tetapkan.']],
-['👥',['Tim dan peran','Team and roles','Pasukan dan peranan'],['Undang anggota sebagai owner, editor, atau viewer, dan kelola akses kapan saja.','Invite members as owner, editor, or viewer, and manage access any time.','Jemput ahli sebagai owner, editor atau viewer, dan urus akses pada bila-bila masa.']],
-['🔁',['Otomatisasi','Automation','Automasi'],['Jurnal berulang seperti sewa atau gaji tercatat sendiri saat jatuh tempo.','Recurring entries such as rent or payroll post themselves when due.','Jurnal berulang seperti sewa atau gaji dicatat sendiri apabila tiba tempoh.']],
-['🏦',['Rekonsiliasi bank','Bank reconciliation','Penyesuaian bank'],['Cocokkan mutasi bank dengan catatan kas untuk menemukan selisih.','Match bank lines with your cash records to find differences.','Padankan penyata bank dengan rekod tunai untuk mencari perbezaan.']],
-['🔒',['Aman','Secure','Selamat'],['Login Google atau email terverifikasi, akses per pengguna, dan rantai audit untuk setiap jurnal.','Google or verified email sign-in, per-user access, and an audit chain for every entry.','Log masuk Google atau e-mel disahkan, akses bagi setiap pengguna, dan rantaian audit untuk setiap jurnal.']]];
-/* UBAH HARGA DAN FITUR PAKET DI SINI */
-const PLANS=[{n:'Gratis',p:'Rp 0',per:['selamanya','forever','selama-lamanya'],f:[['1 buku usaha, 1 anggota','1 business book, 1 member','1 buku perniagaan, 1 ahli'],['Hingga 50 transaksi per bulan','Up to 50 entries per month','Sehingga 50 transaksi sebulan'],['Jurnal, buku besar, dan laporan','Journal, ledger, and reports','Jurnal, lejar dan laporan'],['3 mata uang','3 currencies','3 mata wang'],['Cetak faktur','Invoice printing','Cetak invois']]},
-{n:'Pro',p:'Rp 49.000',per:['per bulan','per month','sebulan'],hot:1,soon:1,f:[['Semua fitur Gratis','Everything in Free','Semua ciri Percuma'],['Hingga 3 anggota (owner, editor, viewer)','Up to 3 members (owner, editor, viewer)','Sehingga 3 ahli (owner, editor, viewer)'],['Transaksi tanpa batas','Unlimited entries','Transaksi tanpa had'],['Percobaan gratis 14 hari','14-day free trial','Percubaan percuma 14 hari'],['Rekonsiliasi dan jurnal berulang','Reconciliation and recurring entries','Penyesuaian dan jurnal berulang'],['Dukungan prioritas','Priority support','Sokongan keutamaan']]},
-{n:'Bisnis',p:'Rp 99.000',per:['per bulan','per month','sebulan'],soon:1,f:[['Semua fitur Pro','Everything in Pro','Semua ciri Pro'],['Beberapa buku usaha','Multiple business books','Berbilang buku perniagaan'],['Hingga 10 anggota tim','Up to 10 team members','Sehingga 10 ahli pasukan'],['Ekspor lanjutan','Advanced export','Eksport lanjutan']]}];
-const FAQ=[[['Apakah data saya aman?','Is my data safe?','Adakah data saya selamat?'],['Login memakai Google atau email terverifikasi, data tersimpan di server dengan aturan akses per pengguna, dan setiap jurnal tercatat dalam rantai audit. Tidak ada sistem yang 100% aman, jadi simpan cadangan laporan penting.','Sign-in uses Google or verified email, data is stored on servers with per-user access rules, and every entry is recorded in an audit chain. No system is 100% secure, so keep backups of important reports.','Log masuk menggunakan Google atau e-mel yang disahkan, data disimpan di pelayan dengan peraturan akses bagi setiap pengguna, dan setiap jurnal direkodkan dalam rantaian audit. Tiada sistem yang 100% selamat, jadi simpan sandaran laporan penting.']],
-[['Apakah ini pengganti akuntan?','Does this replace an accountant?','Adakah ini menggantikan akauntan?'],['Tidak. Zui Finance membantu pencatatan dan laporan. Untuk pajak dan keputusan akuntansi penting, konsultasikan dengan profesional.','No. Zui Finance helps with record-keeping and reports. For tax and major accounting decisions, consult a professional.','Tidak. Zui Finance membantu pencatatan dan laporan. Untuk cukai dan keputusan perakaunan penting, rujuk profesional.']],
-[['Bagaimana cara berhenti berlangganan?','How do I cancel?','Bagaimana untuk berhenti melanggan?'],['Anda bisa berhenti kapan saja. Akses berbayar tetap berlaku sampai akhir periode yang sudah dibayar. Rinciannya ada di Syarat Layanan.','You can cancel any time. Paid access stays until the end of the period already paid. Details are in the Terms of Service.','Anda boleh berhenti pada bila-bila masa. Akses berbayar kekal sehingga akhir tempoh yang telah dibayar. Butiran ada dalam Terma Perkhidmatan.']],
-[['Mata uang apa yang didukung?','Which currencies are supported?','Mata wang apa yang disokong?'],['Rupiah (Rp), Ringgit Malaysia (RM), dan US Dollar (US$). Kurs diatur secara manual.','Rupiah (Rp), Malaysian Ringgit (RM), and US Dollar (US$). Rates are set manually.','Rupiah (Rp), Ringgit Malaysia (RM) dan Dolar AS (US$). Kadar ditetapkan secara manual.']]];
-function landing(sel){const go='onclick="view=\'auth\';draw()"';
-$('#app').innerHTML=`<div class="lnav"><h1 class="brand" style="margin:0;font-size:20px">Zui Finance</h1><div class="row" style="align-items:center">${sel}<button class="b g" ${go}>${t('signin')}</button><button class="b" ${go}>${t('l_cta')}</button></div></div>
-<section class="hero"><span class="badge">${t('l_badge')}</span><h1>${t('l_h')}</h1><p>${t('l_p')}</p><button class="b" style="padding:14px 26px;font-size:17px" ${go}>${t('l_cta')}</button></section>
-<section class="sec"><h2>${t('l_f')}</h2><div class="fg">${FEATS.map(x=>`<div class="card"><div class="fi">${x[0]}</div><h3>${L2(x[1])}</h3><p class="mut">${L2(x[2])}</p></div>`).join('')}</div><p class="mut" style="text-align:center;font-size:13px;margin-top:12px">${t('l_lang')}</p></section>
-
-<section class="sec faq"><h2>FAQ</h2>${FAQ.map(q=>`<details><summary>${L2(q[0])}</summary><p class="mut">${L2(q[1])}</p></details>`).join('')}</section>
-<div class="foot"><p><a href="#" onclick="openLegal('terms','land');return false">${t('terms')}</a> · <a href="#" onclick="openLegal('privacy','land');return false">${t('privacy')}</a></p><p>© ${new Date().getFullYear()} Zui Finance · ${esc(KONTAK)}</p><p>${VER}</p></div>`}
 function openLegal(k,from){view=k;vb=from;window.scrollTo(0,0);draw()}
 let cs0=0;
 const bhsTab=()=>`<div class="card"><h3>${t('c_bhs')}</h3><div class="row">${['Indonesia','English','Bahasa Melayu'].map((x,k)=>`<button class="b ${li===k?'':'g'}" onclick="setLang(${k})">${x}</button>`).join('')}</div><p class="mut" style="font-size:13px">${t('l_lang')}</p></div>`;
@@ -774,7 +740,6 @@ async function wipe(){if(role!=='owner'){toast(t('onlyowner')+' '+role);return}i
 function draw(){applyTh();document.body.classList.remove('fx');$('#app').className='wrap';document.documentElement.lang=L[li];document.documentElement.dir='ltr';
 const sel=`<select aria-label="language" onchange="setLang(+this.value)">${[['0','Indonesia'],['1','English'],['2','Bahasa Melayu']].map(([v,l])=>`<option value="${v}"${+v===li?' selected':''}>${l}</option>`).join('')}</select>`;
 if(LDOCS.includes(view)){legal();return}
-if(view==='land')view='auth';
 if(!st){const bt=(m,l,c='')=>`<button class="b ${c}" onclick="authGo('${m}')">${t(l)}</button>`;
 const body=!cfgOk()?`<p class="bad">${FB_CFG.apiKey?t('sdkfail')+' ('+esc(window.FBERR||'?')+')':t('conf')}</p>`
 :`<p>${bt('g','google')}</p><div class="row" style="flex-direction:column;align-items:stretch"><input id="em" type="email" autocomplete="email" placeholder="${esc(t('email'))}"><div class="pww"><input id="pw" type="password" autocomplete="current-password" placeholder="${esc(t('pw'))}" onkeydown="if(event.key==='Enter')authGo('in')"><button type="button" class="pwt" aria-label="${esc(t('pwshow'))}" aria-pressed="false" onclick="tgPw(this)">${EYE}</button></div></div><p>${bt('in','signin')} ${bt('up','signup','g')} ${bt('f','forgot','g')}</p>`;
