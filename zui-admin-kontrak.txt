@@ -1,11 +1,12 @@
 KONTRAK DATA ZUI FINANCE <-> ZUI ADMIN
-(Asumsi: Zui Admin memakai proyek Firebase yang sama: akuntansi-zuisystem.
-Jika proyek berbeda, Zui Admin harus memakai Firebase Admin SDK/service account.)
+(Zui Admin tersambung langsung ke project Firebase akuntansi-zuisystem lewat blok
+"ZUI FINANCE" (jenis: "finance") di config.js Zui Admin.)
 
 0. AKSES ADMIN
-   Buat dokumen  admins/{UID-admin}  di Firestore (isi bebas, mis. {nama:"Budi"}).
-   UID dilihat di Authentication. Admin harus login dengan email terverifikasi.
-   Admin boleh: baca workspaces, baca/tulis billing, planRequests, chats.
+   Zui Admin (admin.zuisystem.com) masuk dengan Google sebagai admin.zuisystem@gmail.com.
+   isAdmin() di firestore.rules mengizinkan email itu. Admin lain tetap bisa ditambah
+   dengan dokumen  admins/{UID-admin}  (isi bebas, mis. {nama:"Budi"}).
+   Admin boleh: baca workspaces, baca/tulis billing, planRequests, chats, adminPayments.
    Admin TIDAK bisa membaca ledgers (data pembukuan pelanggan).
 
 1. PERMINTAAN PAKET   koleksi: planRequests/{idBuku}
@@ -22,6 +23,10 @@ Jika proyek berbeda, Zui Admin harus memakai Firebase Admin SDK/service account.
    Jika paket masih berlaku, tambahkan dari until yang lama.
    Aplikasi pelanggan langsung berubah (realtime), tanpa muat ulang.
    Untuk menurunkan ke Gratis: hapus dokumen atau isi until dengan tanggal lampau.
+   "Bisnis selamanya" = plan "bisnis" dengan until 31 Des 2099.
+   Saat mengaktifkan dari Antrean, Zui Admin juga menulis catatan pemasukan
+     adminPayments/{auto-id} -> { ws, wsName, plan, period, amount, at }
+   amount diambil dari hargaAwal di config.js Zui Admin (harus sama dengan PL di index.html).
 
 3. CHAT
    Ringkasan:  chats/{idBuku}  -> { wsName, email, lastText, lastFrom, lastAt }
