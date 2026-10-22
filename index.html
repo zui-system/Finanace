@@ -2,7 +2,7 @@
 <html lang="id"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Zui Finance</title>
-<meta name="theme-color" content="#EDF0F3"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#EDF0F3"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <script>try{const p=JSON.parse(localStorage.getItem('lgp')||'{}'),d=p.th==='gelap'||(p.th!=='terang'&&matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.dataset.th=d?'gelap':'terang'}catch(e){}</script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -360,7 +360,7 @@ try{const j=JSON.stringify(st);if(j.length>950000){toast(t('big'));throw new Err
 await FS.runTransaction(fdb,async tx=>{const r=D('workspaces',ws,'ledgers','main'),s=await tx.get(r);if(!s.exists()||s.data().version!==ver)throw new Error('CONFLICT');
 const o=s.data(),ym=ymNow(),base=o.mYm===ym?(o.mBase||0):(o.n||0),n=st.entries.length;
 tx.update(r,{j,version:ver+1,n,mYm:ym,mBase:base,updatedAt:FS.serverTimestamp()});LM={n,mYm:ym,mBase:base}});ver++}
-catch(e){const k=e.message==='CONFLICT'?'conflict':e.message==='BIG'?'big':'limit';try{sessionStorage.setItem('zmsg',k)}catch(_){}msg=t(k);st=null;draw();setTimeout(()=>location.reload(),1800)}}
+catch(e){const k=e.message==='CONFLICT'?'conflict':e.message==='BIG'?'big':e.code==='permission-denied'?'limit':'neterr';try{sessionStorage.setItem('zmsg',k)}catch(_){}msg=t(k);st=null;draw();setTimeout(()=>location.reload(),1800)}}
 async function createWs(){const u=fau.currentUser,w=FS.doc(C('workspaces')),b=FS.writeBatch(fdb);
 b.set(w,{name:'Zui Finance',owner:me.id,memberIds:[me.id],roles:{[me.id]:'owner'},memberInfo:{[me.id]:{email:me.email,name:u.displayName||''}},createdAt:FS.serverTimestamp()});
 b.set(D('workspaces',w.id,'ledgers','main'),{j:'{}',version:1,n:0,mYm:ymNow(),mBase:0,updatedAt:FS.serverTimestamp()});await b.commit()}
@@ -385,9 +385,9 @@ if(fresh)await save();await loadProfile();fixCur();await autorun();msg='';ping()
 const seed=()=>({rates:{IDR:1,MYR:3800,USD:16000},
 accts:[['1100','A'],['1200','A'],['2100','Li'],['2200','Li'],['3100','E'],['4100','R'],['5100','X'],['5200','X']].map(([c,y])=>({c,y,n:''})),entries:[],rules:[],invoices:[]});
 const nm=a=>S['a'+a.c]?t('a'+a.c):a.n;
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const addM=(d,m)=>{const x=new Date(d+'T00:00:00Z');x.setUTCMonth(x.getUTCMonth()+m);return x.toISOString().slice(0,10)};
-async function post(date,desc,cur,lines,auto){if(role==='viewer'){toast(t('ro'));throw new Error('ro')}const prev=st.entries.length?st.entries.at(-1).hash:(st.chainBase||'0');const e={id:Math.max(st.idBase||0,0,...st.entries.map(x=>x.id))+1,date,desc,cur,rate:st.rates[cur],lines,auto:!!auto,prev};e.hash=await sha(prev+JSON.stringify([e.id,date,desc,cur,e.rate,lines]));st.entries.push(e)}
+async function post(date,desc,cur,lines,auto,rate){if(role==='viewer'){toast(t('ro'));throw new Error('ro')}const prev=st.entries.length?st.entries.at(-1).hash:(st.chainBase||'0');const e={id:Math.max(st.idBase||0,0,...st.entries.map(x=>x.id))+1,date,desc,cur,rate:rate??st.rates[cur],lines,auto:!!auto,prev};e.hash=await sha(prev+JSON.stringify([e.id,date,desc,cur,e.rate,lines]));st.entries.push(e)}
 async function autorun(){let n=0;for(const r of st.rules){while(r.next<=today()&&n++<120){await post(r.next,r.desc,r.cur,[{a:r.d,dr:r.amt,cr:0},{a:r.c,dr:0,cr:r.amt}],true);r.next=addM(r.next,r.every)}}if(n)await save()}
 const cfgOk=()=>!!(FB_CFG.apiKey&&FB_CFG.projectId&&window.FB);
 async function boot(){try{const p=JSON.parse(localStorage.getItem('lgp')||'{}');if(p.disp)disp=p.disp;if(Number.isInteger(p.li)&&p.li>=0&&p.li<3)li=p.li;if(p.th)th=normTh(p.th)}catch(e){}
@@ -411,7 +411,7 @@ async function lockNow(){unsub.forEach(f=>f());unsub=[];clearTimeout(idle);st=nu
 function ping(){clearTimeout(idle);idle=setTimeout(lockNow,300000)}
 ['click','keydown','pointerdown'].forEach(e=>addEventListener(e,()=>st&&ping()));
 const conv=(v,from,to)=>v*st.rates[from]/st.rates[to];
-const fmt=(v,c=disp)=>{try{return new Intl.NumberFormat(LOC[li],{style:'currency',currency:c,currencyDisplay:'narrowSymbol',minimumFractionDigits:c==='IDR'?0:2,maximumFractionDigits:c==='IDR'?0:2}).format(v)}catch(e){return v.toFixed(2)+' '+c}};
+const fmt=(v,c=disp)=>{const k=c==='IDR'?1:100;v=Math.round((+v||0)*k)/k||0;try{return new Intl.NumberFormat(LOC[li],{style:'currency',currency:c,currencyDisplay:'narrowSymbol',minimumFractionDigits:c==='IDR'?0:2,maximumFractionDigits:c==='IDR'?0:2}).format(v)}catch(e){return v.toFixed(2)+' '+c}};
 function bals(){const b={};st.accts.forEach(a=>b[a.c]=0);st.entries.forEach(e=>e.lines.forEach(l=>b[l.a]+=(l.dr-l.cr)*e.rate));return b}
 const opt=(arr,sel)=>arr.map(([v,l])=>`<option value="${esc(v)}"${v===sel?' selected':''}>${esc(l)}</option>`).join('');
 const curs=()=>Object.keys(st.rates).map(c=>[c,({MYR:'RM · MYR',USD:'US$ · USD',IDR:'Rp · IDR'})[c]||c]);
@@ -538,8 +538,7 @@ function planInfo(){const w=mem.find(x=>x.workspace_id===ws)||{},now=Date.now(),
 if(bill&&bill.until&&bill.until.toMillis()>now&&LIM[bill.plan])return{p:bill.plan,until:bill.until.toMillis(),trial:false};
 if(now<cr+14*864e5)return{p:'pro',until:cr+14*864e5,trial:true};return{p:'free',until:0,trial:false}}
 function cfg(){const body={prof:profileTab,team:teamTab,plan:planTab,chat:chatTab,sec:settings,bhs:bhsTab,mc:curTab,out:outTab}[cs]();
-return`<div class="chips">${[['prof'],['team'],['plan'],['chat'],['sec'],['bhs'],['mc'],['out']].map(([k])=>`<button class="ch ${cs===k?'on':''}" onclick="cs='${k}';draw()">${t('c_'+k)}</button>`).join('')}</div><div class="cc">${body}</div>${installBtn()}<p class="mut" style="font-size:13px"><a href="#" onclick="openLegal('terms','land');return false" style="color:var(--ac)">${t('terms')}</a> · <a href="#" onclick="openLegal('privacy','land');return false" style="color:var(--ac)">${t('privacy')}</a></p><p class="mut" style="font-size:13px">${VER}</p>`}
-function toggleMenu(){if(matchMedia('(min-width:900px)').matches)mhide=!mhide;else mopen=!mopen;const sh=$('.shell');if(!sh)return;sh.classList.toggle('hide',mhide);$('nav').classList.toggle('open',mopen);$('#scrim').classList.toggle('on',mopen)}
+return`<div class="chips">${[['prof'],['team'],['plan'],['chat'],['sec'],['bhs'],['mc'],['out']].map(([k])=>`<button class="ch ${cs===k?'on':''}" onclick="cs='${k}';draw()">${t('c_'+k)}</button>`).join('')}</div><div class="cc">${body}</div>${installBtn()}<p class="mut" style="font-size:13px">${LDOCS.map(k=>`<a href="#" onclick="openLegal('${k}','auth');return false" style="color:var(--ac)">${t(k)}</a>`).join(' · ')}</p><p class="mut" style="font-size:13px">${VER}</p>`}
 function report(){const b=bals(),D=c=>conv(c,'IDR',disp);
 const sum=ty=>st.accts.filter(a=>a.y===ty).reduce((s,a)=>s+b[a.c],0);
 const A=sum('A'),Li=-sum('Li'),E=-sum('E'),R=-sum('R'),X=sum('X'),N=R-X;
@@ -573,7 +572,7 @@ function jlines(){return[...document.querySelectorAll('.jr')].map(r=>({a:r.query
 function jbal(){const q=jlines();$('#jb').textContent=t('diff')+': '+(q.reduce((s,l)=>s+l.dr,0)-q.reduce((s,l)=>s+l.cr,0)).toFixed(2)}
 async function addJ(){const q=jlines(),d=q.reduce((s,l)=>s+l.dr,0),c=q.reduce((s,l)=>s+l.cr,0);if(q.length<2||d<=0||Math.abs(d-c)>0.005){$('#je').textContent=t('notbal');return}
 await post($('#jd').value||today(),$('#jt').value.trim().slice(0,120)||'-',$('#jc').value,q);await save();draw()}
-async function rev(id){const e=st.entries.find(x=>x.id===id);await post(today(),'↩ #'+id+' '+e.desc,e.cur,e.lines.map(l=>({a:l.a,dr:l.cr,cr:l.dr})));st.entries.at(-1).rate=e.rate;await save();draw()}
+async function rev(id){const e=st.entries.find(x=>x.id===id);await post(today(),'↩ #'+id+' '+e.desc,e.cur,e.lines.map(l=>({a:l.a,dr:l.cr,cr:l.dr})),false,e.rate);await save();draw()}
 function invoices(){const rows=st.invoices.map((v,i)=>`<tr><td>${esc(v.no||'#'+v.n)}</td><td>${esc(v.who)}</td><td>${esc(v.due||'')}</td><td class="n">${fmt(v.total||v.amt,v.cur)}</td><td>${v.paid?`<span class="ok">${t('paid')}</span>`:`<button class="b g" onclick="payInv(${i})">${t('mark')}</button>`} <button class="b g" onclick="printInv(${i})">${t('print')}</button></td></tr>`).reverse().join('');
 return`<div class="card"><div class="row"><label>${t('who')}<input id="iw"></label><label>${t('cur')}<select id="ic">${opt(curs(),disp)}</select></label><label>${t('due')}<input id="idu" type="date" value="${addM(today(),1)}"></label><label>${t('tax')}<input id="itx" type="number" min="0" max="100" step="any" value="0" style="width:80px"></label></div>
 <div id="il" style="margin:12px 0">${irow()}</div><div class="row"><button class="b g" onclick="$('#il').insertAdjacentHTML('beforeend',irow())">+ ${t('line')}</button><button class="b" onclick="addInv()">${t('add')}</button></div></div><div class="card sc"><table>${rows}</table></div>`}
